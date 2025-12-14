@@ -1,20 +1,71 @@
-<style>
-  html,body{min-height:100%}
-  /* Force totale avec URL absolue */
-  body{
-    background:
-      linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65)),
-      url("https://frenchconnect-maker.github.io/frenchconnect/assets/images/bg-frenchconnect-1920.webp")
-      center / cover no-repeat fixed !important;
-  }
-  /* iPhone/iPad : si ça “glisse”, remplace fixed -> scroll */
-  @supports (-webkit-touch-callout: none) {
-    body{
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65)),
-        url("https://frenchconnect-maker.github.io/frenchconnect/assets/images/bg-frenchconnect-1920.webp")
-        center / cover no-repeat scroll !important;
-    }
-  }
-</style>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boutique – FrenchConnect</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=11">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/frenchconnect/index.html">
+      <img src="assets/images/logo.png" alt="FrenchConnect" class="logo">
+    </a>
+    <nav class="nav">
+      <a href="/frenchconnect/shop.html">Boutique</a>
+      <a href="/frenchconnect/about.html">Nos valeurs</a>
+      <a href="/frenchconnect/contact.html">Contact</a>
+      <a class="cart-link" href="/frenchconnect/cart.html">Panier <span id="cart-count">0</span></a>
+    </nav>
+  </div>
+</header>
+<div class="age-banner">18+ | Produits CBD – THC &lt; 0,3 % | Consommer de manière responsable</div>
+
+<main class="container">
+  <h1>Boutique</h1>
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Rechercher un produit…" aria-label="Recherche produit">
+    <select id="category-filter" aria-label="Filtrer par catégorie">
+      <option value="">Toutes catégories</option>
+      <option value="fleurs">Fleurs</option>
+      <option value="resines">Résines</option>
+      <option value="huiles">Huiles</option>
+      <option value="extraits">Extraits</option>
+    </select>
+  </div>
+
+  <!-- Grille des produits -->
+  <div id="product-grid" class="grid"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="cols">
+    <div>
+      <h4>FrenchConnect</h4>
+      <p>CBD premium sélectionné en France et en Europe.</p>
+    </div>
+    <div>
+      <h4>Légal</h4>
+      <ul>
+        <li><a href="/frenchconnect/legal.html">Mentions légales</a></li>
+        <li><a href="/frenchconnect/cgv.html">CGV</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p><a href="mailto:contact@frenchconnect.example">contact@frenchconnect.example</a></p>
+    </div>
+  </div>
+  <p class="copy">© 2025 FrenchConnect. Tous droits réservés.</p>
+</footer>
+
+<!-- JS -->
+<script src="assets/js/store.v3.js?v=3"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
