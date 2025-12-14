@@ -1,3 +1,13 @@
+{
+  id: "frenchconnect-smellz-bananacake-cakeberry-rosin",
+  name: "FrenchConnect x Smellz – Bananacake / Cakeberry Rosin CBD",
+  price: 40.00,
+  image: "assets/images/cakeberry-rosin.jpg",
+  category: "extraits",
+  badge: "Rosin Ultra Premium",
+  desc: "Issu de la collaboration exclusive FrenchConnect x Smellz, ce Rosin CBD Bananacake / Cakeberry est un coup de cœur 2025. Fruit de près de trois mois de travail, il offre une texture pure et un profil aromatique d’exception. Notes gourmandes et fruitées, terpènes 100 % naturels, extraction sans solvants. Série limitée réservée aux amateurs de qualité. THC < 0,3 %.",
+  payment_link: ""
+},
 
 // Product catalog (edit this with your real products)
 // Add your Stripe Payment Link for each product in 'payment_link'
