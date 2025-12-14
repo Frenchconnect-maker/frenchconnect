@@ -2,14 +2,12 @@
 body {
   margin: 0;
   font-family: system-ui, Arial, sans-serif;
+  min-height: 100vh;
 
-  background-image: url("background.png");
+  background: url("background.png") no-repeat center center fixed;
   background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-
-  animation: bgMove 20s ease-in-out infinite alternate;
 }
+
 
 .top {
   display: flex;
