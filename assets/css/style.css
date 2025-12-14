@@ -1,22 +1,10 @@
-/* === BACKGROUND GLOBAL (vivant + lisible) === */
+/* === BACKGROUND GLOBAL FINAL (FORCÉ) === */
+html, body{
+  min-height: 100%;
+}
+
 body{
   background:
-    linear-gradient(180deg, rgba(0,0,0,0.40), rgba(0,0,0,0.60)),
-    image-set(
-      url("assets/images/bg-frenchconnect-1080.webp") type("image/webp") 1x,
-      url("assets/images/bg-frenchconnect-1920.webp") type("image/webp") 2x
-    ) center / cover no-repeat fixed;
-}
-
-/* Effet glass sur les cartes */
-.card{
-  backdrop-filter: blur(6px);
-  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-/* Header plus lisible */
-.site-header{
-  background: rgba(11,16,32,.78);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+    linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.65)),
+    url("assets/images/bg-frenchconnect-1920.webp") center / cover no-repeat fixed !important;
 }
