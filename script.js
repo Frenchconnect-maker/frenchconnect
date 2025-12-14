@@ -1,6 +1,4 @@
 
-let c = 0;
-function add() {
-  c++;
-  document.getElementById("cart-count").innerText = c;
+function toggleMenu() {
+  document.getElementById("mobileMenu").classList.toggle("active");
 }
