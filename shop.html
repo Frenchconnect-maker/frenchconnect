@@ -3,29 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FrenchConnect – CBD Premium</title>
+  <title>Boutique – FrenchConnect</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="icon" type="image/png" href="assets/images/logo.png">
+
+  <!-- Police (rendu plus propre) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
 <header class="site-header">
-  <a class="brand" href="index.html">
-    <img src="assets/images/logo.png" alt="FrenchConnect" class="logo">
-  </a>
-  <nav class="nav">
-    <a href="shop.html">Boutique</a>
-    <a href="about.html">Nos valeurs</a>
-    <a href="contact.html">Contact</a>
-    <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
-  </nav>
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img src="assets/images/logo.png" alt="FrenchConnect" class="logo">
+    </a>
+    <nav class="nav">
+      <a href="shop.html">Boutique</a>
+      <a href="about.html">Nos valeurs</a>
+      <a href="contact.html">Contact</a>
+      <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+    </nav>
+  </div>
 </header>
 <div class="age-banner">18+ | Produits CBD – THC &lt; 0,3 % | Consommer de manière responsable</div>
 
 <main class="container">
   <h1>Boutique</h1>
   <div class="toolbar">
-    <input type="search" id="search" placeholder="Rechercher un produit…">
-    <select id="category-filter">
+    <input type="search" id="search" placeholder="Rechercher un produit…" aria-label="Recherche produit">
+    <select id="category-filter" aria-label="Filtrer par catégorie">
       <option value="">Toutes catégories</option>
       <option value="fleurs">Fleurs</option>
       <option value="resines">Résines</option>
@@ -33,6 +40,8 @@
       <option value="extraits">Extraits</option>
     </select>
   </div>
+
+  <!-- Grille des produits -->
   <div id="product-grid" class="grid"></div>
 </main>
 
@@ -56,8 +65,9 @@
   </div>
   <p class="copy">© 2025 FrenchConnect. Tous droits réservés.</p>
 </footer>
-<script src="assets/js/store.js"></script>
-<script src="assets/js/store.v2.js?v=1"></script>
 
+<!-- IMPORTANT : utiliser le JS avec grammage -->
+<script src="assets/js/store.v3.js?v=2"></script>
+<script src="assets/js/main.js"></script>
 </body>
 </html>
