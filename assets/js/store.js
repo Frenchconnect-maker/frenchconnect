@@ -44,13 +44,15 @@ const STORE = [
   }
   {
   id: "cakeberry",
-  name: "Huile CBD 20%",
-  price: 39.90,
-  image: "assets/images/huile20.jpg",
-  category: "huiles",
-  badge: "Full spectrum",
-  desc: "Huile CBD 20% – spectre complet – THC < 0,3%",
-  payment_link: "https://buy.stripe.com/TON_LIEN_STRIPE"
+  name: "CAKEBERRY",
+  price: 40.00,
+  image: "assets/images/cakeberry.jpg",
+  category: "fleurs",
+  badge: "Premium",
+  desc: "CAKEBERRY – Fleur CBD premium au profil gourmand et fruité. Sélection haut de gamme. THC < 0,3 %.",
+  payment_link: ""
+},
+
 },
 
 ];
