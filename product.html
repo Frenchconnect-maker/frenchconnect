@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FrenchConnect – CBD Premium</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=11">
+  <title>Produit – FrenchConnect</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=21">
+  <!-- 👇 Ajout safe : thème luxe -->
+  <link rel="stylesheet" href="assets/css/style-luxe.css?v=1">
   <link rel="icon" type="image/png" href="assets/images/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -26,33 +28,64 @@
 <div class="age-banner">18+ | Produits CBD – THC &lt; 0,3 % | Consommer de manière responsable</div>
 
 <main class="container" id="product-page">
-  <div class="product-view">
-    <div class="media"><img id="p-image" alt=""></div>
+  <div class="product-view luxe-slab">
+    <!-- Media -->
+    <div class="media">
+      <div class="media-frame">
+        <img id="p-image" alt="">
+        <div class="waterline">FrenchConnect • Sélection USA</div>
+      </div>
+      <ul class="trust-grid">
+        <li>THC &lt; 0,3 %</li>
+        <li>Analyses sur demande</li>
+        <li>Expédition discrète</li>
+      </ul>
+    </div>
+
+    <!-- Infos -->
     <div class="info">
-      <h1 id="p-name"></h1>
+      <h1 class="title-luxe" id="p-name"></h1>
       <p id="p-desc" class="muted"></p>
+
       <div class="meta">
         <span id="p-cat" class="pill"></span>
         <span id="p-badge" class="pill outline"></span>
       </div>
 
-      <!-- Prix dynamique -->
-      <div class="price" id="p-price"></div>
+      <div class="divider"></div>
 
-      <!-- Choix de grammage -->
-      <label>Grammage
-        <select id="option"></select>
-      </label>
+      <div class="price-line">
+        <div class="price" id="p-price"></div>
+        <span class="vat-note muted">TTC — TVA incluse</span>
+      </div>
 
-      <label>Quantité
-        <input type="number" id="qty" min="1" value="1">
-      </label>
+      <div class="form-grid">
+        <label>Grammage
+          <select id="option" class="select-luxe"></select>
+        </label>
+        <label>Quantité
+          <input type="number" id="qty" min="1" value="1" class="input-luxe">
+        </label>
+      </div>
 
       <div class="btn-row">
-        <button id="add-to-cart" class="btn">Ajouter au panier</button>
-        <button id="buy-now" class="btn ghost">Acheter maintenant</button>
+        <button id="add-to-cart" class="btn btn-luxe">Ajouter au panier</button>
+        <button id="buy-now" class="btn ghost btn-ghost-luxe">Acheter maintenant</button>
       </div>
-      <div class="small muted">Analyses disponibles sur demande • THC &lt; 0,3 %</div>
+
+      <!-- Accordions -->
+      <details class="acc">
+        <summary>Traçabilité & conformité</summary>
+        <div class="acc-body muted">Produits conformes à la réglementation UE. THC &lt; 0,3 %. Analyses disponibles sur demande.</div>
+      </details>
+      <details class="acc">
+        <summary>Expédition & discrétion</summary>
+        <div class="acc-body muted">Préparation soignée, emballage discret, envoi rapide avec suivi.</div>
+      </details>
+      <details class="acc">
+        <summary>Conseils d’usage</summary>
+        <div class="acc-body muted">Usage aromatique / collection. Conserver au frais, à l’abri de la lumière.</div>
+      </details>
     </div>
   </div>
 </main>
@@ -61,7 +94,7 @@
   <div class="cols">
     <div>
       <h4>FrenchConnect</h4>
-      <p>CBD premium sélectionné en France et en Europe.</p>
+      <p>CBD premium – Sélection USA.</p>
     </div>
     <div>
       <h4>Légal</h4>
@@ -72,16 +105,17 @@
     </div>
     <div>
       <h4>Contact</h4>
-      <p><a href="mailto:contact@frenchconnect.example">contact@frenchconnect.example</a></p>
+      <p><a href="mailto:connectfrench31@gmail.com">connectfrench31@gmail.com</a></p>
     </div>
   </div>
   <p class="copy">© 2025 FrenchConnect. Tous droits réservés.</p>
 </footer>
 
 <!-- JS -->
-<script src="assets/js/store.v3.js?v=3"></script>
+<script src="assets/js/store.v3.js?v=4"></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>
+
 
 
