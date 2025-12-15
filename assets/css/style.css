@@ -1,0 +1,20 @@
+
+:root{--gold:#d4af37;--bg:#0b1020;--panel:rgba(10,14,30,.78);--line:rgba(212,175,55,.25)}
+*{box-sizing:border-box}
+html{background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,.7)),url("/frenchconnect/assets/images/background.webp") center/cover fixed}
+body{margin:0;font-family:Inter,Arial,sans-serif;color:#eaeaf0}
+a{color:#fff;text-decoration:none}
+header{position:sticky;top:0;background:var(--panel);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+header nav{display:flex;gap:14px;padding:12px 16px;justify-content:space-between;align-items:center}
+.container{max-width:1100px;margin:auto;padding:16px}
+h1,h2{margin:.2em 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.thumb{width:100%;aspect-ratio:1/1;object-fit:cover}
+.pad{padding:12px}
+.price{color:var(--gold);font-weight:800}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:.8rem}
+.btn{display:inline-block;margin-top:8px;padding:10px 14px;border-radius:12px;background:linear-gradient(180deg,var(--gold),#b9931a);color:#111;font-weight:800}
+footer{border-top:1px solid var(--line);margin-top:24px}
+footer .container{display:grid;gap:12px}
+@media(max-width:700px){header nav{flex-direction:column}}
