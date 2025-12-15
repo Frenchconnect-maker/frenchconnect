@@ -6,14 +6,14 @@
   --gold-soft: rgba(212,175,55,.25);
 }
 
-/* fond léger plus chic */
+/* Fond chic (reste cohérent avec le site) */
 body{
   background:
     linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.7)),
     url("assets/images/background.webp") center/cover no-repeat fixed;
 }
 
-/* Cartes produits — effet verre + liseré or discret */
+/* Cartes produits — verre + liseré or */
 .card{
   background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
   border: 1px solid var(--gold-soft);
@@ -26,7 +26,7 @@ body{
   box-shadow: 0 6px 18px rgba(212,175,55,.15);
 }
 
-/* titres et prix */
+/* Titres & prix */
 .card h3 a{
   color:#fff;
   text-decoration:none;
@@ -37,7 +37,7 @@ body{
   font-weight:700;
 }
 
-/* pills dorées */
+/* Pills dorées */
 .pill{
   background: rgba(21,34,56,.8);
   border: 1px solid var(--gold-soft);
@@ -48,7 +48,7 @@ body{
   border:1px solid var(--gold-soft);
 }
 
-/* boutons de carte */
+/* Boutons de carte */
 .card .btn{
   border:1px solid var(--gold-soft);
   background:linear-gradient(180deg, var(--gold), #b9931a);
@@ -59,7 +59,7 @@ body{
   filter:brightness(1.05);
 }
 
-/* barre de catégories */
+/* Barre de catégories (pills) */
 .catbar .pill{
   border:1px solid var(--gold-soft);
   background:rgba(18,26,52,.7);
@@ -76,7 +76,7 @@ body{
   border-color:var(--gold);
 }
 
-/* barre de recherche */
+/* Barre recherche / filtre */
 .toolbar input, .toolbar select{
   border:1px solid var(--gold-soft);
   background:#0f1a33;
@@ -86,10 +86,11 @@ body{
   box-shadow:0 0 0 2px var(--gold-soft);
 }
 
-/* titres de section */
+/* Titre de page */
 main.container h1{
   background:linear-gradient(90deg, #fff, #dfe7f8);
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
 }
+
