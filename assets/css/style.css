@@ -216,4 +216,30 @@ html, body { -webkit-overflow-scrolling: touch; }
     background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));
   }
 }
+/* ===== HERO IMAGE PLUS PETITE & LUXE ===== */
+.hero-media-small{
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.hero-media-small img{
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  object-fit: contain;
+}
+
+/* Desktop : image encore plus élégante */
+@media (min-width: 1024px){
+  .hero-media-small{
+    max-width: 380px;
+  }
+}
+
+/* Mobile : image bien intégrée */
+@media (max-width: 768px){
+  .hero-media-small{
+    max-width: 320px;
+  }
+}
 
