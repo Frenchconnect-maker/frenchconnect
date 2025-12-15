@@ -12,17 +12,18 @@
 }
 
 /* ================================
-   RESET & BASE
+   RESET
 ================================ */
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;min-height:100%}
 
-/* 🌄 BACKGROUND GLOBAL (sur tout le site) */
+/* ================================
+   BACKGROUND GLOBAL
+================================ */
 html{
   background:
     linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65)),
-    url("https://frenchconnect-maker.github.io/frenchconnect/assets/images/background.webp")
-    center/cover no-repeat fixed;
+    url("assets/images/background.webp") center/cover no-repeat fixed;
 }
 body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -31,12 +32,13 @@ body{
   line-height:1.55;
 }
 
-/* Anti-overlay : liens toujours cliquables */
-.site-header, .nav, .nav a, main, .grid, .card, .card a, footer { position:relative; z-index:2; }
-a { pointer-events:auto; }
+/* Mobile : pas de fixed (évite bug scroll iOS) */
+@media (max-width: 1024px){
+  html{ background-attachment: scroll; }
+}
 
 /* ================================
-   HEADER
+   HEADER (LOGO INCHANGÉ)
 ================================ */
 .site-header{
   position:sticky; top:0; z-index:10;
@@ -50,19 +52,30 @@ a { pointer-events:auto; }
   padding:12px 24px;
   display:flex; align-items:center; justify-content:space-between;
 }
-.logo{height:42px}
-.nav a{ margin-left:16px; color:var(--ink); text-decoration:none; font-weight:500; }
+.logo{height:42px;width:auto}
+.nav a{
+  margin-left:16px;
+  color:var(--ink);
+  text-decoration:none;
+  font-weight:500;
+}
 .cart-link span{
-  background:var(--accent); color:#000; border-radius:999px;
-  padding:2px 8px; margin-left:4px; font-size:.8rem;
+  background:var(--accent);
+  color:#000;
+  border-radius:999px;
+  padding:2px 8px;
+  margin-left:4px;
+  font-size:.8rem;
 }
 
 /* ================================
    BANNIÈRE ÂGE
 ================================ */
 .age-banner{
-  text-align:center; padding:8px;
-  background:#0f1a33; border-bottom:1px solid var(--line);
+  text-align:center;
+  padding:8px;
+  background:#0f1a33;
+  border-bottom:1px solid var(--line);
   font-size:.9rem;
 }
 
@@ -74,27 +87,64 @@ h1,h2,h3{margin:0 0 12px}
 .muted{color:var(--muted)}
 
 /* ================================
-   HERO
+   HERO (IMAGE PLUS PETITE)
 ================================ */
 .hero{padding:40px 24px}
 .hero-inner{
-  max-width:var(--maxw); margin:0 auto;
-  display:grid; grid-template-columns:1.2fr .8fr; gap:24px;
+  max-width:var(--maxw);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:28px;
+  align-items:center;
 }
-.hero-media{ border-radius:16px; overflow:hidden; border:1px solid var(--line); }
-.hero-media img{ width:100%; height:100%; object-fit:cover; }
+
+/* Texte hero */
+.hero-text h1{font-size:2.4rem}
+.hero-text p{max-width:520px}
+
+/* Image hero réduite */
+.hero-media-small{
+  max-width:420px;
+  margin:0 auto;
+}
+.hero-media-small img{
+  width:100%;
+  height:auto;
+  border-radius:18px;
+  object-fit:contain;
+  border:1px solid var(--line);
+}
+
+/* Desktop large */
+@media (min-width:1024px){
+  .hero-media-small{max-width:380px}
+}
+
+/* Mobile */
+@media (max-width:768px){
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero-text h1{font-size:2rem}
+  .hero-media-small{max-width:320px}
+}
 
 /* ================================
    FEATURES
 ================================ */
 .features{padding:24px}
 .features .grid{
-  max-width:var(--maxw); margin:0 auto;
-  display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+  max-width:var(--maxw);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
 }
 .feature{
-  background:var(--panel); backdrop-filter: blur(6px);
-  border:1px solid var(--line); border-radius:14px; padding:18px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px;
+  backdrop-filter: blur(6px);
 }
 
 /* ================================
@@ -102,144 +152,152 @@ h1,h2,h3{margin:0 0 12px}
 ================================ */
 .collection{padding:24px}
 .grid{
-  max-width:var(--maxw); margin:0 auto;
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:18px;
+  max-width:var(--maxw);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:18px;
 }
 
 /* ================================
    CARDS PRODUITS
 ================================ */
 .card{
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  backdrop-filter: blur(6px);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
   border:1px solid var(--line);
   border-radius:16px;
   overflow:hidden;
-  display:flex; flex-direction:column;
+  display:flex;
+  flex-direction:column;
+  backdrop-filter: blur(6px);
 }
-.card .thumb{ width:100%; aspect-ratio:1/1; object-fit:cover; }
-.card .pad{ padding:14px }
-.card h3{ font-size:1.05rem; margin:6px 0 8px }
-.price-tag{ font-weight:800 }
-.pill{ display:inline-block; font-size:.8rem; border-radius:999px; padding:4px 10px; background:#152238; color:#c9d6e7; }
-.pill.outline{ background:transparent; border:1px solid #2a3a55; }
+.card .thumb{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+}
+.card .pad{padding:14px}
+.card h3{font-size:1.05rem;margin:6px 0 8px}
+.price-tag{font-weight:800}
+
+/* Pills */
+.pill{
+  display:inline-block;
+  font-size:.8rem;
+  border-radius:999px;
+  padding:4px 10px;
+  background:#152238;
+  color:#c9d6e7;
+}
+.pill.outline{
+  background:transparent;
+  border:1px solid #2a3a55;
+}
 
 /* ================================
    BOUTONS
 ================================ */
 .btn{
-  padding:10px 14px; border-radius:12px;
-  background:var(--accent); color:#000; font-weight:700;
-  border:none; cursor:pointer; text-decoration:none;
+  padding:10px 14px;
+  border-radius:12px;
+  background:var(--accent);
+  color:#000;
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
 }
-.btn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
-.btn-row{ display:flex; gap:10px; margin-top:12px }
+.btn.ghost{
+  background:transparent;
+  color:var(--ink);
+  border:1px solid var(--line);
+}
+.btn-row{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
 
 /* ================================
-   SHOP TOOLBAR
+   TOOLBAR BOUTIQUE
 ================================ */
 .toolbar{
-  max-width:var(--maxw); margin:0 auto 16px;
-  display:flex; gap:10px;
+  max-width:var(--maxw);
+  margin:0 auto 16px;
+  display:flex;
+  gap:10px;
 }
 input,select{
-  padding:11px 12px; border-radius:12px; border:1px solid var(--line);
-  background:#0f1a33; color:var(--ink);
+  padding:11px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#0f1a33;
+  color:var(--ink);
 }
 
 /* ================================
    PAGE PRODUIT
 ================================ */
 .product-view{
-  max-width:var(--maxw); margin:0 auto;
-  display:grid; grid-template-columns:1fr 1fr; gap:24px;
+  max-width:var(--maxw);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
 }
-.product-view img{ width:100%; border-radius:16px; border:1px solid var(--line); }
-.price{ font-size:1.7rem; font-weight:800; }
+.product-view img{
+  width:100%;
+  border-radius:16px;
+  border:1px solid var(--line);
+}
+.price{font-size:1.7rem;font-weight:800}
+
+/* ================================
+   PANIER
+================================ */
+.cart-line{
+  display:grid;
+  grid-template-columns:80px 1fr auto auto auto;
+  gap:12px;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+  padding:12px 0;
+}
+.cart-line img{
+  width:80px;
+  height:80px;
+  border-radius:12px;
+  object-fit:cover;
+}
 
 /* ================================
    FOOTER
 ================================ */
-.site-footer{ border-top:1px solid var(--line); margin-top:40px; }
-.site-footer .cols{
-  max-width:var(--maxw); margin:0 auto; padding:24px;
-  display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+.site-footer{
+  border-top:1px solid var(--line);
+  margin-top:40px;
 }
-.site-footer .copy{ text-align:center; color:var(--muted); padding-bottom:24px; }
+.site-footer .cols{
+  max-width:var(--maxw);
+  margin:0 auto;
+  padding:24px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+.site-footer .copy{
+  text-align:center;
+  color:var(--muted);
+  padding-bottom:24px;
+}
 
 /* ================================
-   RESPONSIVE + MOBILE UPGRADE PACK
+   RESPONSIVE GLOBAL
 ================================ */
-
-/* 1) iOS/Android : éviter le freeze du scroll avec background fixed */
-@media (max-width: 1024px){
-  html{
-    background-attachment: scroll !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-  }
+@media (max-width:980px){
+  .features .grid{grid-template-columns:1fr}
+  .product-view{grid-template-columns:1fr}
+  .site-footer .cols{grid-template-columns:1fr}
 }
 
-/* Bonus robuste pour iOS (WebKit) */
-@supports (-webkit-touch-callout: none) {
-  html{ background-attachment: scroll !important; }
-}
-
-/* 2) Layout mobile : toolbar en colonne, gros tap targets */
-@media (max-width: 980px){
-  .toolbar{
-    padding: 0 16px;
-    flex-direction: column; align-items: stretch; gap: 12px;
-  }
-  input[type="search"], select{
-    min-width: 100%; font-size: 16px; padding: 12px 14px; /* évite le zoom iOS */
-  }
-  .grid{ grid-template-columns: 1fr; gap: 14px; padding: 0 16px; }
-  .card{ border-radius: 14px; }
-  .card .pad{ padding: 12px; }
-  .btn{ padding: 12px 16px; font-size: 16px; border-radius: 12px; }
-  .site-header .wrap{ padding: 10px 16px; }
-  .age-banner{ font-size: 0.9rem; padding: 8px 12px; }
-  .container{ padding: 16px; }
-  .product-view{ grid-template-columns: 1fr; gap: 16px; padding: 0 16px; }
-  .price{ font-size: 1.4rem; }
-}
-
-/* 3) Scroll plus fluide sur iOS */
-html, body { -webkit-overflow-scrolling: touch; }
-
-/* 4) Légère réduction d’overlay pour plus de peps sur mobile */
-@media (max-width: 980px){
-  .site-header{ background: rgba(11,16,32,.8); }
-  .card, .feature, .product-view, .site-footer{
-    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));
-  }
-}
-/* ===== HERO IMAGE PLUS PETITE & LUXE ===== */
-.hero-media-small{
-  max-width: 420px;
-  margin: 0 auto;
-}
-
-.hero-media-small img{
-  width: 100%;
-  height: auto;
-  border-radius: 18px;
-  object-fit: contain;
-}
-
-/* Desktop : image encore plus élégante */
-@media (min-width: 1024px){
-  .hero-media-small{
-    max-width: 380px;
-  }
-}
-
-/* Mobile : image bien intégrée */
-@media (max-width: 768px){
-  .hero-media-small{
-    max-width: 320px;
-  }
-}
 
