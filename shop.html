@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Boutique – FrenchConnect</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=21">
-  <link rel="stylesheet" href="assets/css/shop-luxe.css?v=1">
-  <link rel="icon" type="image/png" href="assets/images/logo.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/style.css?v=21" />
+  <!-- Thème LUXE pour la boutique -->
+  <link rel="stylesheet" href="assets/css/shop-luxe.css?v=1" />
+
+  <link rel="icon" type="image/png" href="assets/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="/frenchconnect/index.html">
-      <img src="assets/images/logo.png" alt="FrenchConnect" class="logo">
+      <img src="assets/images/logo.png" alt="FrenchConnect" class="logo" />
     </a>
     <nav class="nav">
       <a href="/frenchconnect/shop.html">Boutique</a>
@@ -34,19 +38,19 @@
 
 <main class="container">
 
-  <!-- TITRE -->
+  <!-- Titre -->
   <section style="max-width:900px;margin:0 auto 10px;">
     <h1>Boutique</h1>
     <p class="muted">
-      Sélection premium de fleurs, résines, extraits et huiles CBD.
+      Sélection premium de fleurs, résines (hash), extraits et huiles CBD.
       Qualité contrôlée – Origine USA & Europe.
     </p>
   </section>
 
-  <!-- FILTRES -->
-  <div class="toolbar">
-    <input type="search" id="search" placeholder="Rechercher un produit…">
-    <select id="category-filter">
+  <!-- Filtres -->
+  <div class="toolbar" role="search">
+    <input type="search" id="search" placeholder="Rechercher un produit…" aria-label="Rechercher un produit" />
+    <select id="category-filter" aria-label="Filtrer par catégorie">
       <option value="">Toutes catégories</option>
       <option value="fleurs">Fleurs</option>
       <option value="resines">Résines (Hash)</option>
@@ -55,18 +59,19 @@
     </select>
   </div>
 
-  <!-- PILLS CATEGORIES -->
-  <nav class="catbar" style="max-width:var(--maxw);margin:0 auto 14px;padding:0 24px;display:flex;flex-wrap:wrap;gap:8px">
-    <a class="pill outline" href="/frenchconnect/shop.html">Tout</a>
-    <a class="pill outline" href="/frenchconnect/shop.html?cat=fleurs">Fleurs</a>
-    <a class="pill outline" href="/frenchconnect/shop.html?cat=resines">Résines</a>
-    <a class="pill outline" href="/frenchconnect/shop.html?cat=huiles">Huiles</a>
-    <a class="pill outline" href="/frenchconnect/shop.html?cat=extraits">Extraits</a>
-    <a class="pill" href="/frenchconnect/shop.html?cat=hash">Hash</a>
+  <!-- Pills catégories -->
+  <nav class="catbar" aria-label="Catégories"
+       style="max-width:var(--maxw);margin:0 auto 14px;padding:0 24px;display:flex;flex-wrap:wrap;gap:8px">
+    <a class="pill outline" data-cat=""        href="/frenchconnect/shop.html">Tout</a>
+    <a class="pill outline" data-cat="fleurs"  href="/frenchconnect/shop.html?cat=fleurs">Fleurs</a>
+    <a class="pill outline" data-cat="resines" href="/frenchconnect/shop.html?cat=resines">Résines</a>
+    <a class="pill outline" data-cat="huiles"  href="/frenchconnect/shop.html?cat=huiles">Huiles</a>
+    <a class="pill outline" data-cat="extraits" href="/frenchconnect/shop.html?cat=extraits">Extraits</a>
+    <a class="pill outline" data-cat="hash"    href="/frenchconnect/shop.html?cat=hash">Hash</a>
   </nav>
 
-  <!-- GRILLE PRODUITS -->
-  <div id="product-grid" class="grid"></div>
+  <!-- Grille produits -->
+  <div id="product-grid" class="grid" role="list"></div>
 
 </main>
 
@@ -86,17 +91,31 @@
     <div>
       <h4>Contact</h4>
       <p>
-        <a href="mailto:connectfrench31@gmail.com">
-          connectfrench31@gmail.com
-        </a>
+        <a href="mailto:connectfrench31@gmail.com">connectfrench31@gmail.com</a>
       </p>
     </div>
   </div>
   <p class="copy">© 2025 FrenchConnect. Tous droits réservés.</p>
 </footer>
 
+<!-- JS -->
 <script src="assets/js/store.v3.js?v=4"></script>
 <script src="assets/js/main.js"></script>
+
+<!-- Active automatiquement la pill selon ?cat=... -->
+<script>
+  (function () {
+    const params = new URL(location.href).searchParams;
+    const cat = (params.get('cat') || '').toLowerCase();
+    const wanted = ['','fleurs','resines','huiles','extraits','rosin','hash'].includes(cat) ? cat : '';
+    document.querySelectorAll('.catbar .pill').forEach(a => {
+      if ((a.getAttribute('data-cat') || '').toLowerCase() === wanted) {
+        a.classList.add('active');
+      }
+    });
+  })();
+</script>
 </body>
 </html>
+
 
