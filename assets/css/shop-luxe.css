@@ -1,0 +1,95 @@
+/* ================================
+   SHOP THEME LUXE
+================================ */
+:root{
+  --gold: #D4AF37;
+  --gold-soft: rgba(212,175,55,.25);
+}
+
+/* fond léger plus chic */
+body{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.7)),
+    url("assets/images/background.webp") center/cover no-repeat fixed;
+}
+
+/* Cartes produits — effet verre + liseré or discret */
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+  border: 1px solid var(--gold-soft);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(212,175,55,.15);
+}
+
+/* titres et prix */
+.card h3 a{
+  color:#fff;
+  text-decoration:none;
+}
+.card h3 a:hover{ color:var(--gold); }
+.price-tag{
+  color: var(--gold);
+  font-weight:700;
+}
+
+/* pills dorées */
+.pill{
+  background: rgba(21,34,56,.8);
+  border: 1px solid var(--gold-soft);
+  color:#e6ebf5;
+}
+.pill.outline{
+  background:transparent;
+  border:1px solid var(--gold-soft);
+}
+
+/* boutons de carte */
+.card .btn{
+  border:1px solid var(--gold-soft);
+  background:linear-gradient(180deg, var(--gold), #b9931a);
+  color:#111;
+  font-weight:700;
+}
+.card .btn:hover{
+  filter:brightness(1.05);
+}
+
+/* barre de catégories */
+.catbar .pill{
+  border:1px solid var(--gold-soft);
+  background:rgba(18,26,52,.7);
+  color:#dfe7f8;
+  transition:all .15s ease;
+}
+.catbar .pill:hover{
+  background:var(--gold);
+  color:#111;
+}
+.catbar .pill.active{
+  background:var(--gold);
+  color:#000;
+  border-color:var(--gold);
+}
+
+/* barre de recherche */
+.toolbar input, .toolbar select{
+  border:1px solid var(--gold-soft);
+  background:#0f1a33;
+  color:#e6ebf5;
+}
+.toolbar input:focus, .toolbar select:focus{
+  box-shadow:0 0 0 2px var(--gold-soft);
+}
+
+/* titres de section */
+main.container h1{
+  background:linear-gradient(90deg, #fff, #dfe7f8);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
