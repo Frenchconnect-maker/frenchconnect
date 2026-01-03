@@ -4,6 +4,11 @@
 // (Remises sur fleurs/resines/extraits via options)
 // Pre Rolls = produit simple sans options
 // =====================
+function clearCart(){
+  localStorage.removeItem("cart");
+  updateCartCount();
+  renderCart();
+}
 
 // ---- REMISES PAR GRAMMAGE (coef) ----
 const DISCOUNT = {
