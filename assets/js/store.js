@@ -1,16 +1,6 @@
-
 // =====================
-// CATALOGUE PRODUITS
-// (Remises sur fleurs/resines/extraits via options)
-// Pre Rolls = produit simple sans options
+// REMISES + GRAMMAGES
 // =====================
-function clearCart(){
-  localStorage.removeItem("cart");
-  updateCartCount();
-  renderCart();
-}
-
-// ---- REMISES PAR GRAMMAGE (coef) ----
 const DISCOUNT = {
   1:   1.00, // 0%
   3:   0.95, // -5%
@@ -33,7 +23,11 @@ function buildGramOptions(price1g){
   }));
 }
 
-// ---- CATALOGUE ----
+// =====================
+// CATALOGUE (TES PRODUITS)
+// Grammage sur fleurs/resines/extraits
+// Pre Rolls = produit simple sans options
+// =====================
 const STORE = [
   // ===== EXTRAITS =====
   {
@@ -203,21 +197,38 @@ const getOption = (p, optId) => (p.options || []).find(o => o.id === optId);
 const defaultOptionId = (p) => (p.options && p.options[0]?.id) || null;
 const priceFor = (p, optId) => (getOption(p, optId)?.price ?? p.price);
 
+function findProduct(id){ return STORE.find(p => p.id === id); }
+
 // =====================
-// PANIER localStorage
+// PANIER (localStorage)
 // =====================
-function getCart(){ try { return JSON.parse(localStorage.getItem("cart") || "[]"); } catch(e){ return []; } }
-function setCart(cart){ localStorage.setItem("cart", JSON.stringify(cart)); updateCartCount(); }
+function getCart(){
+  try { return JSON.parse(localStorage.getItem("cart") || "[]"); }
+  catch(e){ return []; }
+}
+function setCart(cart){
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
+}
+
+function clearCart(){
+  localStorage.removeItem("cart");
+  updateCartCount();
+  renderCart();
+}
+
 function updateCartCount(){
   const cart = getCart();
   const count = cart.reduce((s,l)=>s+(l.qty||0),0);
   const el = document.getElementById("cart-count");
   if(el) el.textContent = count;
 }
-function findProduct(id){ return STORE.find(p => p.id === id); }
+
+// Expose pour les onclick inline (cart.html)
+window.clearCart = clearCart;
 
 // =====================
-// CATEGORIES (normalisation + alias)
+// CATEGORIES (filtre boutique)
 // =====================
 const CATEGORY_MAP = {
   "fleurs": "fleurs",
@@ -252,27 +263,13 @@ function searchProducts(q, cat){
   return STORE.filter(p => {
     const okQ = !q || (p.name.toLowerCase().includes(q) || (p.desc||"").toLowerCase().includes(q));
     const pCat = normCat(p.category);
-    let okC = !want || pCat === want;
-
-    // alias rosin/hash si besoin
-    if((cat||"").toLowerCase() === "hash") okC = pCat === "resines";
-    if((cat||"").toLowerCase() === "rosin") okC = pCat === "extraits";
-
+    const okC = !want || pCat === want;
     return okQ && okC;
   });
 }
 
 // =====================
-// HOME
-// =====================
-function renderHome(){
-  const box = document.getElementById("home-collection");
-  if(!box) return;
-  box.innerHTML = STORE.slice(0,3).map(card).join("");
-}
-
-// =====================
-// CARDS (liens relatifs = OK GitHub Pages)
+// CARDS (shop)
 // =====================
 function card(p){
   const base = p.options?.length ? p.options[0].price : p.price;
@@ -295,66 +292,26 @@ function card(p){
 }
 
 // =====================
-// PANIER UI
+// PAGE BOUTIQUE
 // =====================
-function addToCart(id, qty, optId){
-  const p = findProduct(id); if(!p) return;
-  const optionId = optId || defaultOptionId(p); // null sur prerolls => OK
-  const key = optionId ? `${id}__${optionId}` : id;
+function bootShopPage(){
+  const grid  = document.getElementById("product-grid");
+  if(!grid) return;
 
-  const cart = getCart();
-  const line = cart.find(l => l.key === key);
-  if(line) line.qty += qty; else cart.push({ key, id, optionId, qty });
+  const input = document.getElementById("search");
+  const select= document.getElementById("category-filter");
 
-  setCart(cart);
-  alert("Ajouté au panier ✔");
-}
-
-function removeFromCart(key){
-  const cart = getCart().filter(l => l.key !== key);
-  setCart(cart); renderCart();
-}
-
-function setQty(key, qty){
-  const cart = getCart();
-  const line = cart.find(l => l.key === key);
-  if(!line) return;
-  line.qty = Math.max(1, qty|0);
-  setCart(cart); renderCart();
-}
-
-function renderCart(){
-  const box = document.getElementById("cart-items");
-  if(!box) return;
-
-  const cart = getCart();
-  if(cart.length === 0){
-    box.innerHTML = "<p>Votre panier est vide.</p>";
-    const t = document.getElementById("cart-total"); if(t) t.textContent = formatPrice(0);
-    return;
+  function rerender(){
+    const q = input ? input.value : "";
+    const cat = select ? select.value : "";
+    const results = searchProducts(q, cat);
+    grid.innerHTML = results.map(card).join("");
   }
 
-  let total = 0;
-  box.innerHTML = cart.map(l => {
-    const p = findProduct(l.id);
-    const price = priceFor(p, l.optionId);
-    total += price * l.qty;
+  if(input) input.oninput = rerender;
+  if(select) select.onchange = rerender;
 
-    const optLabel = l.optionId ? (getOption(p, l.optionId)?.label || "") : "";
-    return `
-      <div class="cart-line">
-        <img src="${p.image}" alt="${p.name}">
-        <div>
-          <strong>${p.name}</strong>
-          <div class="muted">${p.category} • ${p.badge}${optLabel ? " • " + optLabel : ""}</div>
-        </div>
-        <div>${formatPrice(price)}</div>
-        <div><input type="number" min="1" value="${l.qty}" onchange="setQty('${l.key}', this.value)"></div>
-        <div><button class="btn ghost" onclick="removeFromCart('${l.key}')">Retirer</button></div>
-      </div>`;
-  }).join("");
-
-  const t = document.getElementById("cart-total"); if(t) t.textContent = formatPrice(total);
+  rerender();
 }
 
 // =====================
@@ -395,7 +352,7 @@ function bootProductPage(){
       if(priceEl) priceEl.textContent = formatPrice(priceFor(p, currentOpt));
     };
   } else {
-    // Pre rolls => pas de grammage
+    // Pre Rolls => pas de grammage
     if(gramBox) gramBox.style.display = "none";
   }
 
@@ -411,42 +368,94 @@ function bootProductPage(){
 }
 
 // =====================
-// PAGE BOUTIQUE
+// PANIER UI
 // =====================
-function bootShopPage(){
-  const grid  = document.getElementById("product-grid");
-  if(!grid) return;
+function addToCart(id, qty, optId){
+  const p = findProduct(id); if(!p) return;
 
-  const input = document.getElementById("search");
-  const select= document.getElementById("category-filter");
+  const optionId = optId || defaultOptionId(p); // null pour prerolls
+  const key = optionId ? `${id}__${optionId}` : id;
 
-  const url   = new URL(location.href);
-  const urlCatRaw = (url.searchParams.get("cat") || "").toLowerCase();
+  const cart = getCart();
+  const line = cart.find(l => l.key === key);
 
-  const possible = ["", "fleurs", "resines", "extraits", "prerolls", "rosin", "hash"];
-  if(select && possible.includes(urlCatRaw)){
-    select.value = (urlCatRaw === "rosin") ? "extraits" : (urlCatRaw === "hash" ? "resines" : urlCatRaw);
-  }
+  if(line) line.qty += qty;
+  else cart.push({ key, id, optionId, qty });
 
-  function rerender(){
-    const catParam = (urlCatRaw === "rosin") ? "rosin" : (urlCatRaw === "hash" ? "hash" : (select ? select.value : ""));
-    const q = input ? input.value : "";
-    const results = searchProducts(q, catParam);
-    grid.innerHTML = results.map(card).join("");
-  }
-
-  if(input) input.oninput = rerender;
-  if(select) select.onchange = rerender;
-
-  rerender();
+  setCart(cart);
+  alert("Ajouté au panier ✔");
 }
+
+function removeFromCart(key){
+  const cart = getCart().filter(l => l.key !== key);
+  setCart(cart);
+  renderCart();
+}
+
+function setQty(key, qty){
+  const cart = getCart();
+  const line = cart.find(l => l.key === key);
+  if(!line) return;
+  line.qty = Math.max(1, qty|0);
+  setCart(cart);
+  renderCart();
+}
+
+// Expose pour les onchange/onclick inline générés dans renderCart()
+window.removeFromCart = removeFromCart;
+window.setQty = setQty;
+
+function renderCart(){
+  const box = document.getElementById("cart-items");
+  if(!box) return;
+
+  const cart = getCart();
+  if(cart.length === 0){
+    box.innerHTML = "<p>Votre panier est vide.</p>";
+    const t = document.getElementById("cart-total");
+    if(t) t.textContent = formatPrice(0);
+    return;
+  }
+
+  let total = 0;
+
+  box.innerHTML = cart.map(l => {
+    const p = findProduct(l.id);
+    const price = priceFor(p, l.optionId);
+    total += price * l.qty;
+
+    const optLabel = l.optionId ? (getOption(p, l.optionId)?.label || "") : "";
+
+    return `
+      <div class="cart-line">
+        <img src="${p.image}" alt="${p.name}">
+        <div>
+          <strong>${p.name}</strong>
+          <div class="muted">${p.category} • ${p.badge}${optLabel ? " • " + optLabel : ""}</div>
+        </div>
+        <div>${formatPrice(price)}</div>
+        <div><input type="number" min="1" value="${l.qty}" onchange="setQty('${l.key}', this.value)"></div>
+        <div><button class="btn ghost" onclick="removeFromCart('${l.key}')">Retirer</button></div>
+      </div>`;
+  }).join("");
+
+  const t = document.getElementById("cart-total");
+  if(t) t.textContent = formatPrice(total);
+}
+
+// =====================
+// CHECKOUT (placeholder)
+// =====================
+function startCheckout(){
+  alert("Pour activer le paiement, on branche Stripe Payment Links.");
+}
+window.startCheckout = startCheckout;
 
 // =====================
 // INIT
 // =====================
 document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
-  renderHome();
   bootShopPage();
   renderCart();
   if(document.getElementById("product-page")) bootProductPage();
