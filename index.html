@@ -22,47 +22,6 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/images/hero.jpg">
 </head>
-<script>
-(function(){
-  const toggle = document.getElementById("navToggle");
-  const menu   = document.getElementById("mobileMenu");
-  const close  = document.getElementById("menuClose");
-  const back   = document.getElementById("menuBackdrop");
-
-  if(!toggle || !menu) return;
-
-  function openMenu(){
-    document.body.classList.add("menu-open");
-    menu.classList.add("open");
-    menu.setAttribute("aria-hidden","false");
-    toggle.setAttribute("aria-expanded","true");
-  }
-  function closeMenu(){
-    document.body.classList.remove("menu-open");
-    menu.classList.remove("open");
-    menu.setAttribute("aria-hidden","true");
-    toggle.setAttribute("aria-expanded","false");
-  }
-
-  toggle.addEventListener("click", () => {
-    if(menu.classList.contains("open")) closeMenu();
-    else openMenu();
-  });
-
-  if(close) close.addEventListener("click", closeMenu);
-  if(back)  back.addEventListener("click", closeMenu);
-
-  document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape") closeMenu();
-  });
-
-  // Ferme le menu quand on clique sur un lien
-  menu.addEventListener("click", (e) => {
-    const a = e.target.closest("a");
-    if(a) closeMenu();
-  });
-})();
-</script>
 
 <body>
   <!-- Bandeau info (pro + conformité) -->
@@ -77,14 +36,41 @@
         <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
       </a>
 
+      <!-- NAV DESKTOP -->
       <nav class="nav" aria-label="Navigation principale">
         <a class="active" href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
         <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
         <a href="contact.html">Contact</a>
       </nav>
+
+      <!-- BURGER MOBILE (affiché via CSS @media) -->
+      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
+
+  <!-- MENU MOBILE OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="backdrop" id="menuBackdrop"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="head">
+        <strong>FRENCHCONNECT</strong>
+        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
+      </div>
+      <div class="links">
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a href="shop.html?cat=fleurs">Fleurs</a>
+        <a href="shop.html?cat=resines">Résines</a>
+        <a href="shop.html?cat=extraits">Extraits</a>
+        <a href="shop.html?cat=prerolls">Pre Rolls</a>
+        <a href="cart.html">Panier</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
@@ -184,7 +170,6 @@
         Une sélection rapide du moment. Clique pour choisir ton grammage (si dispo).
       </p>
 
-      <!-- store.js remplit avec renderHome() -->
       <div id="home-collection" class="grid" style="margin-top:14px;">
         <!-- Injecté par JS -->
       </div>
@@ -195,7 +180,7 @@
       </div>
     </section>
 
-    <!-- SECTION PRO (confiance / infos) -->
+    <!-- SECTION PRO -->
     <section class="wrap" style="margin-top:40px;">
       <h2>Pourquoi FrenchConnect</h2>
       <div class="grid" style="margin-top:14px;">
@@ -231,7 +216,7 @@
       </div>
     </section>
 
-    <!-- FAQ (pro) -->
+    <!-- FAQ -->
     <section class="wrap" style="margin-top:40px;">
       <h2>FAQ rapide</h2>
 
@@ -270,9 +255,7 @@
     <div class="cols wrap">
       <div>
         <h3>FrenchConnect</h3>
-        <p class="muted">
-          CBD premium • Street selection • Drops limités
-        </p>
+        <p class="muted">CBD premium • Street selection • Drops limités</p>
       </div>
 
       <div>
@@ -303,9 +286,49 @@
   <!-- JS -->
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    (function(){
+      const toggle = document.getElementById("navToggle");
+      const menu   = document.getElementById("mobileMenu");
+      const close  = document.getElementById("menuClose");
+      const back   = document.getElementById("menuBackdrop");
+
+      if(!toggle || !menu) return;
+
+      function openMenu(){
+        document.body.classList.add("menu-open");
+        menu.classList.add("open");
+        menu.setAttribute("aria-hidden","false");
+        toggle.setAttribute("aria-expanded","true");
+      }
+      function closeMenu(){
+        document.body.classList.remove("menu-open");
+        menu.classList.remove("open");
+        menu.setAttribute("aria-hidden","true");
+        toggle.setAttribute("aria-expanded","false");
+      }
+
+      toggle.addEventListener("click", () => {
+        if(menu.classList.contains("open")) closeMenu();
+        else openMenu();
+      });
+
+      if(close) close.addEventListener("click", closeMenu);
+      if(back)  back.addEventListener("click", closeMenu);
+
+      document.addEventListener("keydown", (e) => {
+        if(e.key === "Escape") closeMenu();
+      });
+
+      menu.addEventListener("click", (e) => {
+        const a = e.target.closest("a");
+        if(a) closeMenu();
+      });
+    })();
   </script>
 
   <!-- store.js (cache bust) -->
   <script src="assets/js/store.js?v=20260104"></script>
 </body>
 </html>
+
