@@ -233,5 +233,134 @@ h1,h2,h3{margin:0 0 12px}
   padding: 10px !important;
   gap: 10px !important;
 }
+/* =========================================================
+   FRENCHCONNECT — STREET PACK 1 : GRAFFITI NEON (PATCH)
+   À coller tout en bas de style.css
+   ========================================================= */
+
+:root{
+  --bg:#050507;
+  --panel:rgba(255,255,255,.045);
+  --panel2:rgba(255,255,255,.03);
+  --text:#f6f6f6;
+  --muted:rgba(255,255,255,.72);
+
+  --neon:#39ff14;     /* vert néon */
+  --neon2:#ff2bd6;    /* rose néon */
+  --neon3:#00e5ff;    /* cyan */
+  --line:rgba(255,255,255,.10);
+
+  --glow: 0 0 18px rgba(57,255,20,.16);
+  --glow2: 0 0 18px rgba(255,43,214,.14);
+}
+
+/* Fond + légère texture */
+body{
+  background:
+    radial-gradient(1200px 700px at 20% 10%, rgba(57,255,20,.10), transparent 55%),
+    radial-gradient(900px 600px at 80% 20%, rgba(255,43,214,.10), transparent 55%),
+    radial-gradient(900px 700px at 50% 90%, rgba(0,229,255,.08), transparent 60%),
+    var(--bg);
+  color: var(--text);
+}
+
+/* Liens */
+a{ color: var(--text); }
+a:hover{ color: var(--neon3); }
+
+/* Header plus “night city” */
+.site-header{
+  background: rgba(5,5,7,.78) !important;
+  border-bottom: 1px solid rgba(57,255,20,.18) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* Titres avec vibe néon (sans tout exploser) */
+h1, h2, h3{
+  text-shadow: 0 0 18px rgba(57,255,20,.10);
+}
+
+/* Pills / badges */
+.pill{
+  border: 1px solid rgba(57,255,20,.25) !important;
+  background: rgba(57,255,20,.08) !important;
+  box-shadow: var(--glow);
+}
+
+/* Cards */
+.card{
+  background: var(--panel) !important;
+  border: 1px solid rgba(57,255,20,.18) !important;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(0,229,255,.25) !important;
+  box-shadow: var(--glow), 0 18px 40px rgba(0,0,0,.35);
+}
+
+/* Images */
+.thumb{
+  filter: saturate(1.08) contrast(1.04);
+}
+
+/* Boutons */
+.btn{
+  border: 1px solid rgba(57,255,20,.55) !important;
+  background: rgba(57,255,20,.10) !important;
+  box-shadow: var(--glow);
+  color: var(--text) !important;
+}
+.btn:hover{
+  border-color: rgba(255,43,214,.55) !important;
+  background: rgba(255,43,214,.12) !important;
+  box-shadow: var(--glow2);
+}
+.btn.ghost{
+  border: 1px solid rgba(0,229,255,.35) !important;
+  background: transparent !important;
+  box-shadow: 0 0 14px rgba(0,229,255,.10);
+}
+.btn.ghost:hover{
+  background: rgba(0,229,255,.10) !important;
+}
+
+/* Champs (search/select/qty) — lisibles + vibe néon */
+input, select{
+  background: rgba(255,255,255,.03) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+}
+input:focus, select:focus{
+  outline: none;
+  border-color: rgba(0,229,255,.55) !important;
+  box-shadow: 0 0 0 3px rgba(0,229,255,.12);
+}
+
+/* Fix dropdown blanc (grammage) */
+#grammage-box select,
+#grammage-box option{
+  background: #0f0f0f !important;
+  color: #ffffff !important;
+}
+
+/* Panier: vibe néon + lisibilité */
+#cart-items .cart-line{
+  background: var(--panel2) !important;
+  border: 1px solid rgba(0,229,255,.18) !important;
+  box-shadow: 0 0 14px rgba(0,229,255,.08);
+}
+#cart-items .cart-line strong{
+  text-shadow: 0 0 14px rgba(255,43,214,.10);
+}
+#cart-items .cart-line .muted{
+  color: var(--muted) !important;
+}
+
+/* Petit détail "tag" sur prix */
+.price-tag{
+  color: rgba(255,255,255,.92);
+}
 
 
