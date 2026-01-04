@@ -4,7 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>FrenchConnect — Panier</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- CSS (cache-bust) -->
+  <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
 </head>
 
 <body>
@@ -41,7 +43,9 @@
         <strong>Total :</strong> <span id="cart-total">0,00 €</span>
       </div>
 
-      <a id="checkout-btn" class="btn" href="#" onclick="startCheckout(); return false;">Procéder au paiement</a>
+      <a id="checkout-btn" class="btn" href="#" onclick="startCheckout(); return false;">
+        Procéder au paiement
+      </a>
     </div>
 
     <p style="opacity:.75; margin-top:10px;">
@@ -59,8 +63,7 @@
     </div>
   </footer>
 
-  <!-- IMPORTANT : versionner pour éviter le cache -->
-  <script src="assets/js/store.js?v=3"></script>
+  <!-- JS (cache-bust) -->
+  <script src="assets/js/store.js?v=20260104"></script>
 </body>
 </html>
-
