@@ -1,96 +1,270 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>FrenchConnect — CBD Premium • Street Selection</title>
+  <meta name="description" content="FrenchConnect : sélection CBD premium (Fleurs, Résines, Extraits, Pre Rolls). Série limitée, terpènes naturels, qualité propre. THC < 0,3%." />
+  <meta name="theme-color" content="#07070b" />
+
+  <!-- Fonts (Street) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FrenchConnect – CBD Premium</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=19"/>
-  <link rel="icon" type="image/png" href="assets/images/logo.png"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <!-- CSS (cache bust) -->
+  <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
+
+  <!-- OpenGraph (optionnel mais pro) -->
+  <meta property="og:title" content="FrenchConnect — CBD Premium • Street Selection">
+  <meta property="og:description" content="Fleurs • Résines • Extraits • Pre Rolls — Qualité premium, série limitée.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero.jpg">
 </head>
+
 <body>
-
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="/frenchconnect/index.html">
-      <img src="assets/images/logo.png" alt="FrenchConnect" class="logo"/>
-    </a>
-    <nav class="nav">
-      <a href="/frenchconnect/shop.html">Boutique</a>
-      <a href="/frenchconnect/about.html">Nos valeurs</a>
-      <a href="/frenchconnect/contact.html">Contact</a>
-      <a class="cart-link" href="/frenchconnect/cart.html">
-        Panier <span id="cart-count">0</span>
-      </a>
-    </nav>
+  <!-- Bandeau info (pro + conformité) -->
+  <div class="age-banner">
+    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3% • Usage conforme à la législation en vigueur
   </div>
-</header>
 
-<div class="age-banner">
-  18+ | Produits CBD – THC &lt; 0,3 % | Consommer de manière responsable
-</div>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="wrap">
+      <a href="index.html" aria-label="FrenchConnect Accueil">
+        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
+      </a>
 
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-text">
-      <h1>CBD d’exception<br>Origine USA</h1>
-      <p class="muted">
-        Sélection premium auprès des plus grands producteurs américains.
-        Séries limitées, terpènes naturels.
+      <nav class="nav" aria-label="Navigation principale">
+        <a class="active" href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>CBD PREMIUM — STREET SELECTION</h1>
+        <p class="muted">
+          FrenchConnect sélectionne des produits CBD propres et premium : fleurs soignées, résines maîtrisées,
+          extractions sans compromis, et pre rolls prêts à partir. Série limitée, profil aromatique marqué.
+        </p>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+          <a class="btn" href="shop.html">Shop Now</a>
+          <a class="btn ghost" href="shop.html?cat=fleurs">Fleurs</a>
+          <a class="btn ghost" href="shop.html?cat=resines">Résines</a>
+          <a class="btn ghost" href="shop.html?cat=extraits">Extraits</a>
+          <a class="btn ghost" href="shop.html?cat=prerolls">Pre Rolls</a>
+        </div>
+
+        <!-- USP (pro) -->
+        <div style="margin-top:18px; display:grid; gap:10px;">
+          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-weight:900; color:var(--neon3);">✔</span>
+            <span><strong>Qualité premium</strong> : sélection, tri et profil aromatique au centre.</span>
+          </div>
+          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-weight:900; color:var(--neon);">✔</span>
+            <span><strong>Série limitée</strong> : drops réguliers, stocks contrôlés.</span>
+          </div>
+          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-weight:900; color:var(--neon2);">✔</span>
+            <span><strong>Conformité</strong> : THC &lt; 0,3% (UE) — infos produit claires.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-media-small">
+        <img src="assets/images/hero.jpg" alt="FrenchConnect — sélection CBD premium" loading="eager" />
+        <div class="muted" style="margin-top:10px; font-size:.95rem;">
+          Drop actuel • Visuels premium • Vibe street
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES (cards “street”) -->
+  <main class="container">
+    <section class="wrap" style="margin-bottom:18px;">
+      <h2>Catégories</h2>
+      <p class="muted" style="margin-top:-6px;">
+        Choisis ton style : fleurs, résines, extraits, ou pre rolls. Les produits à grammage se sélectionnent sur la fiche.
       </p>
-      <div class="btn-row">
-        <a class="btn" href="/frenchconnect/shop.html">Découvrir la boutique</a>
-        <a class="btn ghost" href="/frenchconnect/about.html">Nos valeurs</a>
+
+      <div class="grid" style="margin-top:14px;">
+        <a class="card" href="shop.html?cat=fleurs" aria-label="Voir Fleurs">
+          <img class="thumb" src="assets/images/fleur2.jpg" alt="Fleurs" loading="lazy">
+          <div class="pad">
+            <div class="pill">Fleurs</div>
+            <h3>Fleurs</h3>
+            <div class="price-tag">Qualité • Têtes denses</div>
+          </div>
+        </a>
+
+        <a class="card" href="shop.html?cat=resines" aria-label="Voir Résines">
+          <img class="thumb" src="assets/images/hash2.jpg" alt="Résines" loading="lazy">
+          <div class="pad">
+            <div class="pill">Résines</div>
+            <h3>Résines</h3>
+            <div class="price-tag">Texture • Arômes</div>
+          </div>
+        </a>
+
+        <a class="card" href="shop.html?cat=extraits" aria-label="Voir Extraits">
+          <img class="thumb" src="assets/images/cakeberry-rosin.jpg" alt="Extraits" loading="lazy">
+          <div class="pad">
+            <div class="pill">Extraits</div>
+            <h3>Extraits</h3>
+            <div class="price-tag">Terpènes • Premium</div>
+          </div>
+        </a>
+
+        <a class="card" href="shop.html?cat=prerolls" aria-label="Voir Pre Rolls">
+          <img class="thumb" src="assets/images/prerolls3.webp" alt="Pre Rolls" loading="lazy">
+          <div class="pad">
+            <div class="pill">Pre Rolls</div>
+            <h3>Pre Rolls</h3>
+            <div class="price-tag">Prêt • Clean</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- FEATURED (rempli par store.js) -->
+    <section class="wrap" style="margin-top:34px;">
+      <h2>Produits en avant</h2>
+      <p class="muted" style="margin-top:-6px;">
+        Une sélection rapide du moment. Clique pour choisir ton grammage (si dispo).
+      </p>
+
+      <!-- store.js remplit avec renderHome() -->
+      <div id="home-collection" class="grid" style="margin-top:14px;">
+        <!-- Injecté par JS -->
+      </div>
+
+      <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+        <a class="btn" href="shop.html">Voir toute la boutique</a>
+        <a class="btn ghost" href="shop.html?cat=extraits">Voir les Extraits</a>
+      </div>
+    </section>
+
+    <!-- SECTION PRO (confiance / infos) -->
+    <section class="wrap" style="margin-top:40px;">
+      <h2>Pourquoi FrenchConnect</h2>
+      <div class="grid" style="margin-top:14px;">
+        <div class="card">
+          <div class="pad">
+            <div class="pill">Drop</div>
+            <h3>Drops limités</h3>
+            <p class="muted" style="margin:0;">
+              On préfère sortir moins, mais mieux : sélection, cohérence aromatique, et qualité constante.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="pad">
+            <div class="pill">Transparence</div>
+            <h3>Infos claires</h3>
+            <p class="muted" style="margin:0;">
+              Catégories nettes, grammages simples, prix lisibles. Tu sais ce que tu achètes.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="pad">
+            <div class="pill">Vibe</div>
+            <h3>Street mais clean</h3>
+            <p class="muted" style="margin:0;">
+              Identité street, mais expérience shop propre : rapide, claire, mobile-friendly.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ (pro) -->
+    <section class="wrap" style="margin-top:40px;">
+      <h2>FAQ rapide</h2>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="pad">
+          <h3>THC &lt; 0,3% ?</h3>
+          <p class="muted" style="margin:0;">
+            Les produits sont proposés dans le respect du cadre UE (THC &lt; 0,3%). Vérifie toujours la législation locale.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="pad">
+          <h3>Comment choisir le grammage ?</h3>
+          <p class="muted" style="margin:0;">
+            Sur les produits fleurs/résines/extraits, tu cliques sur un produit puis tu choisis le grammage sur la fiche produit.
+            Les pre rolls sont vendus à l’unité.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="pad">
+          <h3>Livraison / paiement ?</h3>
+          <p class="muted" style="margin:0;">
+            Le module de paiement peut être branché via Stripe. Contacte-nous si tu veux une solution sur-mesure.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="cols wrap">
+      <div>
+        <h3>FrenchConnect</h3>
+        <p class="muted">
+          CBD premium • Street selection • Drops limités
+        </p>
+      </div>
+
+      <div>
+        <h3>Shop</h3>
+        <p class="muted" style="margin:0;">
+          <a href="shop.html?cat=fleurs">Fleurs</a><br>
+          <a href="shop.html?cat=resines">Résines</a><br>
+          <a href="shop.html?cat=extraits">Extraits</a><br>
+          <a href="shop.html?cat=prerolls">Pre Rolls</a>
+        </p>
+      </div>
+
+      <div>
+        <h3>Infos</h3>
+        <p class="muted" style="margin:0;">
+          <a href="contact.html">Contact</a><br>
+          <a href="legal.html">Mentions légales</a><br>
+          <a href="cgv.html">CGV</a>
+        </p>
       </div>
     </div>
 
-    <div class="hero-media hero-media-small">
-      <img src="assets/images/hero-600.webp"
-           srcset="assets/images/hero-400.webp 400w, assets/images/hero-600.webp 600w"
-           sizes="(max-width:768px) 90vw, 420px"
-           alt="FrenchConnect">
+    <div class="copy wrap">
+      © <span id="year"></span> FrenchConnect — Tous droits réservés
     </div>
-  </div>
-</section>
+  </footer>
 
-<section class="collection">
-  <h2>Nos sélections</h2>
-  <div id="home-collection" class="grid"></div>
-</section>
+  <!-- JS -->
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 
-<footer class="site-footer">
-  <div class="cols">
-    <div>
-      <h4>FrenchConnect</h4>
-      <p>CBD premium – Sélection USA.</p>
-    </div>
-    <div>
-      <h4>Légal</h4>
-      <ul>
-        <li><a href="/frenchconnect/legal.html">Mentions légales</a></li>
-        <li><a href="/frenchconnect/cgv.html">CGV</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Contact</h4>
-      <p>
-        <a href="mailto:connectfrench31@gmail.com">
-          connectfrench31@gmail.com
-        </a>
-      </p>
-    </div>
-  </div>
-  <p class="copy">© 2025 FrenchConnect</p>
-</footer>
-<script src="assets/js/store.js?v=20260104"></script>
-
-
-
+  <!-- store.js (cache bust) -->
+  <script src="assets/js/store.js?v=20260104"></script>
 </body>
 </html>
-
