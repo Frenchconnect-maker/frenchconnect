@@ -1,17 +1,20 @@
+/* =========================================================
+   FRENCHCONNECT — STREET MAX (GRAFFITI NEON)
+   Fichier complet: assets/css/style.css
+   ========================================================= */
+
 /* ================================
-   VARIABLES (UNIQUE)
+   VARIABLES
 ================================ */
 :root{
-  --bg: #0b1020;
-  --panel: rgba(18,26,52,.85);
-  --panel2: rgba(255,255,255,.03);
-  --line: rgba(255,255,255,.10);
+  --bg: #07070b;
+  --panel: rgba(255,255,255,.055);
+  --panel2: rgba(255,255,255,.035);
+  --line: rgba(255,255,255,.12);
 
-  --ink: #e6ebf5;
-  --muted: #a9b4c7;
-  --accent: #22c55e;
+  --ink: #f1f4ff;
+  --muted: rgba(241,244,255,.72);
 
-  /* NEON */
   --neon:#39ff14;
   --neon2:#ff2bd6;
   --neon3:#00e5ff;
@@ -22,18 +25,21 @@
 /* ================================
    RESET
 ================================ */
-*{ box-sizing:border-box }
-html,body{ margin:0; padding:0; min-height:100% }
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; min-height:100%; }
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+a:hover{ color: var(--neon3); }
 
 /* ================================
-   BACKGROUND GLOBAL (street night city)
+   BACKGROUND (MAX STREET)
 ================================ */
 html{
   background:
-    radial-gradient(1100px 650px at 15% 10%, rgba(57,255,20,.14), transparent 55%),
-    radial-gradient(900px 650px at 85% 15%, rgba(255,43,214,.12), transparent 55%),
-    radial-gradient(900px 700px at 55% 95%, rgba(0,229,255,.10), transparent 60%),
-    linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.70)),
+    radial-gradient(1200px 700px at 15% 10%, rgba(57,255,20,.18), transparent 55%),
+    radial-gradient(1000px 700px at 85% 15%, rgba(255,43,214,.16), transparent 55%),
+    radial-gradient(900px 700px at 55% 92%, rgba(0,229,255,.14), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.70), rgba(0,0,0,.82)),
     url("/frenchconnect/assets/images/background.webp") center/cover no-repeat fixed;
 }
 @media (max-width: 1024px){
@@ -47,59 +53,87 @@ body{
   line-height:1.55;
 }
 
-/* Titres street */
+/* Titres (street) */
 h1,h2,h3{
   margin:0 0 12px;
   font-family: "Bangers", Inter, system-ui, sans-serif;
-  letter-spacing: .8px;
+  letter-spacing: 1px;
   text-transform: uppercase;
+  text-shadow:
+    0 0 10px rgba(57,255,20,.18),
+    0 0 18px rgba(0,229,255,.12);
 }
-.muted{ color: var(--muted) }
+.muted{ color: var(--muted); }
 
 /* ================================
-   HEADER
+   LAYOUT
 ================================ */
-.site-header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background: rgba(11,16,32,.85);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(0,229,255,.20);
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
-}
-.site-header .wrap{
+.container{ padding:24px; }
+.wrap{
   max-width:var(--maxw);
   margin:0 auto;
-  padding:12px 24px;
+}
+
+/* ================================
+   HEADER (CLUB / STREET)
+================================ */
+.site-header{
+  position: sticky;
+  top:0;
+  z-index: 50;
+  background: rgba(7,7,11,.78);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,229,255,.22);
+  box-shadow: 0 12px 34px rgba(0,0,0,.45);
+}
+.site-header .wrap{
+  padding: 12px 24px;
   display:flex;
   align-items:center;
   justify-content:space-between;
+  gap:16px;
 }
-.logo{ height:42px; width:auto }
+.logo{ height:42px; width:auto; }
 
+.nav{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
 .nav a{
-  margin-left:16px;
-  color:var(--ink);
-  text-decoration:none;
-  font-weight:500;
+  padding: 8px 10px;
+  border-radius: 12px;
+  opacity: .90;
   position: relative;
-  opacity: .88;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  font-size: .92rem;
 }
 .nav a:hover{
   opacity: 1;
-  color: var(--neon3);
-  text-shadow: 0 0 14px rgba(0,229,255,.20);
+  background: rgba(0,229,255,.08);
+  box-shadow: 0 0 18px rgba(0,229,255,.10);
 }
-.nav a.active{ opacity: 1; }
+.nav a.active{
+  opacity: 1;
+  background: rgba(57,255,20,.10);
+  border: 1px solid rgba(57,255,20,.25);
+  box-shadow: 0 0 18px rgba(57,255,20,.10);
+}
 
-.cart-link span{
-  background:var(--accent);
+/* Compteur panier */
+.cart-link span,
+#cart-count{
+  display:inline-block;
+  background: rgba(57,255,20,.95);
   color:#000;
   border-radius:999px;
   padding:2px 8px;
-  margin-left:4px;
-  font-size:.8rem;
+  margin-left:6px;
+  font-size:.85rem;
+  font-weight:900;
 }
 
 /* ================================
@@ -107,83 +141,74 @@ h1,h2,h3{
 ================================ */
 .age-banner{
   text-align:center;
-  padding:8px;
-  background:#0f1a33;
-  border-bottom:1px solid var(--line);
+  padding:8px 14px;
+  background: rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,255,255,.08);
   font-size:.9rem;
 }
 
 /* ================================
-   LAYOUT
+   HERO (si présent)
 ================================ */
-.container{ padding:24px }
-
-/* ================================
-   HERO
-================================ */
-.hero{ padding:40px 24px }
+.hero{ padding:40px 24px; }
 .hero-inner{
   max-width:var(--maxw);
   margin:0 auto;
   display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:28px;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 28px;
   align-items:center;
 }
-.hero-text h1{ font-size:2.4rem }
-.hero-text p{ max-width:520px }
+.hero-text h1{ font-size: 2.4rem; }
+.hero-text p{ max-width: 560px; color: var(--muted); }
 
-.hero-media-small{
-  max-width:420px;
-  margin:0 auto;
-}
+.hero-media-small{ max-width: 420px; margin:0 auto; }
 .hero-media-small img{
   width:100%;
-  border-radius:18px;
-  border:1px solid var(--line);
-  object-fit:contain;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.12);
+  object-fit: contain;
+  box-shadow: 0 18px 60px rgba(0,0,0,.40);
 }
-@media (max-width:768px){
-  .hero-inner{ grid-template-columns:1fr; text-align:center }
-  .hero-text h1{ font-size:2rem }
-  .hero-media-small{ max-width:320px }
+
+@media (max-width: 768px){
+  .hero-inner{ grid-template-columns: 1fr; text-align:center; }
+  .hero-text h1{ font-size: 2rem; }
+  .hero-media-small{ max-width: 320px; }
 }
 
 /* ================================
-   GRID / CARDS
+   GRID / CARDS (MAX STREET)
 ================================ */
 .grid{
   max-width:var(--maxw);
   margin:0 auto;
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:18px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .card{
-  position: relative; /* pour sticker */
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  border: 1px solid rgba(57,255,20,.18);
-  border-radius:16px;
-  overflow:hidden;
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.03));
+  border: 1px solid rgba(0,229,255,.22);
+  border-radius: 18px;
+  overflow: hidden;
   display:flex;
   flex-direction:column;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 16px 45px rgba(0,0,0,.32);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-.card:hover{
-  transform: translateY(-3px);
-  border-color: rgba(0,229,255,.30);
-  box-shadow: 0 22px 60px rgba(0,0,0,.38), 0 0 18px rgba(0,229,255,.10);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 18px 60px rgba(0,0,0,.42),
+    0 0 18px rgba(0,229,255,.10);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
 }
 
-/* Effets street derrière */
+/* Dashed + tape (derrière) */
 .card::after{
   content:"";
   position:absolute;
   inset:-2px;
-  border-radius:22px;
+  border-radius:24px;
   border:2px dashed rgba(255,255,255,.08);
   pointer-events:none;
   mix-blend-mode:overlay;
@@ -192,38 +217,83 @@ h1,h2,h3{
 .card::before{
   content:"";
   position:absolute;
-  top:-8px;
+  top:-10px;
   right:18px;
-  width:54px;
-  height:18px;
+  width:62px;
+  height:20px;
   background: repeating-linear-gradient(
     45deg,
     rgba(255,255,255,.25),
     rgba(255,255,255,.25) 6px,
-    rgba(255,255,255,.15) 6px,
-    rgba(255,255,255,.15) 12px
+    rgba(255,255,255,.14) 6px,
+    rgba(255,255,255,.14) 12px
   );
-  transform: rotate(3deg);
+  transform: rotate(4deg);
   opacity:.35;
   pointer-events:none;
   z-index:0;
 }
 
-/* Image + contenu : couches */
-.card .thumb{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  position: relative;
-  z-index:1;
-  filter: saturate(1.12) contrast(1.06);
-}
-.card .pad{
-  padding:14px;
-  position: relative;
-  z-index:2;
+.card:hover{
+  transform: translateY(-4px);
+  border-color: rgba(57,255,20,.25);
+  box-shadow:
+    0 22px 70px rgba(0,0,0,.48),
+    0 0 22px rgba(57,255,20,.10),
+    0 0 18px rgba(255,43,214,.08);
+  filter: saturate(1.06) contrast(1.02);
 }
 
+/* Image / contenu en couches (stickers au-dessus) */
+.card .thumb{
+  width:100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+  filter: saturate(1.14) contrast(1.06);
+}
+.card .pad{
+  padding: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Spray glow en bas */
+.card .pad::after{
+  content:"";
+  position:absolute;
+  left:-18px;
+  right:-18px;
+  bottom:-12px;
+  height: 26px;
+  background:
+    radial-gradient(circle at 10% 60%, rgba(255,43,214,.22), transparent 55%),
+    radial-gradient(circle at 35% 40%, rgba(57,255,20,.18), transparent 58%),
+    radial-gradient(circle at 70% 60%, rgba(0,229,255,.18), transparent 58%),
+    radial-gradient(circle at 90% 45%, rgba(255,255,255,.06), transparent 60%);
+  filter: blur(10px);
+  opacity: .95;
+  pointer-events:none;
+}
+
+/* Pills (tag) */
+.pill{
+  display:inline-block;
+  font-size:.78rem;
+  border-radius:999px;
+  padding:4px 10px;
+  color:#eaf2ff;
+  border: 1px solid rgba(255,43,214,.24);
+  background: rgba(255,43,214,.10);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  transform: rotate(-4deg);
+  box-shadow: 0 0 18px rgba(255,43,214,.10);
+}
+
+/* Price tag (spray underline) */
 .price-tag{
   position: relative;
   font-weight: 900;
@@ -234,52 +304,40 @@ h1,h2,h3{
   left:-8px;
   right:10px;
   bottom:-3px;
-  height:8px;
-  background: linear-gradient(90deg, rgba(57,255,20,.25), rgba(255,43,214,.25), rgba(0,229,255,.25));
-  filter: blur(8px);
+  height:9px;
+  background: linear-gradient(90deg, rgba(57,255,20,.28), rgba(255,43,214,.26), rgba(0,229,255,.26));
+  filter: blur(9px);
   z-index:-1;
 }
 
 /* ================================
-   PILLS / BOUTONS
+   BUTTONS (MAX NEON)
 ================================ */
-.pill{
-  display:inline-block;
-  font-size:.8rem;
-  border-radius:999px;
-  padding:4px 10px;
-  color:#c9d6e7;
-  border:1px solid rgba(57,255,20,.22);
-  font-weight:700;
-  text-transform: uppercase;
-  letter-spacing:.6px;
-  transform: rotate(-2deg);
-  background: rgba(57,255,20,.08);
-  box-shadow: 0 0 18px rgba(57,255,20,.10);
-}
-.pill.outline{ background: transparent; }
-
 .btn{
-  padding:10px 14px;
-  border-radius:14px;
-  border: 1px solid rgba(57,255,20,.55);
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(57,255,20,.60);
   background: rgba(57,255,20,.12);
-  color: #fff;
-  font-weight:700;
+  color:#fff;
+  font-weight: 900;
   cursor:pointer;
-  text-decoration:none;
   text-transform: uppercase;
-  letter-spacing:.8px;
-  box-shadow: 0 0 18px rgba(57,255,20,.18);
-  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  letter-spacing: .9px;
+  box-shadow:
+    0 0 18px rgba(57,255,20,.18),
+    0 18px 50px rgba(0,0,0,.25);
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
 }
 .btn:hover{
   transform: translateY(-1px);
   border-color: rgba(255,43,214,.55);
-  box-shadow: 0 0 22px rgba(255,43,214,.18);
+  background: rgba(255,43,214,.12);
+  box-shadow:
+    0 0 24px rgba(255,43,214,.20),
+    0 18px 60px rgba(0,0,0,.28);
 }
 .btn.ghost{
-  border: 1px solid rgba(0,229,255,.35);
+  border: 1px solid rgba(0,229,255,.40);
   background: transparent;
   color: var(--ink);
   box-shadow: 0 0 14px rgba(0,229,255,.10);
@@ -287,42 +345,20 @@ h1,h2,h3{
 .btn.ghost:hover{
   background: rgba(0,229,255,.10);
 }
-.btn-row{ display:flex; gap:10px; margin-top:12px }
 
-/* Inputs / selects : dark glass */
+/* ================================
+   INPUTS / SELECTS (GLASS)
+================================ */
 input, select{
   background: rgba(255,255,255,.03) !important;
   border: 1px solid rgba(255,255,255,.16) !important;
   color: #fff !important;
+  border-radius: 12px;
 }
 input:focus, select:focus{
   outline: none;
   border-color: rgba(0,229,255,.55) !important;
   box-shadow: 0 0 0 3px rgba(0,229,255,.12);
-}
-
-/* ================================
-   FOOTER
-================================ */
-.site-footer{
-  border-top:1px solid var(--line);
-  margin-top:40px;
-}
-.site-footer .cols{
-  max-width:var(--maxw);
-  margin:0 auto;
-  padding:24px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:18px;
-}
-.site-footer .copy{
-  text-align:center;
-  color:var(--muted);
-  padding-bottom:24px;
-}
-@media (max-width:980px){
-  .site-footer .cols{ grid-template-columns:1fr }
 }
 
 /* ================================
@@ -343,7 +379,7 @@ input:focus, select:focus{
 }
 
 /* ================================
-   PANIER (photos plus petites)
+   PANIER (photos)
 ================================ */
 #cart-items .cart-line img{
   width: 52px !important;
@@ -357,19 +393,18 @@ input:focus, select:focus{
 }
 
 /* ================================
-   STICKERS PROMO (AU-DESSUS)
+   STICKERS PROMO (MAX STREET TAG)
+   Toujours au-dessus
 ================================ */
 .sticker{
   position:absolute !important;
   top: 14px !important;
   left: 14px !important;
-  z-index: 50 !important;
+  z-index: 999 !important;
   pointer-events:none !important;
 
-  padding: 8px 12px !important;
-  border-radius: 12px !important;
-
-  font-weight: 900 !important;
+  padding: 9px 13px !important;
+  font-weight: 1000 !important;
   font-size: 12px !important;
   letter-spacing: 1px !important;
   text-transform: uppercase !important;
@@ -379,137 +414,79 @@ input:focus, select:focus{
 
   border: 1px solid rgba(255,255,255,.18) !important;
   box-shadow:
-    0 10px 30px rgba(0,0,0,.35),
-    0 0 18px rgba(57,255,20,.22) !important;
+    0 12px 34px rgba(0,0,0,.45),
+    0 0 22px rgba(57,255,20,.20) !important;
 
-  transform: rotate(-4deg) !important;
-  backdrop-filter: blur(6px);
+  transform: rotate(-8deg) !important;
 
+  /* tag cut */
+  clip-path: polygon(0 0, 95% 0, 100% 50%, 95% 100%, 0 100%, 4% 50%);
+
+  /* grain */
   background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px) !important;
   background-size: 6px 6px !important;
-}
-.sticker::after{
-  content:"" !important;
-  position:absolute !important;
-  right:-1px !important;
-  top:-1px !important;
-  width: 14px !important;
-  height: 14px !important;
-  background: rgba(255,255,255,.35) !important;
-  clip-path: polygon(0 0, 100% 0, 100% 100%) !important;
-  opacity: .45 !important;
 }
 .sticker.right{
   left:auto !important;
   right:14px !important;
-  transform: rotate(4deg) !important;
+  transform: rotate(8deg) !important;
 }
 .sticker.pink{
   background: var(--neon2) !important;
   box-shadow:
-    0 10px 30px rgba(0,0,0,.35),
-    0 0 18px rgba(255,43,214,.20) !important;
+    0 12px 34px rgba(0,0,0,.45),
+    0 0 22px rgba(255,43,214,.20) !important;
 }
 .sticker.cyan{
   background: var(--neon3) !important;
   box-shadow:
-    0 10px 30px rgba(0,0,0,.35),
-    0 0 18px rgba(0,229,255,.18) !important;
+    0 12px 34px rgba(0,0,0,.45),
+    0 0 22px rgba(0,229,255,.18) !important;
 }
 .sticker.black{
   background: rgba(255,255,255,.92) !important;
   color:#000 !important;
   box-shadow:
-    0 10px 30px rgba(0,0,0,.35),
+    0 12px 34px rgba(0,0,0,.45),
     0 0 18px rgba(255,255,255,.10) !important;
 }
-/* =========================================================
-   GRAFFITI MODE (A) — plus agressif, plus street
-   Colle tout en bas de style.css
-   ========================================================= */
 
-/* Titres : plus “tag” */
-h1,h2,h3{
-  text-shadow:
-    0 0 10px rgba(57,255,20,.18),
-    0 0 18px rgba(0,229,255,.12);
+/* ================================
+   FOOTER
+================================ */
+.site-footer{
+  border-top:1px solid rgba(255,255,255,.10);
+  margin-top:40px;
 }
-
-/* Cards : contour néon + grain léger */
-.card{
-  border-color: rgba(0,229,255,.22) !important;
-  box-shadow:
-    0 18px 60px rgba(0,0,0,.40),
-    0 0 18px rgba(0,229,255,.10) !important;
+.site-footer .cols{
+  max-width:var(--maxw);
+  margin:0 auto;
+  padding:24px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
 }
-
-/* Effet spray sur le bas des cards */
-.card .pad{
-  position: relative;
+.site-footer .copy{
+  text-align:center;
+  color:var(--muted);
+  padding-bottom:24px;
 }
-.card .pad::after{
-  content:"";
-  position:absolute;
-  left: -18px;
-  right: -18px;
-  bottom: -10px;
-  height: 26px;
-  background:
-    radial-gradient(circle at 10% 60%, rgba(255,43,214,.22), transparent 50%),
-    radial-gradient(circle at 35% 40%, rgba(57,255,20,.18), transparent 55%),
-    radial-gradient(circle at 70% 60%, rgba(0,229,255,.18), transparent 55%),
-    radial-gradient(circle at 90% 45%, rgba(255,255,255,.06), transparent 55%);
-  filter: blur(10px);
-  opacity: .9;
-  pointer-events:none;
+@media (max-width:980px){
+  .site-footer .cols{ grid-template-columns:1fr; }
 }
 
-/* Sticker : plus gros + “tag cut” */
-.sticker{
-  padding: 9px 13px !important;
-  font-size: 12px !important;
-  border-radius: 10px !important;
-  transform: rotate(-8deg) !important;
-  box-shadow:
-    0 12px 34px rgba(0,0,0,.45),
-    0 0 22px rgba(57,255,20,.20) !important;
-  clip-path: polygon(0 0, 95% 0, 100% 50%, 95% 100%, 0 100%, 4% 50%);
+/* ================================
+   Micro animation (street vibe)
+================================ */
+@keyframes neonPulse{
+  0%{ filter: brightness(1); }
+  50%{ filter: brightness(1.08); }
+  100%{ filter: brightness(1); }
 }
+.sticker{ animation: neonPulse 2.2s ease-in-out infinite; }
 
-/* Variante droite */
-.sticker.right{
-  transform: rotate(8deg) !important;
-}
-
-/* Pills : plus punch */
-.pill{
-  transform: rotate(-4deg) !important;
-  border-color: rgba(255,43,214,.22) !important;
-  background: rgba(255,43,214,.08) !important;
-  box-shadow: 0 0 18px rgba(255,43,214,.10) !important;
-}
-
-/* Boutons : plus “street neon” */
-.btn{
-  box-shadow:
-    0 0 18px rgba(57,255,20,.18),
-    0 18px 50px rgba(0,0,0,.25) !important;
-}
-.btn:hover{
-  box-shadow:
-    0 0 24px rgba(255,43,214,.20),
-    0 18px 60px rgba(0,0,0,.28) !important;
-}
-
-/* Hover : léger “shake” (subtil) */
-@keyframes microShake{
-  0%{ transform: translateY(-3px) rotate(0deg); }
-  40%{ transform: translateY(-3px) rotate(-0.2deg); }
-  70%{ transform: translateY(-3px) rotate(0.2deg); }
-  100%{ transform: translateY(-3px) rotate(0deg); }
-}
-.card:hover{
-  animation: microShake .22s ease-in-out;
+@media (prefers-reduced-motion: reduce){
+  .sticker{ animation:none !important; }
 }
 
 
