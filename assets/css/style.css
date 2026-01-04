@@ -537,5 +537,32 @@ h1, h2, h3 { font-family: "Bangers", system-ui, sans-serif; letter-spacing: .5px
   line-height:1.55;
   letter-spacing:.2px;
 }
+/* ====== FIX : stickers toujours AU-DESSUS des images ====== */
+.card{ position: relative !important; }
+
+/* si tu as des effets ::before / ::after sur .card, on les met derrière */
+.card::before,
+.card::after{
+  z-index: 0 !important;
+}
+
+/* image en dessous */
+.card .thumb{
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* contenu texte au-dessus de l’image aussi */
+.card .pad{
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* sticker TOUT EN HAUT */
+.card .sticker{
+  position: absolute !important;
+  z-index: 50 !important;
+  pointer-events: none !important; /* évite les bugs de clic */
+}
 
 
