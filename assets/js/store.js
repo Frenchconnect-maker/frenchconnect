@@ -24,9 +24,12 @@ function buildGramOptions(price1g){
 }
 
 // =====================
-// CATALOGUE (TES PRODUITS)
+// CATALOGUE + DESCRIPTIFS
 // Grammage sur fleurs/resines/extraits
 // Pre Rolls = produit simple sans options
+// Stickers : { text, tone?, side? }
+// tone: "pink" | "cyan" | "black" | (vide = vert par défaut)
+// side: "right" (optionnel)
 // =====================
 const STORE = [
   // ===== EXTRAITS =====
@@ -37,7 +40,8 @@ const STORE = [
     image: "assets/images/cakeberry-rosin.jpg",
     category: "extraits",
     badge: "Rosin",
-    desc: "",
+    desc: "Rosin CBD premium extrait sans solvants par pression à chaud. Cakeberry Rosin offre une texture fondante et un profil aromatique riche, mêlant notes sucrées et pâtissières. Produit artisanal de haute qualité. THC < 0,3 %.",
+    sticker: { text: "LIMITED", tone: "pink", side: "right" },
     options: buildGramOptions(40.00),
     payment_link: ""
   },
@@ -48,7 +52,8 @@ const STORE = [
     image: "assets/images/cereal-cakes-live-rosin.webp",
     category: "extraits",
     badge: "Live Rosin",
-    desc: "",
+    desc: "Live Rosin CBD issu de fleurs fraîches pressées à chaud. Cereal Cakes développe des arômes complexes, céréaliers et légèrement vanillés, avec une forte concentration en terpènes naturels. THC < 0,3 %.",
+    sticker: { text: "-28%", tone: "black", side: "right" },
     options: buildGramOptions(40.00),
     payment_link: ""
   },
@@ -59,7 +64,7 @@ const STORE = [
     image: "assets/images/sherbet-cookie-live-rosin.png",
     category: "extraits",
     badge: "Live Rosin",
-    desc: "",
+    desc: "Live Rosin CBD au profil gourmand et intense. Sherbet Cookie associe des notes sucrées, crémeuses et légèrement fruitées. Extraction artisanale pour une pureté maximale. THC < 0,3 %.",
     options: buildGramOptions(40.00),
     payment_link: ""
   },
@@ -72,7 +77,7 @@ const STORE = [
     image: "assets/images/sherbet-cookie-hash.webp",
     category: "resines",
     badge: "Hash",
-    desc: "",
+    desc: "Résine CBD à la texture souple et homogène. Sherbet Cookie dévoile un profil sucré et crémeux, avec des notes biscuitées et légèrement épicées. Extraction soignée pour un rendu aromatique riche. THC < 0,3 %.",
     options: buildGramOptions(12.00),
     payment_link: ""
   },
@@ -83,7 +88,7 @@ const STORE = [
     image: "assets/images/banana-kush-hash.jpg",
     category: "resines",
     badge: "Hash",
-    desc: "",
+    desc: "Hash CBD aux notes exotiques et gourmandes. Banana Kush développe des arômes doux de banane mûre et de fruits tropicaux, avec une texture malléable et un pressage maîtrisé. THC < 0,3 %.",
     options: buildGramOptions(12.00),
     payment_link: ""
   },
@@ -94,7 +99,7 @@ const STORE = [
     image: "assets/images/amnesia-hash.jpg",
     category: "resines",
     badge: "Hash",
-    desc: "",
+    desc: "Résine CBD inspirée du profil Amnesia : notes citronnées, herbacées et légèrement épicées, associées à une texture fine issue d’un tamisage précis. THC < 0,3 %.",
     options: buildGramOptions(11.00),
     payment_link: ""
   },
@@ -105,7 +110,7 @@ const STORE = [
     image: "assets/images/blueberry-hash.webp",
     category: "resines",
     badge: "Hash",
-    desc: "",
+    desc: "Hash CBD aux arômes ronds et fruités. Blueberry se distingue par ses notes de myrtille, de fruits rouges et une légère touche sucrée. Texture homogène et finition propre. THC < 0,3 %.",
     options: buildGramOptions(12.00),
     payment_link: ""
   },
@@ -118,7 +123,7 @@ const STORE = [
     image: "assets/images/diamond-og.jpg",
     category: "fleurs",
     badge: "Fleur",
-    desc: "",
+    desc: "Fleur CBD indoor aux têtes compactes et résineuses. Diamond OG développe un profil aromatique puissant mêlant notes terreuses, boisées et légèrement citronnées. Qualité premium, manucure soignée. THC < 0,3 %.",
     options: buildGramOptions(12.90),
     payment_link: ""
   },
@@ -129,7 +134,8 @@ const STORE = [
     image: "assets/images/runtz.jpg",
     category: "fleurs",
     badge: "Fleur",
-    desc: "",
+    desc: "Fleur CBD très appréciée pour son profil gourmand et fruité. Runtz offre des arômes sucrés rappelant les bonbons et les fruits tropicaux, avec de belles têtes denses. THC < 0,3 %.",
+    sticker: { text: "BEST" }, // vert par défaut
     options: buildGramOptions(12.90),
     payment_link: ""
   },
@@ -140,7 +146,7 @@ const STORE = [
     image: "assets/images/sour-apple.webp",
     category: "fleurs",
     badge: "Fleur",
-    desc: "",
+    desc: "Fleur CBD au caractère vif et rafraîchissant. Sour Apple se distingue par ses notes acidulées de pomme verte et d’agrumes, avec une structure résineuse et une finition propre. THC < 0,3 %.",
     options: buildGramOptions(12.90),
     payment_link: ""
   },
@@ -151,7 +157,8 @@ const STORE = [
     image: "assets/images/strawberry-haze.png",
     category: "fleurs",
     badge: "Fleur",
-    desc: "",
+    desc: "Fleur CBD aux arômes doux et fruités dominés par la fraise et les fruits rouges. Strawberry Haze séduit par un profil équilibré, une belle couleur et une richesse aromatique. THC < 0,3 %.",
+    sticker: { text: "NEW", tone: "cyan" },
     options: buildGramOptions(12.90),
     payment_link: ""
   },
@@ -164,7 +171,7 @@ const STORE = [
     image: "assets/images/strawberry-haze-pre-roll.webp",
     category: "prerolls",
     badge: "Pre Roll",
-    desc: "",
+    desc: "Pre roll CBD prêt à l’emploi, roulé avec des fleurs Strawberry Haze soigneusement sélectionnées. Saveurs fruitées et douces, combustion régulière et roulage premium. THC < 0,3 %.",
     payment_link: ""
   },
   {
@@ -174,7 +181,7 @@ const STORE = [
     image: "assets/images/banana-kush-cakeberry-rosin-pre-roll.jpeg",
     category: "prerolls",
     badge: "Pre Roll",
-    desc: "",
+    desc: "Pre roll CBD enrichi en rosin Cakeberry pour une expérience aromatique intense. Alliance gourmande entre les notes fruitées de Banana Kush et la richesse du rosin. THC < 0,3 %.",
     payment_link: ""
   },
   {
@@ -184,7 +191,7 @@ const STORE = [
     image: "assets/images/prerolls3.webp",
     category: "prerolls",
     badge: "Pre Roll",
-    desc: "",
+    desc: "Pre roll CBD premium associant fleurs Runtz et rosin Cereal Cakes. Profil sucré et gourmand, roulage soigné et combustion homogène. THC < 0,3 %.",
     payment_link: ""
   }
 ];
@@ -210,13 +217,6 @@ function setCart(cart){
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
 }
-
-function clearCart(){
-  localStorage.removeItem("cart");
-  updateCartCount();
-  renderCart();
-}
-
 function updateCartCount(){
   const cart = getCart();
   const count = cart.reduce((s,l)=>s+(l.qty||0),0);
@@ -224,11 +224,15 @@ function updateCartCount(){
   if(el) el.textContent = count;
 }
 
-// Expose pour les onclick inline (cart.html)
+function clearCart(){
+  localStorage.removeItem("cart");
+  updateCartCount();
+  renderCart();
+}
 window.clearCart = clearCart;
 
 // =====================
-// CATEGORIES (filtre boutique)
+// FILTRE CATEGORIES (shop)
 // =====================
 const CATEGORY_MAP = {
   "fleurs": "fleurs",
@@ -262,21 +266,26 @@ function searchProducts(q, cat){
 
   return STORE.filter(p => {
     const okQ = !q || (p.name.toLowerCase().includes(q) || (p.desc||"").toLowerCase().includes(q));
-    const pCat = normCat(p.category);
-    const okC = !want || pCat === want;
+    const okC = !want || normCat(p.category) === want;
     return okQ && okC;
   });
 }
 
 // =====================
-// CARDS (shop)
+// CARD SHOP (avec STICKERS)
 // =====================
 function card(p){
   const base = p.options?.length ? p.options[0].price : p.price;
   const priceText = p.options?.length ? `à partir de ${formatPrice(base)}` : formatPrice(base);
 
+  const st = p.sticker;
+  const stickerHTML = st
+    ? `<div class="sticker ${st.tone || ""} ${st.side === "right" ? "right" : ""}">${st.text}</div>`
+    : "";
+
   return `
   <article class="card">
+    ${stickerHTML}
     <a href="product.html?id=${encodeURIComponent(p.id)}">
       <img class="thumb" src="${p.image}" alt="${p.name}" loading="lazy" decoding="async">
     </a>
@@ -315,7 +324,7 @@ function bootShopPage(){
 }
 
 // =====================
-// PAGE PRODUIT
+// PAGE PRODUIT (grammage)
 // =====================
 function bootProductPage(){
   const url = new URL(location.href);
@@ -352,7 +361,6 @@ function bootProductPage(){
       if(priceEl) priceEl.textContent = formatPrice(priceFor(p, currentOpt));
     };
   } else {
-    // Pre Rolls => pas de grammage
     if(gramBox) gramBox.style.display = "none";
   }
 
@@ -401,7 +409,6 @@ function setQty(key, qty){
   renderCart();
 }
 
-// Expose pour les onchange/onclick inline générés dans renderCart()
 window.removeFromCart = removeFromCart;
 window.setQty = setQty;
 
