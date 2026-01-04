@@ -353,5 +353,125 @@ h1,h2,h3{margin:0 0 12px}
     0 10px 30px rgba(0,0,0,.35),
     0 0 18px rgba(255,255,255,.10) !important;
 }
+/* =========================================================
+   STREET UPGRADE — TRAP / GRAFFITI NEON (SAFE PATCH)
+   Colle en bas de style.css
+   ========================================================= */
+
+/* Typos */
+body{
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+h1,h2,h3{
+  font-family: "Bangers", Inter, system-ui, sans-serif;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+/* Background : plus “night city” sans casser ton image */
+html{
+  background:
+    radial-gradient(1100px 650px at 15% 10%, rgba(57,255,20,.14), transparent 55%),
+    radial-gradient(900px 650px at 85% 15%, rgba(255,43,214,.12), transparent 55%),
+    radial-gradient(900px 700px at 55% 95%, rgba(0,229,255,.10), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.70)),
+    url("/frenchconnect/assets/images/background.webp") center/cover no-repeat fixed;
+}
+
+/* Header plus “club” */
+.site-header{
+  border-bottom: 1px solid rgba(0,229,255,.20) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* Liens nav : effet néon au hover */
+.nav a{
+  position: relative;
+  opacity: .88;
+}
+.nav a:hover{
+  opacity: 1;
+  color: var(--neon3);
+  text-shadow: 0 0 14px rgba(0,229,255,.20);
+}
+.nav a.active{
+  opacity: 1;
+}
+
+/* Cards : plus “street premium” */
+.card{
+  border: 1px solid rgba(57,255,20,.18) !important;
+  box-shadow: 0 16px 45px rgba(0,0,0,.32);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.card:hover{
+  transform: translateY(-3px);
+  border-color: rgba(0,229,255,.30) !important;
+  box-shadow: 0 22px 60px rgba(0,0,0,.38), 0 0 18px rgba(0,229,255,.10);
+}
+
+/* Thumb : punch + vibe */
+.card .thumb{
+  filter: saturate(1.12) contrast(1.06);
+}
+
+/* Pill = tag plus street */
+.pill{
+  background: rgba(57,255,20,.08) !important;
+  border-color: rgba(57,255,20,.22) !important;
+  box-shadow: 0 0 18px rgba(57,255,20,.10);
+}
+
+/* Prix : petit “spray underline” */
+.price-tag{
+  position: relative;
+  font-weight: 900;
+}
+.price-tag::after{
+  content:"";
+  position:absolute;
+  left:-8px;
+  right:10px;
+  bottom:-3px;
+  height:8px;
+  background: linear-gradient(90deg, rgba(57,255,20,.25), rgba(255,43,214,.25), rgba(0,229,255,.25));
+  filter: blur(8px);
+  z-index:-1;
+}
+
+/* Boutons : neon + punch */
+.btn{
+  border-radius: 14px;
+  border: 1px solid rgba(57,255,20,.55) !important;
+  background: rgba(57,255,20,.12) !important;
+  color: #fff !important;
+  box-shadow: 0 0 18px rgba(57,255,20,.18);
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,43,214,.55) !important;
+  box-shadow: 0 0 22px rgba(255,43,214,.18);
+}
+.btn.ghost{
+  border: 1px solid rgba(0,229,255,.35) !important;
+  background: transparent !important;
+  box-shadow: 0 0 14px rgba(0,229,255,.10);
+}
+.btn.ghost:hover{
+  background: rgba(0,229,255,.10) !important;
+}
+
+/* Inputs / selects : dark glass */
+input, select{
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  color: #fff !important;
+}
+input:focus, select:focus{
+  outline: none;
+  border-color: rgba(0,229,255,.55) !important;
+  box-shadow: 0 0 0 3px rgba(0,229,255,.12);
+}
 
 
