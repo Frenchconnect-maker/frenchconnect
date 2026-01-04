@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>FrenchConnect — Produit</title>
 
-  <!-- CSS (cache-bust) -->
+  <!-- cache-bust CSS -->
   <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
 </head>
 
@@ -26,19 +26,11 @@
   </header>
 
   <main class="container" style="padding: 20px 0;">
-    <!-- IMPORTANT : cet id déclenche bootProductPage() -->
     <section id="product-page" style="display:grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items:start;">
-      <!-- IMAGE -->
       <div class="product-media">
-        <img
-          id="p-image"
-          src=""
-          alt=""
-          style="width:100%; border-radius: 16px; border: 1px solid rgba(255,255,255,.10);"
-        />
+        <img id="p-image" src="" alt="" style="width:100%; border-radius: 16px; border: 1px solid rgba(255,255,255,.10);" />
       </div>
 
-      <!-- INFOS -->
       <div class="product-info">
         <h1 id="p-name" style="margin:0 0 8px;"></h1>
         <p id="p-desc" style="opacity:.9; margin:0 0 12px;"></p>
@@ -49,7 +41,6 @@
           <span id="p-badge"></span>
         </div>
 
-        <!-- GRAMMAGE -->
         <div id="grammage-box" style="margin: 14px 0;">
           <label for="option" style="display:block; margin-bottom:6px;">Grammage</label>
           <select
@@ -58,7 +49,6 @@
           ></select>
         </div>
 
-        <!-- QUANTITÉ -->
         <div style="margin: 14px 0;">
           <label for="qty" style="display:block; margin-bottom:6px;">Quantité</label>
           <input
@@ -70,12 +60,10 @@
           />
         </div>
 
-        <!-- PRIX -->
         <p style="margin: 10px 0 16px;">
           Prix : <strong id="p-price"></strong>
         </p>
 
-        <!-- ACTIONS -->
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <button id="add-to-cart" class="btn" type="button">Ajouter au panier</button>
           <a class="btn ghost" href="cart.html">Voir le panier</a>
@@ -95,7 +83,7 @@
     </div>
   </footer>
 
-  <!-- JS (cache-bust) -->
+  <!-- cache-bust JS -->
   <script src="assets/js/store.js?v=20260104"></script>
 </body>
 </html>
