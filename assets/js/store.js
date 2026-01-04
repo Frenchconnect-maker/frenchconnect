@@ -31,26 +31,34 @@ function buildGramOptions(price1g){
 const STORE = [
   // ===== EXTRAITS =====
   {
-    id: "cakeberry-rosin",
-    name: "Cakeberry Rosin",
-    price: 40.00,
-    image: "assets/images/cakeberry-rosin.jpg",
-    category: "extraits",
-    badge: "Rosin",
-    desc: "Rosin CBD premium extrait sans solvants par pression à chaud. Cakeberry Rosin offre une texture fondante et un profil aromatique riche, mêlant notes sucrées et pâtissières. Produit artisanal de haute qualité. THC < 0,3 %.",
-    options: buildGramOptions(40.00),
-    payment_link: ""
+    {
+  id: "cakeberry-rosin",
+  name: "Cakeberry Rosin",
+  price: 40.00,
+  image: "assets/images/cakeberry-rosin.jpg",
+  category: "extraits",
+  badge: "Rosin",
+  desc: "Rosin CBD premium extrait sans solvants par pression à chaud. Cakeberry Rosin offre une texture fondante et un profil aromatique riche, mêlant notes sucrées et pâtissières. Produit artisanal de haute qualité. THC < 0,3 %.",
+  sticker: { text: "LIMITED", tone: "pink", side: "right" },
+  options: buildGramOptions(40.00),
+  payment_link: ""
+}
+
   },
   {
-    id: "cereal-cakes-live-rosin",
-    name: "Cereal Cakes Live Rosin",
-    price: 40.00,
-    image: "assets/images/cereal-cakes-live-rosin.webp",
-    category: "extraits",
-    badge: "Live Rosin",
-    desc: "Live Rosin CBD issu de fleurs fraîches pressées à chaud. Cereal Cakes développe des arômes complexes, céréaliers et légèrement vanillés, avec une forte concentration en terpènes naturels. THC < 0,3 %.",
-    options: buildGramOptions(40.00),
-    payment_link: ""
+    {
+  id: "cereal-cakes-live-rosin",
+  name: "Cereal Cakes Live Rosin",
+  price: 40.00,
+  image: "assets/images/cereal-cakes-live-rosin.webp",
+  category: "extraits",
+  badge: "Live Rosin",
+  desc: "Live Rosin CBD issu de fleurs fraîches pressées à chaud. Cereal Cakes développe des arômes complexes, céréaliers et légèrement vanillés, avec une forte concentration en terpènes naturels. THC < 0,3 %.",
+  sticker: { text: "-28%", tone: "black", side: "right" },
+  options: buildGramOptions(40.00),
+  payment_link: ""
+}
+
   },
   {
     id: "sherbet-cookie-live-rosin",
@@ -123,15 +131,19 @@ const STORE = [
     payment_link: ""
   },
   {
-    id: "runtz",
-    name: "Runtz",
-    price: 12.90,
-    image: "assets/images/runtz.jpg",
-    category: "fleurs",
-    badge: "Fleur",
-    desc: "Fleur CBD très appréciée pour son profil gourmand et fruité. Runtz offre des arômes sucrés rappelant les bonbons et les fruits tropicaux, avec de belles têtes denses. THC < 0,3 %.",
-    options: buildGramOptions(12.90),
-    payment_link: ""
+    {
+  id: "runtz",
+  name: "Runtz",
+  price: 12.90,
+  image: "assets/images/runtz.jpg",
+  category: "fleurs",
+  badge: "Fleur",
+  desc: "Fleur CBD très appréciée pour son profil gourmand et fruité. Runtz offre des arômes sucrés rappelant les bonbons et les fruits tropicaux, avec de belles têtes denses. THC < 0,3 %.",
+  sticker: { text: "BEST" },
+  options: buildGramOptions(12.90),
+  payment_link: ""
+}
+
   },
   {
     id: "sour-apple",
@@ -145,15 +157,19 @@ const STORE = [
     payment_link: ""
   },
   {
-    id: "strawberry-haze",
-    name: "Strawberry Haze",
-    price: 12.90,
-    image: "assets/images/strawberry-haze.png",
-    category: "fleurs",
-    badge: "Fleur",
-    desc: "Fleur CBD aux arômes doux et fruités dominés par la fraise et les fruits rouges. Strawberry Haze séduit par un profil équilibré, une belle couleur et une richesse aromatique. THC < 0,3 %.",
-    options: buildGramOptions(12.90),
-    payment_link: ""
+    {
+  id: "strawberry-haze",
+  name: "Strawberry Haze",
+  price: 12.90,
+  image: "assets/images/strawberry-haze.png",
+  category: "fleurs",
+  badge: "Fleur",
+  desc: "Fleur CBD aux arômes doux et fruités dominés par la fraise et les fruits rouges. Strawberry Haze séduit par un profil équilibré, une belle couleur et une richesse aromatique. THC < 0,3 %.",
+  sticker: { text: "NEW", tone: "cyan" },
+  options: buildGramOptions(12.90),
+  payment_link: ""
+}
+
   },
 
   // ===== PRE ROLLS (SANS GRAMMAGE) =====
