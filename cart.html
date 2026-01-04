@@ -7,24 +7,55 @@
 
   <!-- cache-bust CSS -->
   <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
-<script src="assets/js/store.js?v=20260104"></script>
+
+  <!-- Fonts (si tu les utilises déjà sur index) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
   <header class="site-header">
-    <div class="container header-row">
-      <a class="brand" href="index.html">
-        <img src="assets/images/logo.png" alt="FrenchConnect" style="height:36px" />
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
+        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
       </a>
 
-      <nav class="nav">
+      <!-- NAV DESKTOP -->
+      <nav class="nav" aria-label="Navigation principale">
         <a href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
-        <a class="active" href="cart.html">Panier (<span id="cart-count">0</span>)</a>
+        <a class="cart-link active" href="cart.html">Panier <span id="cart-count">0</span></a>
         <a href="contact.html">Contact</a>
       </nav>
+
+      <!-- BURGER MOBILE -->
+      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
+
+  <!-- MENU MOBILE OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="backdrop" id="menuBackdrop"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="head">
+        <strong>FRENCHCONNECT</strong>
+        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
+      </div>
+      <div class="links">
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a href="shop.html?cat=fleurs">Fleurs</a>
+        <a href="shop.html?cat=resines">Résines</a>
+        <a href="shop.html?cat=extraits">Extraits</a>
+        <a href="shop.html?cat=prerolls">Pre Rolls</a>
+        <a href="cart.html">Panier</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
 
   <main class="container" style="padding: 20px 0;">
     <h1 style="margin:0 0 12px;">Panier</h1>
@@ -34,6 +65,7 @@
       <button class="btn ghost" type="button" onclick="clearCart()">Vider le panier</button>
     </div>
 
+    <!-- Lignes du panier injectées par store.js -->
     <section id="cart-items"></section>
 
     <hr style="border:0; border-top:1px solid rgba(255,255,255,.10); margin: 18px 0;" />
@@ -57,7 +89,49 @@
     </div>
   </footer>
 
-  <!-- cache-bust JS -->
+  <!-- Burger JS (SAFE, indépendant) -->
+  <script>
+  (function(){
+    const toggle = document.getElementById("navToggle");
+    const menu   = document.getElementById("mobileMenu");
+    const close  = document.getElementById("menuClose");
+    const back   = document.getElementById("menuBackdrop");
+
+    if(!toggle || !menu) return;
+
+    function openMenu(){
+      document.body.classList.add("menu-open");
+      menu.classList.add("open");
+      menu.setAttribute("aria-hidden","false");
+      toggle.setAttribute("aria-expanded","true");
+    }
+    function closeMenu(){
+      document.body.classList.remove("menu-open");
+      menu.classList.remove("open");
+      menu.setAttribute("aria-hidden","true");
+      toggle.setAttribute("aria-expanded","false");
+    }
+
+    toggle.addEventListener("click", () => {
+      if(menu.classList.contains("open")) closeMenu();
+      else openMenu();
+    });
+
+    if(close) close.addEventListener("click", closeMenu);
+    if(back)  back.addEventListener("click", closeMenu);
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") closeMenu();
+    });
+
+    menu.addEventListener("click", (e) => {
+      const a = e.target.closest("a");
+      if(a) closeMenu();
+    });
+  })();
+  </script>
+
+  <!-- store.js (une seule fois, en bas) -->
   <script src="assets/js/store.js?v=20260104"></script>
 </body>
 </html>
