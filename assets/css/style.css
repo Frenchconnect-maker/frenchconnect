@@ -362,5 +362,6 @@ input:focus, select:focus{
 .price-tag{
   color: rgba(255,255,255,.92);
 }
+h1, h2, h3 { font-family: "Bangers", system-ui, sans-serif; letter-spacing: .5px; }
 
 
