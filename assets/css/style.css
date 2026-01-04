@@ -488,6 +488,157 @@ input:focus, select:focus{
 @media (prefers-reduced-motion: reduce){
   .sticker{ animation:none !important; }
 }
+/* =========================================================
+   STREET NAV — BURGER + OVERLAY (SAFE)
+   Colle tout en bas de style.css
+   ========================================================= */
+
+.nav-toggle{
+  display:none;
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:1px solid rgba(0,229,255,.30);
+  background: rgba(255,255,255,.03);
+  box-shadow: 0 0 18px rgba(0,229,255,.10);
+  cursor:pointer;
+  position: relative;
+}
+
+.nav-toggle span{
+  position:absolute;
+  left:50%;
+  width:22px;
+  height:2px;
+  background: rgba(241,244,255,.92);
+  transform: translateX(-50%);
+  border-radius:99px;
+  transition: transform .18s ease, top .18s ease, opacity .18s ease;
+}
+.nav-toggle span:nth-child(1){ top:15px; }
+.nav-toggle span:nth-child(2){ top:21px; opacity:.95; }
+.nav-toggle span:nth-child(3){ top:27px; }
+
+.nav-toggle:hover{
+  border-color: rgba(57,255,20,.35);
+  box-shadow: 0 0 22px rgba(57,255,20,.10);
+}
+
+/* Overlay */
+.mobile-menu{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display:none;
+}
+
+.mobile-menu .backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(8px);
+}
+
+.mobile-menu .panel{
+  position:absolute;
+  right: 14px;
+  top: 14px;
+  width: min(420px, calc(100% - 28px));
+  border-radius: 22px;
+  border: 1px solid rgba(0,229,255,.22);
+  background:
+    radial-gradient(900px 520px at 20% 10%, rgba(57,255,20,.16), transparent 55%),
+    radial-gradient(700px 520px at 80% 15%, rgba(255,43,214,.14), transparent 55%),
+    rgba(8,8,12,.88);
+  box-shadow:
+    0 26px 90px rgba(0,0,0,.55),
+    0 0 22px rgba(0,229,255,.12);
+  overflow:hidden;
+  transform: translateY(-6px);
+  opacity:0;
+  transition: transform .22s ease, opacity .22s ease;
+}
+
+.mobile-menu .panel::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:24px;
+  border:2px dashed rgba(255,255,255,.08);
+  pointer-events:none;
+  mix-blend-mode: overlay;
+}
+
+.mobile-menu.open{ display:block; }
+.mobile-menu.open .panel{
+  transform: translateY(0);
+  opacity:1;
+}
+
+.mobile-menu .head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 14px 14px 8px;
+}
+.mobile-menu .head strong{
+  font-family:"Bangers", Inter, system-ui, sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(0,229,255,.14);
+}
+
+.mobile-menu .close{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:1px solid rgba(255,43,214,.28);
+  background: rgba(255,255,255,.03);
+  color: var(--ink);
+  cursor:pointer;
+  box-shadow: 0 0 18px rgba(255,43,214,.10);
+}
+
+.mobile-menu .links{
+  padding: 8px 14px 14px;
+  display:grid;
+  gap:10px;
+}
+
+.mobile-menu .links a{
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  font-weight: 900;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px rgba(255,255,255,.04);
+}
+.mobile-menu .links a:hover{
+  border-color: rgba(57,255,20,.28);
+  background: rgba(57,255,20,.08);
+  box-shadow: 0 0 18px rgba(57,255,20,.10);
+}
+
+/* Affichage mobile : nav desktop cachée */
+@media (max-width: 860px){
+  .site-header .nav{ display:none; }
+  .nav-toggle{ display:inline-block; }
+}
+
+/* Animation burger -> X quand ouvert */
+body.menu-open .nav-toggle span:nth-child(1){
+  top:21px;
+  transform: translateX(-50%) rotate(45deg);
+}
+body.menu-open .nav-toggle span:nth-child(2){
+  opacity:0;
+}
+body.menu-open .nav-toggle span:nth-child(3){
+  top:21px;
+  transform: translateX(-50%) rotate(-45deg);
+}
 
 
 
