@@ -222,5 +222,16 @@ h1,h2,h3{margin:0 0 12px}
   color: #ffffff !important;
   border: 1px solid rgba(255,255,255,.20) !important;
 }
+/* ====== PANIER : PHOTOS PLUS PETITES (sans toucher au reste) ====== */
+#cart-items .cart-line img {
+  width: 52px !important;
+  height: 52px !important;
+  object-fit: cover !important;
+  border-radius: 10px !important;
+}
+#cart-items .cart-line {
+  padding: 10px !important;
+  gap: 10px !important;
+}
 
 
