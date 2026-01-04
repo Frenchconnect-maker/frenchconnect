@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>FrenchConnect — Boutique</title>
 
-  <!-- Garde tes CSS si tu as d'autres fichiers, ici on inclut style.css -->
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <!-- CSS (cache-bust) -->
+  <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
 </head>
 
 <body>
-  <!-- HEADER SIMPLE (si tu as déjà un header, tu peux garder le tien) -->
   <header class="site-header">
     <div class="container header-row">
       <a class="brand" href="index.html">
@@ -29,7 +28,6 @@
   <main class="container" style="padding: 20px 0;">
     <h1 style="margin: 0 0 10px;">Boutique</h1>
 
-    <!-- BARRE DE FILTRES -->
     <section class="filters" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin: 12px 0 18px;">
       <input
         id="search"
@@ -50,7 +48,6 @@
       </select>
     </section>
 
-    <!-- GRID PRODUITS (rempli par store.js) -->
     <section id="product-grid" class="grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
       <!-- Injecté par JS -->
     </section>
@@ -66,9 +63,7 @@
     </div>
   </footer>
 
-  <!-- IMPORTANT : UN SEUL STORE -->
-  <script src="assets/js/store.js?v=1"></script>
+  <!-- JS (cache-bust) -->
+  <script src="assets/js/store.js?v=20260104"></script>
 </body>
 </html>
-
-
