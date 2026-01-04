@@ -423,6 +423,94 @@ input:focus, select:focus{
     0 10px 30px rgba(0,0,0,.35),
     0 0 18px rgba(255,255,255,.10) !important;
 }
+/* =========================================================
+   GRAFFITI MODE (A) — plus agressif, plus street
+   Colle tout en bas de style.css
+   ========================================================= */
+
+/* Titres : plus “tag” */
+h1,h2,h3{
+  text-shadow:
+    0 0 10px rgba(57,255,20,.18),
+    0 0 18px rgba(0,229,255,.12);
+}
+
+/* Cards : contour néon + grain léger */
+.card{
+  border-color: rgba(0,229,255,.22) !important;
+  box-shadow:
+    0 18px 60px rgba(0,0,0,.40),
+    0 0 18px rgba(0,229,255,.10) !important;
+}
+
+/* Effet spray sur le bas des cards */
+.card .pad{
+  position: relative;
+}
+.card .pad::after{
+  content:"";
+  position:absolute;
+  left: -18px;
+  right: -18px;
+  bottom: -10px;
+  height: 26px;
+  background:
+    radial-gradient(circle at 10% 60%, rgba(255,43,214,.22), transparent 50%),
+    radial-gradient(circle at 35% 40%, rgba(57,255,20,.18), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(0,229,255,.18), transparent 55%),
+    radial-gradient(circle at 90% 45%, rgba(255,255,255,.06), transparent 55%);
+  filter: blur(10px);
+  opacity: .9;
+  pointer-events:none;
+}
+
+/* Sticker : plus gros + “tag cut” */
+.sticker{
+  padding: 9px 13px !important;
+  font-size: 12px !important;
+  border-radius: 10px !important;
+  transform: rotate(-8deg) !important;
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.45),
+    0 0 22px rgba(57,255,20,.20) !important;
+  clip-path: polygon(0 0, 95% 0, 100% 50%, 95% 100%, 0 100%, 4% 50%);
+}
+
+/* Variante droite */
+.sticker.right{
+  transform: rotate(8deg) !important;
+}
+
+/* Pills : plus punch */
+.pill{
+  transform: rotate(-4deg) !important;
+  border-color: rgba(255,43,214,.22) !important;
+  background: rgba(255,43,214,.08) !important;
+  box-shadow: 0 0 18px rgba(255,43,214,.10) !important;
+}
+
+/* Boutons : plus “street neon” */
+.btn{
+  box-shadow:
+    0 0 18px rgba(57,255,20,.18),
+    0 18px 50px rgba(0,0,0,.25) !important;
+}
+.btn:hover{
+  box-shadow:
+    0 0 24px rgba(255,43,214,.20),
+    0 18px 60px rgba(0,0,0,.28) !important;
+}
+
+/* Hover : léger “shake” (subtil) */
+@keyframes microShake{
+  0%{ transform: translateY(-3px) rotate(0deg); }
+  40%{ transform: translateY(-3px) rotate(-0.2deg); }
+  70%{ transform: translateY(-3px) rotate(0.2deg); }
+  100%{ transform: translateY(-3px) rotate(0deg); }
+}
+.card:hover{
+  animation: microShake .22s ease-in-out;
+}
 
 
 
