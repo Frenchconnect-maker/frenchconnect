@@ -363,5 +363,101 @@ input:focus, select:focus{
   color: rgba(255,255,255,.92);
 }
 h1, h2, h3 { font-family: "Bangers", system-ui, sans-serif; letter-spacing: .5px; }
+/* =========================================================
+   STREET PACK — TAG / STICKERS (PATCH)
+   Effet graffiti / stickers / tape
+   ========================================================= */
+
+/* Effet "sticker" sur les cards */
+.card{
+  position: relative;
+}
+
+.card::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:22px;
+  border:2px dashed rgba(255,255,255,.08);
+  pointer-events:none;
+  mix-blend-mode:overlay;
+}
+
+/* Coins “collés” type tape */
+.card::before{
+  content:"";
+  position:absolute;
+  top:-8px;
+  right:18px;
+  width:54px;
+  height:18px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,.25),
+    rgba(255,255,255,.25) 6px,
+    rgba(255,255,255,.15) 6px,
+    rgba(255,255,255,.15) 12px
+  );
+  transform: rotate(3deg);
+  opacity:.35;
+  pointer-events:none;
+}
+
+/* Badge type sticker */
+.pill{
+  font-weight:700;
+  text-transform: uppercase;
+  letter-spacing:.6px;
+  transform: rotate(-2deg);
+}
+
+/* Hover : effet “tag spray” */
+.card:hover{
+  filter: saturate(1.15) contrast(1.05);
+}
+
+/* Boutons plus street */
+.btn{
+  text-transform: uppercase;
+  letter-spacing:.8px;
+  font-weight:700;
+}
+
+/* Prix façon “tag” */
+.price-tag{
+  position: relative;
+  font-weight:700;
+}
+.price-tag::after{
+  content:"";
+  position:absolute;
+  left:-6px;
+  right:-6px;
+  bottom:-2px;
+  height:6px;
+  background: linear-gradient(
+    90deg,
+    rgba(57,255,20,.35),
+    rgba(255,43,214,.35),
+    rgba(0,229,255,.35)
+  );
+  z-index:-1;
+  filter: blur(6px);
+}
+
+/* Panier : lignes type autocollant */
+#cart-items .cart-line{
+  position: relative;
+  transform: rotate(-0.3deg);
+}
+#cart-items .cart-line:nth-child(even){
+  transform: rotate(0.4deg);
+}
+
+/* Texte description plus “street” */
+.product-info p{
+  line-height:1.55;
+  letter-spacing:.2px;
+}
 
 
