@@ -1,14 +1,11 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FrenchConnect — Panier</title>
 
-  <!-- cache-bust CSS -->
-  <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
-
-  <!-- Fonts (si tu les utilises déjà sur index) -->
+  <link rel="stylesheet" href="assets/css/style.css?v=20260106">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -17,121 +14,73 @@
 <body>
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
-        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
+      <a class="brand" href="index.html">
+        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect">
       </a>
 
-      <!-- NAV DESKTOP -->
-      <nav class="nav" aria-label="Navigation principale">
+      <nav class="nav">
         <a href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
         <a class="cart-link active" href="cart.html">Panier <span id="cart-count">0</span></a>
+        <a href="account.html">Mon compte</a>
         <a href="contact.html">Contact</a>
       </nav>
 
-      <!-- BURGER MOBILE -->
-      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+      <button class="nav-toggle" id="navToggle">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <!-- MENU MOBILE OVERLAY -->
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu" id="mobileMenu">
     <div class="backdrop" id="menuBackdrop"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="panel">
       <div class="head">
         <strong>FRENCHCONNECT</strong>
-        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
+        <button class="close" id="menuClose">✕</button>
       </div>
       <div class="links">
         <a href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
-        <a href="shop.html?cat=fleurs">Fleurs</a>
-        <a href="shop.html?cat=resines">Résines</a>
-        <a href="shop.html?cat=extraits">Extraits</a>
-        <a href="shop.html?cat=prerolls">Pre Rolls</a>
         <a href="cart.html">Panier</a>
+        <a href="account.html">Mon compte</a>
         <a href="contact.html">Contact</a>
       </div>
     </div>
   </div>
 
-  <main class="container" style="padding: 20px 0;">
-    <h1 style="margin:0 0 12px;">Panier</h1>
+  <main class="container">
+    <h1>Panier</h1>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin: 0 0 16px;">
-      <a class="btn ghost" href="shop.html">Continuer mes achats</a>
-      <button class="btn ghost" type="button" onclick="clearCart()">Vider le panier</button>
+    <div class="btn-row">
+      <a class="btn ghost" href="shop.html">Continuer achats</a>
+      <button class="btn ghost" onclick="clearCart()">Vider le panier</button>
     </div>
 
-    <!-- Lignes du panier injectées par store.js -->
     <section id="cart-items"></section>
 
-    <hr style="border:0; border-top:1px solid rgba(255,255,255,.10); margin: 18px 0;" />
+    <hr>
 
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-      <div style="font-size: 1.1rem;">
-        <strong>Total :</strong> <span id="cart-total">0,00 €</span>
-      </div>
-
-      <a id="checkout-btn" class="btn" href="#" onclick="startCheckout(); return false;">Procéder au paiement</a>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <strong>Total : <span id="cart-total">0,00 €</span></strong>
+      <a class="btn" href="#" onclick="startCheckout();return false;">Commander</a>
     </div>
   </main>
 
-  <footer class="site-footer" style="padding: 24px 0; border-top: 1px solid rgba(255,255,255,.08); margin-top: 40px;">
-    <div class="container" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-      <small>© FrenchConnect</small>
-      <div style="display:flex; gap:12px;">
-        <a href="legal.html">Mentions légales</a>
-        <a href="cgv.html">CGV</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Burger JS (SAFE, indépendant) -->
+  <script src="assets/js/store.js?v=20260106"></script>
   <script>
-  (function(){
-    const toggle = document.getElementById("navToggle");
-    const menu   = document.getElementById("mobileMenu");
-    const close  = document.getElementById("menuClose");
-    const back   = document.getElementById("menuBackdrop");
-
-    if(!toggle || !menu) return;
-
-    function openMenu(){
-      document.body.classList.add("menu-open");
-      menu.classList.add("open");
-      menu.setAttribute("aria-hidden","false");
-      toggle.setAttribute("aria-expanded","true");
-    }
-    function closeMenu(){
-      document.body.classList.remove("menu-open");
-      menu.classList.remove("open");
-      menu.setAttribute("aria-hidden","true");
-      toggle.setAttribute("aria-expanded","false");
-    }
-
-    toggle.addEventListener("click", () => {
-      if(menu.classList.contains("open")) closeMenu();
-      else openMenu();
-    });
-
-    if(close) close.addEventListener("click", closeMenu);
-    if(back)  back.addEventListener("click", closeMenu);
-
-    document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape") closeMenu();
-    });
-
-    menu.addEventListener("click", (e) => {
-      const a = e.target.closest("a");
-      if(a) closeMenu();
-    });
-  })();
+    (function(){
+      const t=document.getElementById("navToggle"),
+            m=document.getElementById("mobileMenu"),
+            c=document.getElementById("menuClose"),
+            b=document.getElementById("menuBackdrop");
+      if(!t) return;
+      const o=()=>m.classList.add("open"),
+            x=()=>m.classList.remove("open");
+      t.onclick=()=>m.classList.contains("open")?x():o();
+      c.onclick=x; b.onclick=x;
+    })();
   </script>
-
-  <!-- store.js (une seule fois, en bas) -->
-  <script src="assets/js/store.js?v=20260105"></script>
 </body>
 </html>
+
