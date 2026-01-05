@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FrenchConnect — Checkout</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/style.css?v=20260105" />
+
+  <style>
+    /* Checkout layout (ne touche pas au reste du design) */
+    .checkout-wrap{max-width:1200px;margin:0 auto;padding:18px}
+    .checkout-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+    @media (max-width: 980px){ .checkout-grid{grid-template-columns:1fr} }
+
+    .panel-card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      overflow:hidden;
+      backdrop-filter: blur(6px);
+    }
+    .panel-card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .panel-card .bd{padding:14px}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width: 640px){ .field-row{grid-template-columns:1fr} }
+    .field{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+    .field label{font-weight:700}
+    .field input,.field select,.field textarea{
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.03);
+      color:#fff;
+    }
+    .small-muted{color: rgba(255,255,255,.7); font-size:.92rem}
+    .order-table{width:100%;border-collapse:collapse;font-size:.95rem}
+    .order-table th,.order-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.10);vertical-align:top}
+    .order-table th{text-align:left;color:rgba(255,255,255,.75);font-weight:800}
+    .order-lines .row{display:flex;gap:10px;justify-content:space-between}
+    .sum-line{display:flex;justify-content:space-between;gap:10px;margin:8px 0}
+    .sum-line strong{font-weight:900}
+    .radio{display:flex;gap:10px;align-items:flex-start;margin:10px 0;padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(0,0,0,.18)}
+    .radio input{margin-top:3px}
+    .danger{color:#ff7b7b}
+    .ok{color:#7bffb2}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+    .ghost-link{color:rgba(255,255,255,.85);text-decoration:none}
+    .ghost-link:hover{color:#fff;text-decoration:underline}
+    .notice{
+      margin-top:10px;padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="age-banner">
+    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
+  </div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
+        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
+      </a>
+
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="backdrop" id="menuBackdrop"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="head">
+        <strong>FRENCHCONNECT</strong>
+        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
+      </div>
+      <div class="links">
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a href="shop.html?cat=fleurs">Fleurs</a>
+        <a href="shop.html?cat=resines">Résines</a>
+        <a href="shop.html?cat=extraits">Extraits</a>
+        <a href="shop.html?cat=prerolls">Pre Rolls</a>
+        <a href="cart.html">Panier</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="checkout-wrap">
+    <h1 style="margin:6px 0 6px;">Détails de facturation</h1>
+    <p class="small-muted" style="margin:0 0 14px;">
+      Compte obligatoire : tes infos seront enregistrées pour suivre tes commandes.
+    </p>
+
+    <div class="checkout-grid">
+      <!-- LEFT: Billing / Account -->
+      <section class="panel-card">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Informations client</strong>
+          <a class="ghost-link" href="cart.html">← Retour panier</a>
+        </div>
+        <div class="bd">
+          <!-- Auth mode -->
+          <div class="notice">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <label style="display:flex;gap:8px;align-items:center;margin:0;">
+                <input type="radio" name="authMode" value="signup" checked>
+                <strong>Créer un compte</strong>
+              </label>
+              <label style="display:flex;gap:8px;align-items:center;margin:0;">
+                <input type="radio" name="authMode" value="login">
+                <strong>J’ai déjà un compte</strong>
+              </label>
+            </div>
+            <div class="small-muted" style="margin-top:8px;">
+              Si tu as déjà un compte, connecte-toi pour voir tes commandes et adresses.
+            </div>
+          </div>
+
+          <form id="checkout-form" autocomplete="on">
+            <div class="field-row">
+              <div class="field">
+                <label for="first_name">Prénom *</label>
+                <input id="first_name" required />
+              </div>
+              <div class="field">
+                <label for="last_name">Nom *</label>
+                <input id="last_name" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="company">Nom de l’entreprise (facultatif)</label>
+              <input id="company" />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="email">Adresse e-mail *</label>
+                <input id="email" type="email" required />
+              </div>
+              <div class="field">
+                <label for="phone">Téléphone *</label>
+                <input id="phone" required />
+              </div>
+            </div>
+
+            <div class="field" id="password_box">
+              <label for="password">Mot de passe *</label>
+              <input id="password" type="password" minlength="6" required />
+              <div class="small-muted">6 caractères minimum.</div>
+            </div>
+
+            <hr style="border:0;border-top:1px solid rgba(255,255,255,.10);margin:14px 0;">
+
+            <div class="field">
+              <label for="country">Pays / région *</label>
+              <select id="country" required>
+                <option value="France">France</option>
+                <option value="Belgique">Belgique</option>
+                <option value="Suisse">Suisse</option>
+                <option value="Luxembourg">Luxembourg</option>
+                <option value="Italie">Italie</option>
+                <option value="Espagne">Espagne</option>
+                <option value="Allemagne">Allemagne</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="address1">Numéro et nom de rue *</label>
+              <input id="address1" required />
+            </div>
+
+            <div class="field">
+              <label for="address2">Bâtiment, appartement, lot, etc. (facultatif)</label>
+              <input id="address2" />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="city">Ville *</label>
+                <input id="city" required />
+              </div>
+              <div class="field">
+                <label for="postal_code">Code postal *</label>
+                <input id="postal_code" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="note">Notes de commande (facultatif)</label>
+              <textarea id="note" rows="3" placeholder="Instructions de livraison…"></textarea>
+            </div>
+
+            <div id="msg" class="notice" style="display:none;"></div>
+
+            <div class="top-actions">
+              <button id="place-order" class="btn" type="submit">Commander</button>
+              <a class="btn ghost" href="shop.html">Retour boutique</a>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- RIGHT: Order summary -->
+      <aside class="panel-card">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Votre commande</strong>
+          <span class="small-muted" id="cart-mini"></span>
+        </div>
+
+        <div class="bd">
+          <table class="order-table">
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th style="text-align:right;">Sous-total</th>
+              </tr>
+            </thead>
+            <tbody id="order-lines"></tbody>
+          </table>
+
+          <div style="margin-top:14px;">
+            <div class="sum-line">
+              <span class="small-muted">Sous-total</span>
+              <strong id="subtotal">0,00 €</strong>
+            </div>
+
+            <div style="margin:12px 0 6px; font-weight:900;">Expédition</div>
+
+            <label class="radio">
+              <input type="radio" name="shipping" value="relay" data-cents="1000" checked>
+              <div>
+                <div><strong>Point Relais colis 100% assuré</strong> : 10,00 €</div>
+                <div class="small-muted">Sélection du point de retrait (à intégrer plus tard).</div>
+              </div>
+            </label>
+
+            <label class="radio">
+              <input type="radio" name="shipping" value="signature" data-cents="1200">
+              <div>
+                <div><strong>Livraison signature colis 100% assuré</strong> : 12,00 €</div>
+                <div class="small-muted">Livraison à domicile avec signature.</div>
+              </div>
+            </label>
+
+            <label class="radio">
+              <input type="radio" name="shipping" value="swiss" data-cents="1754">
+              <div>
+                <div><strong>Suisse</strong> : 17,54 €</div>
+              </div>
+            </label>
+
+            <label class="radio">
+              <input type="radio" name="shipping" value="lux" data-cents="1000">
+              <div>
+                <div><strong>Luxembourg colis 100% assuré</strong> : 10,00 €</div>
+              </div>
+            </label>
+
+            <label class="radio">
+              <input type="radio" name="shipping" value="eu" data-cents="2000">
+              <div>
+                <div><strong>Italie / Espagne / Allemagne</strong> : 20,00 €</div>
+              </div>
+            </label>
+
+            <hr style="border:0;border-top:1px solid rgba(255,255,255,.10);margin:14px 0;">
+
+            <div class="sum-line" style="font-size:1.05rem;">
+              <span>Total</span>
+              <strong id="total">0,00 €</strong>
+            </div>
+
+            <div style="margin-top:14px;">
+              <div style="font-weight:900;">Paiement</div>
+              <div class="notice small-muted">
+                Paiement carte / Stripe : on branche après. Là, on valide le flux commande + comptes + back-office.
+              </div>
+            </div>
+
+            <div class="notice small-muted">
+              Vos données personnelles sont utilisées pour traiter la commande et créer votre compte.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer" style="margin-top: 34px;">
+    <div class="copy wrap">© <span id="year"></span> FrenchConnect</div>
+  </footer>
+
+  <!-- Burger JS (safe) -->
+  <script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+  (function(){
+    const toggle = document.getElementById("navToggle");
+    const menu   = document.getElementById("mobileMenu");
+    const close  = document.getElementById("menuClose");
+    const back   = document.getElementById("menuBackdrop");
+    if(!toggle || !menu) return;
+
+    function openMenu(){ document.body.classList.add("menu-open"); menu.classList.add("open"); toggle.setAttribute("aria-expanded","true"); }
+    function closeMenu(){ document.body.classList.remove("menu-open"); menu.classList.remove("open"); toggle.setAttribute("aria-expanded","false"); }
+
+    toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
+    if(close) close.addEventListener("click", closeMenu);
+    if(back)  back.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
+    menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
+  })();
+  </script>
+
+  <!-- store.js (cart count, helpers) -->
+  <script src="assets/js/store.js?v=20260105"></script>
+
+  <!-- checkout logic -->
+  <script src="assets/js/checkout.js?v=20260105"></script>
+</body>
+</html>
