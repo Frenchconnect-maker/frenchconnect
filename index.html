@@ -5,38 +5,37 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   <title>FrenchConnect — CBD Premium • Street Selection</title>
-  <meta name="description" content="FrenchConnect : sélection CBD premium (Fleurs, Résines, Extraits, Pre Rolls). Série limitée, terpènes naturels, qualité propre. THC < 0,3%." />
+  <meta name="description" content="FrenchConnect : sélection CBD premium (Fleurs, Résines, Extraits, Pre Rolls). Drops limités, terpènes naturels, qualité propre. THC < 0,3%." />
   <meta name="theme-color" content="#07070b" />
 
-  <!-- Fonts (Street) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- CSS (cache bust) -->
+  <!-- CSS -->
   <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
 
-  <!-- OpenGraph (optionnel mais pro) -->
+  <!-- OpenGraph -->
   <meta property="og:title" content="FrenchConnect — CBD Premium • Street Selection">
-  <meta property="og:description" content="Fleurs • Résines • Extraits • Pre Rolls — Qualité premium, série limitée.">
+  <meta property="og:description" content="Fleurs • Résines • Extraits • Pre Rolls — Drops limités, vibe street, qualité clean.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/images/hero.jpg">
 </head>
 
 <body>
-  <!-- Bandeau info (pro + conformité) -->
+  <!-- Bandeau -->
   <div class="age-banner">
     Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3% • Usage conforme à la législation en vigueur
   </div>
 
-  <!-- Header -->
+  <!-- Header + Burger -->
   <header class="site-header">
     <div class="wrap">
       <a href="index.html" aria-label="FrenchConnect Accueil">
         <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
       </a>
 
-      <!-- NAV DESKTOP -->
       <nav class="nav" aria-label="Navigation principale">
         <a class="active" href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
@@ -44,14 +43,12 @@
         <a href="contact.html">Contact</a>
       </nav>
 
-      <!-- BURGER MOBILE (affiché via CSS @media) -->
       <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <!-- MENU MOBILE OVERLAY -->
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="backdrop" id="menuBackdrop"></div>
     <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
@@ -72,178 +69,187 @@
     </div>
   </div>
 
-  <!-- HERO -->
-  <section class="hero">
+  <!-- TICKER STREET -->
+  <div style="border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.35); overflow:hidden;">
+    <div id="ticker" style="white-space:nowrap; display:inline-block; padding:10px 0; will-change: transform;">
+      <span style="padding:0 22px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">
+        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • STREET SELECTION • THC &lt; 0,3% •
+      </span>
+      <span style="padding:0 22px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">
+        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • STREET SELECTION • THC &lt; 0,3% •
+      </span>
+      <span style="padding:0 22px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">
+        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • STREET SELECTION • THC &lt; 0,3% •
+      </span>
+    </div>
+  </div>
+
+  <!-- HERO (plus street) -->
+  <section class="hero" style="padding-top:34px;">
     <div class="hero-inner">
       <div class="hero-text">
-        <h1>CBD PREMIUM — STREET SELECTION</h1>
-        <p class="muted">
-          FrenchConnect sélectionne des produits CBD propres et premium : fleurs soignées, résines maîtrisées,
-          extractions sans compromis, et pre rolls prêts à partir. Série limitée, profil aromatique marqué.
+        <h1 style="font-size:2.8rem; line-height:1;">
+          CBD PREMIUM<br>
+          <span style="color:var(--neon3); text-shadow:0 0 18px rgba(0,229,255,.18);">STREET DROPS</span>
+        </h1>
+
+        <p class="muted" style="font-size:1.05rem;">
+          Sélection CBD propre et premium : fleurs soignées, résines puissantes en goût, extraits maîtrisés, et pre rolls prêts à partir.
+          Chaque drop est limité. Quand c’est parti, c’est parti.
         </p>
 
-        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
-          <a class="btn" href="shop.html">Shop Now</a>
-          <a class="btn ghost" href="shop.html?cat=fleurs">Fleurs</a>
-          <a class="btn ghost" href="shop.html?cat=resines">Résines</a>
-          <a class="btn ghost" href="shop.html?cat=extraits">Extraits</a>
-          <a class="btn ghost" href="shop.html?cat=prerolls">Pre Rolls</a>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
+          <a class="btn" href="shop.html">Entrer dans la boutique</a>
+          <a class="btn ghost" href="shop.html?cat=extraits">Voir les Extraits</a>
         </div>
 
-        <!-- USP (pro) -->
+        <!-- “Stickers” pro -->
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;">
+          <span class="sticker black" style="position:relative !important; transform:none !important;">CLEAN</span>
+          <span class="sticker cyan" style="position:relative !important; transform:none !important;">NEW</span>
+          <span class="sticker pink" style="position:relative !important; transform:none !important;">LIMITED</span>
+        </div>
+
+        <!-- Points clés -->
         <div style="margin-top:18px; display:grid; gap:10px;">
           <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
-            <span style="font-weight:900; color:var(--neon3);">✔</span>
-            <span><strong>Qualité premium</strong> : sélection, tri et profil aromatique au centre.</span>
-          </div>
-          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
             <span style="font-weight:900; color:var(--neon);">✔</span>
-            <span><strong>Série limitée</strong> : drops réguliers, stocks contrôlés.</span>
+            <span><strong>Qualité</strong> : sélection aromatique + visuels propres.</span>
           </div>
           <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
             <span style="font-weight:900; color:var(--neon2);">✔</span>
-            <span><strong>Conformité</strong> : THC &lt; 0,3% (UE) — infos produit claires.</span>
+            <span><strong>Grammage</strong> : choix sur la fiche produit (hors pre rolls).</span>
+          </div>
+          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-weight:900; color:var(--neon3);">✔</span>
+            <span><strong>Drops</strong> : séries limitées, stocks contrôlés.</span>
           </div>
         </div>
       </div>
 
       <div class="hero-media-small">
         <img src="assets/images/hero.jpg" alt="FrenchConnect — sélection CBD premium" loading="eager" />
-        <div class="muted" style="margin-top:10px; font-size:.95rem;">
-          Drop actuel • Visuels premium • Vibe street
+        <div class="muted" style="margin-top:12px;">
+          <strong style="color:var(--ink);">Drop du moment</strong> • visuels premium • vibe street
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CATEGORIES (cards “street”) -->
+  <!-- MAIN -->
   <main class="container">
     <section class="wrap" style="margin-bottom:18px;">
       <h2>Catégories</h2>
       <p class="muted" style="margin-top:-6px;">
-        Choisis ton style : fleurs, résines, extraits, ou pre rolls. Les produits à grammage se sélectionnent sur la fiche.
+        Choisis ton style. Clique et entre.
       </p>
 
       <div class="grid" style="margin-top:14px;">
         <a class="card" href="shop.html?cat=fleurs" aria-label="Voir Fleurs">
+          <span class="sticker cyan">NEW</span>
           <img class="thumb" src="assets/images/fleur2.jpg" alt="Fleurs" loading="lazy">
           <div class="pad">
             <div class="pill">Fleurs</div>
             <h3>Fleurs</h3>
-            <div class="price-tag">Qualité • Têtes denses</div>
+            <div class="price-tag">Têtes denses • profil aromatique</div>
           </div>
         </a>
 
         <a class="card" href="shop.html?cat=resines" aria-label="Voir Résines">
+          <span class="sticker pink">BEST</span>
           <img class="thumb" src="assets/images/hash2.jpg" alt="Résines" loading="lazy">
           <div class="pad">
             <div class="pill">Résines</div>
             <h3>Résines</h3>
-            <div class="price-tag">Texture • Arômes</div>
+            <div class="price-tag">Texture • arômes • sélection</div>
           </div>
         </a>
 
         <a class="card" href="shop.html?cat=extraits" aria-label="Voir Extraits">
+          <span class="sticker black">LIMITED</span>
           <img class="thumb" src="assets/images/cakeberry-rosin.jpg" alt="Extraits" loading="lazy">
           <div class="pad">
             <div class="pill">Extraits</div>
             <h3>Extraits</h3>
-            <div class="price-tag">Terpènes • Premium</div>
+            <div class="price-tag">Terpènes • premium</div>
           </div>
         </a>
 
         <a class="card" href="shop.html?cat=prerolls" aria-label="Voir Pre Rolls">
+          <span class="sticker cyan">READY</span>
           <img class="thumb" src="assets/images/prerolls3.webp" alt="Pre Rolls" loading="lazy">
           <div class="pad">
             <div class="pill">Pre Rolls</div>
             <h3>Pre Rolls</h3>
-            <div class="price-tag">Prêt • Clean</div>
+            <div class="price-tag">Prêt • clean</div>
           </div>
         </a>
       </div>
     </section>
 
-    <!-- FEATURED (rempli par store.js) -->
+    <!-- PRODUITS EN AVANT (store.js) -->
     <section class="wrap" style="margin-top:34px;">
       <h2>Produits en avant</h2>
       <p class="muted" style="margin-top:-6px;">
-        Une sélection rapide du moment. Clique pour choisir ton grammage (si dispo).
+        Sélection rapide du moment. Clique pour choisir ton grammage.
       </p>
 
       <div id="home-collection" class="grid" style="margin-top:14px;">
-        <!-- Injecté par JS -->
+        <!-- Injecté par store.js -->
       </div>
 
       <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
         <a class="btn" href="shop.html">Voir toute la boutique</a>
         <a class="btn ghost" href="shop.html?cat=extraits">Voir les Extraits</a>
+        <a class="btn ghost" href="shop.html?cat=prerolls">Voir les Pre Rolls</a>
       </div>
     </section>
 
-    <!-- SECTION PRO -->
+    <!-- SECTION DROPS (pro + street) -->
     <section class="wrap" style="margin-top:40px;">
-      <h2>Pourquoi FrenchConnect</h2>
+      <h2>Comment ça marche</h2>
       <div class="grid" style="margin-top:14px;">
         <div class="card">
           <div class="pad">
-            <div class="pill">Drop</div>
-            <h3>Drops limités</h3>
+            <div class="pill">01</div>
+            <h3>Drop</h3>
             <p class="muted" style="margin:0;">
-              On préfère sortir moins, mais mieux : sélection, cohérence aromatique, et qualité constante.
+              Chaque sortie est limitée. On préfère la qualité au volume.
             </p>
           </div>
         </div>
 
         <div class="card">
           <div class="pad">
-            <div class="pill">Transparence</div>
-            <h3>Infos claires</h3>
+            <div class="pill">02</div>
+            <h3>Choisis ton grammage</h3>
             <p class="muted" style="margin:0;">
-              Catégories nettes, grammages simples, prix lisibles. Tu sais ce que tu achètes.
+              Fleurs / Résines / Extraits : grammage sur la fiche produit. Pre rolls : à l’unité.
             </p>
           </div>
         </div>
 
         <div class="card">
           <div class="pad">
-            <div class="pill">Vibe</div>
-            <h3>Street mais clean</h3>
+            <div class="pill">03</div>
+            <h3>Panier clean</h3>
             <p class="muted" style="margin:0;">
-              Identité street, mais expérience shop propre : rapide, claire, mobile-friendly.
+              Ajoute, ajuste, check. Simple et mobile-friendly.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FAQ -->
+    <!-- FAQ light -->
     <section class="wrap" style="margin-top:40px;">
-      <h2>FAQ rapide</h2>
+      <h2>FAQ</h2>
 
       <div class="card" style="margin-top:14px;">
         <div class="pad">
           <h3>THC &lt; 0,3% ?</h3>
           <p class="muted" style="margin:0;">
-            Les produits sont proposés dans le respect du cadre UE (THC &lt; 0,3%). Vérifie toujours la législation locale.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:14px;">
-        <div class="pad">
-          <h3>Comment choisir le grammage ?</h3>
-          <p class="muted" style="margin:0;">
-            Sur les produits fleurs/résines/extraits, tu cliques sur un produit puis tu choisis le grammage sur la fiche produit.
-            Les pre rolls sont vendus à l’unité.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:14px;">
-        <div class="pad">
-          <h3>Livraison / paiement ?</h3>
-          <p class="muted" style="margin:0;">
-            Le module de paiement peut être branché via Stripe. Contacte-nous si tu veux une solution sur-mesure.
+            Produits proposés dans le respect du cadre UE (THC &lt; 0,3%). Vérifie toujours la législation locale.
           </p>
         </div>
       </div>
@@ -255,7 +261,7 @@
     <div class="cols wrap">
       <div>
         <h3>FrenchConnect</h3>
-        <p class="muted">CBD premium • Street selection • Drops limités</p>
+        <p class="muted">CBD premium • Street drops • Série limitée</p>
       </div>
 
       <div>
@@ -283,10 +289,26 @@
     </div>
   </footer>
 
-  <!-- JS -->
+  <!-- JS UI -->
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
+    // Ticker simple (safe)
+    (function(){
+      const el = document.getElementById("ticker");
+      if(!el) return;
+      let x = 0;
+      function loop(){
+        x -= 0.55;
+        el.style.transform = "translateX(" + x + "px)";
+        const w = el.scrollWidth / 3;
+        if(Math.abs(x) > w) x = 0;
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    })();
+
+    // Burger menu (safe)
     (function(){
       const toggle = document.getElementById("navToggle");
       const menu   = document.getElementById("mobileMenu");
@@ -326,6 +348,12 @@
       });
     })();
   </script>
+
+  <!-- store.js -->
+  <script src="assets/js/store.js?v=20260104"></script>
+</body>
+</html>
+
 
   <!-- store.js (cache bust) -->
   <script src="assets/js/store.js?v=20260104"></script>
