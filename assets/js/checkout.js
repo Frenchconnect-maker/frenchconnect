@@ -6,8 +6,8 @@
    ========================================= */
 
 // 1) ✅ RENSEIGNE ICI
-const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";     // ex: https://xxxx.supabase.co
-const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE"; // sb_publishable_...
+const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";     // ex: https://xxxx.supabase.co
+const SUPABASE_KEY = "sb_secret_M5PXsDHCwEDAhySd6-RT4A_FP8zSgcv"; // sb_publishable_...
 
 // 2) Charger supabase-js depuis CDN (sans build)
 (function loadSupabaseCDN(){
