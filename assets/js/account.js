@@ -1,13 +1,12 @@
 /* ======================================================
-   ACCOUNT — Mes commandes (Supabase)
-   - Liste orders du user connecté
-   - Détail order_items
-   - Déconnexion
+   ACCOUNT — Mon compte (Supabase)
+   - Si connecté: affiche commandes + logout
+   - Si pas connecté: affiche un vrai formulaire login
    ====================================================== */
 
 // ✅ Mets TA publishable key (PAS secret)
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM"; // <-- remplace
+const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
 
 (function loadSupabaseCDN(){
   const s = document.createElement("script");
@@ -55,22 +54,48 @@ async function initAccount(){
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Qui est connecté ?
+  // Session
   const { data: sess } = await sb.auth.getSession();
   const user = sess?.session?.user;
 
   const who = document.getElementById("whoami");
   const logoutBtn = document.getElementById("logoutBtn");
+  const loginBox = document.getElementById("login-box");
+  const ordersBox = document.getElementById("orders");
 
+  // ✅ PAS CONNECTÉ -> on montre le formulaire
   if(!user){
     if(who) who.innerHTML = `Non connecté.`;
-    showMsg("err", `Tu dois être connecté pour voir tes commandes.<br><br>
-      ➜ Va sur <a href="checkout.html" style="color:#fff;text-decoration:underline;">checkout</a> et choisis <strong>« J’ai déjà un compte »</strong>.`);
-    renderEmpty();
+    if(loginBox) loginBox.style.display = "block";
+    if(ordersBox) ordersBox.innerHTML = "";
+
+    hideMsg();
+    showMsg("err", "Connecte-toi pour voir tes commandes.");
+
+    const form = document.getElementById("login-form");
+    if(form){
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        hideMsg();
+
+        const email = document.getElementById("login-email").value.trim().toLowerCase();
+        const password = document.getElementById("login-password").value;
+
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if(error){
+          showMsg("err", escapeHtml(error.message));
+          return;
+        }
+        location.reload();
+      });
+    }
     return;
   }
 
+  // ✅ CONNECTÉ -> on cache login, show logout
+  if(loginBox) loginBox.style.display = "none";
   if(who) who.innerHTML = `Connecté : <strong>${escapeHtml(user.email || "")}</strong>`;
+
   if(logoutBtn){
     logoutBtn.style.display = "";
     logoutBtn.onclick = async () => {
@@ -80,7 +105,6 @@ async function initAccount(){
   }
 
   // Charge orders du user
-  // Important : RLS doit autoriser SELECT where user_id = auth.uid()
   const ordersRes = await sb
     .from("orders")
     .select("id, status, currency, subtotal_cents, shipping_cents, total_cents, shipping_method, note, created_at")
@@ -101,7 +125,7 @@ async function initAccount(){
     return;
   }
 
-  // Récupère tous les items de ces commandes en 1 fois
+  // Items
   const orderIds = orders.map(o => o.id);
   const itemsRes = await sb
     .from("order_items")
