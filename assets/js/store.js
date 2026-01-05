@@ -451,10 +451,12 @@ function renderCart(){
 }
 
 // =====================
-// CHECKOUT (placeholder)
+// CHECKOUT (redirige vers checkout.html)
 // =====================
 function startCheckout(){
-  alert("Pour activer le paiement, on branche Stripe Payment Links.");
+  // ✅ nouveau flow : checkout (compte + commandes Supabase)
+  // GitHub Pages: on reste en relatif pour éviter les soucis de chemin
+  window.location.href = "checkout.html";
 }
 window.startCheckout = startCheckout;
 
@@ -467,3 +469,4 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCart();
   if(document.getElementById("product-page")) bootProductPage();
 });
+
