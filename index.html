@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   <title>FrenchConnect — CBD Premium • Street Selection</title>
-  <meta name="description" content="FrenchConnect : sélection CBD premium (Fleurs, Résines, Extraits, Pre Rolls). Drops limités, terpènes naturels, qualité propre. THC < 0,3%." />
+  <meta name="description" content="FrenchConnect : sélection CB...rops limités, terpènes naturels, qualité propre. THC < 0,3%." />
   <meta name="theme-color" content="#07070b" />
 
   <!-- Fonts -->
@@ -14,11 +14,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="assets/css/style.css?v=20260104" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260106" />
 
   <!-- OpenGraph -->
   <meta property="og:title" content="FrenchConnect — CBD Premium • Street Selection">
-  <meta property="og:description" content="Fleurs • Résines • Extraits • Pre Rolls — Drops limités, vibe street, qualité clean.">
+  <meta property="og:description" content="Fleurs • Résines • Ex...raits • Pre Rolls — Drops limités, vibe street, qualité clean.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/images/hero.jpg">
 </head>
@@ -26,13 +26,13 @@
 <body>
   <!-- Bandeau -->
   <div class="age-banner">
-    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3% • Usage conforme à la législation en vigueur
+    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
   </div>
 
-  <!-- Header + Burger -->
+  <!-- HEADER -->
   <header class="site-header">
     <div class="wrap">
-      <a href="index.html" aria-label="FrenchConnect Accueil">
+      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
         <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
       </a>
 
@@ -40,6 +40,7 @@
         <a class="active" href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
         <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+        <a href="account.html">Mon compte</a>
         <a href="contact.html">Contact</a>
       </nav>
 
@@ -49,6 +50,7 @@
     </div>
   </header>
 
+  <!-- MENU MOBILE -->
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="backdrop" id="menuBackdrop"></div>
     <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
@@ -64,299 +66,121 @@
         <a href="shop.html?cat=extraits">Extraits</a>
         <a href="shop.html?cat=prerolls">Pre Rolls</a>
         <a href="cart.html">Panier</a>
+        <a href="account.html">Mon compte</a>
         <a href="contact.html">Contact</a>
       </div>
     </div>
   </div>
 
   <!-- TICKER STREET -->
-  <div style="border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.35); overflow:hidden;">
+  <div style="border-top:1px solid rgba(255,255,255,.08); border...255,255,255,.08); background:rgba(0,0,0,.35); overflow:hidden;">
     <div id="ticker" style="white-space:nowrap; display:inline-block; padding:10px 0; will-change: transform;">
       <span style="padding:0 22px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">
-        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • STREET SELECTION • THC &lt; 0,3% •
+        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • VIBE STREET •
       </span>
       <span style="padding:0 22px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">
-        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • STREET SELECTION • THC &lt; 0,3% •
+        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • VIBE STREET •
       </span>
       <span style="padding:0 22px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">
-        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • STREET SELECTION • THC &lt; 0,3% •
+        🔥 DROPS LIMITÉS • TERPÈNES NATURELS • CBD PREMIUM • VIBE STREET •
       </span>
     </div>
   </div>
 
-  <!-- HERO (plus street) -->
-  <section class="hero" style="padding-top:34px;">
+  <!-- HERO -->
+  <section class="hero">
     <div class="hero-inner">
       <div class="hero-text">
-        <h1 style="font-size:2.8rem; line-height:1;">
-          CBD PREMIUM<br>
-          <span style="color:var(--neon3); text-shadow:0 0 18px rgba(0,229,255,.18);">STREET DROPS</span>
-        </h1>
-
-        <p class="muted" style="font-size:1.05rem;">
-          Sélection CBD propre et premium : fleurs soignées, résines puissantes en goût, extraits maîtrisés, et pre rolls prêts à partir.
-          Chaque drop est limité. Quand c’est parti, c’est parti.
+        <h1>CBD Premium • Street Selection</h1>
+        <p class="muted">
+          Fleurs, Résines, Extraits, Pre Rolls — drops limités, terpènes naturels, sélection propre.
         </p>
-
-        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
-          <a class="btn" href="shop.html">Entrer dans la boutique</a>
-          <a class="btn ghost" href="shop.html?cat=extraits">Voir les Extraits</a>
-        </div>
-
-        <!-- “Stickers” pro -->
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;">
-          <span class="sticker black" style="position:relative !important; transform:none !important;">CLEAN</span>
-          <span class="sticker cyan" style="position:relative !important; transform:none !important;">NEW</span>
-          <span class="sticker pink" style="position:relative !important; transform:none !important;">LIMITED</span>
-        </div>
-
-        <!-- Points clés -->
-        <div style="margin-top:18px; display:grid; gap:10px;">
-          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
-            <span style="font-weight:900; color:var(--neon);">✔</span>
-            <span><strong>Qualité</strong> : sélection aromatique + visuels propres.</span>
-          </div>
-          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
-            <span style="font-weight:900; color:var(--neon2);">✔</span>
-            <span><strong>Grammage</strong> : choix sur la fiche produit (hors pre rolls).</span>
-          </div>
-          <div class="muted" style="display:flex; gap:10px; align-items:flex-start;">
-            <span style="font-weight:900; color:var(--neon3);">✔</span>
-            <span><strong>Drops</strong> : séries limitées, stocks contrôlés.</span>
-          </div>
+        <div class="btn-row" style="margin-top:16px;">
+          <a class="btn" href="shop.html">Accéder à la boutique</a>
+          <a class="btn ghost" href="shop.html?cat=extraits">Voir les extraits</a>
         </div>
       </div>
 
       <div class="hero-media-small">
-        <img src="assets/images/hero.jpg" alt="FrenchConnect — sélection CBD premium" loading="eager" />
-        <div class="muted" style="margin-top:12px;">
-          <strong style="color:var(--ink);">Drop du moment</strong> • visuels premium • vibe street
-        </div>
+        <img src="assets/images/hero.jpg" alt="FrenchConnect hero" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
 
-  <!-- MAIN -->
-  <main class="container">
-    <section class="wrap" style="margin-bottom:18px;">
-      <h2>Catégories</h2>
-      <p class="muted" style="margin-top:-6px;">
-        Choisis ton style. Clique et entre.
-      </p>
-
-      <div class="grid" style="margin-top:14px;">
-        <a class="card" href="shop.html?cat=fleurs" aria-label="Voir Fleurs">
-          <span class="sticker cyan">NEW</span>
-          <img class="thumb" src="assets/images/fleur2.jpg" alt="Fleurs" loading="lazy">
-          <div class="pad">
-            <div class="pill">Fleurs</div>
-            <h3>Fleurs</h3>
-            <div class="price-tag">Têtes denses • profil aromatique</div>
-          </div>
-        </a>
-
-        <a class="card" href="shop.html?cat=resines" aria-label="Voir Résines">
-          <span class="sticker pink">BEST</span>
-          <img class="thumb" src="assets/images/hash2.jpg" alt="Résines" loading="lazy">
-          <div class="pad">
-            <div class="pill">Résines</div>
-            <h3>Résines</h3>
-            <div class="price-tag">Texture • arômes • sélection</div>
-          </div>
-        </a>
-
-        <a class="card" href="shop.html?cat=extraits" aria-label="Voir Extraits">
-          <span class="sticker black">LIMITED</span>
-          <img class="thumb" src="assets/images/cakeberry-rosin.jpg" alt="Extraits" loading="lazy">
-          <div class="pad">
-            <div class="pill">Extraits</div>
-            <h3>Extraits</h3>
-            <div class="price-tag">Terpènes • premium</div>
-          </div>
-        </a>
-
-        <a class="card" href="shop.html?cat=prerolls" aria-label="Voir Pre Rolls">
-          <span class="sticker cyan">READY</span>
-          <img class="thumb" src="assets/images/prerolls3.webp" alt="Pre Rolls" loading="lazy">
-          <div class="pad">
-            <div class="pill">Pre Rolls</div>
-            <h3>Pre Rolls</h3>
-            <div class="price-tag">Prêt • clean</div>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <!-- PRODUITS EN AVANT (store.js) -->
-    <section class="wrap" style="margin-top:34px;">
-      <h2>Produits en avant</h2>
-      <p class="muted" style="margin-top:-6px;">
-        Sélection rapide du moment. Clique pour choisir ton grammage.
-      </p>
-
-      <div id="home-collection" class="grid" style="margin-top:14px;">
-        <!-- Injecté par store.js -->
-      </div>
-
-      <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
-        <a class="btn" href="shop.html">Voir toute la boutique</a>
-        <a class="btn ghost" href="shop.html?cat=extraits">Voir les Extraits</a>
-        <a class="btn ghost" href="shop.html?cat=prerolls">Voir les Pre Rolls</a>
-      </div>
-    </section>
-
-    <!-- SECTION DROPS (pro + street) -->
-    <section class="wrap" style="margin-top:40px;">
-      <h2>Comment ça marche</h2>
-      <div class="grid" style="margin-top:14px;">
-        <div class="card">
-          <div class="pad">
-            <div class="pill">01</div>
-            <h3>Drop</h3>
-            <p class="muted" style="margin:0;">
-              Chaque sortie est limitée. On préfère la qualité au volume.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="pad">
-            <div class="pill">02</div>
-            <h3>Choisis ton grammage</h3>
-            <p class="muted" style="margin:0;">
-              Fleurs / Résines / Extraits : grammage sur la fiche produit. Pre rolls : à l’unité.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="pad">
-            <div class="pill">03</div>
-            <h3>Panier clean</h3>
-            <p class="muted" style="margin:0;">
-              Ajoute, ajuste, check. Simple et mobile-friendly.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ light -->
-    <section class="wrap" style="margin-top:40px;">
-      <h2>FAQ</h2>
-
-      <div class="card" style="margin-top:14px;">
-        <div class="pad">
-          <h3>THC &lt; 0,3% ?</h3>
-          <p class="muted" style="margin:0;">
-            Produits proposés dans le respect du cadre UE (THC &lt; 0,3%). Vérifie toujours la législation locale.
-          </p>
-        </div>
-      </div>
-    </section>
-  </main>
+  <!-- COLLECTION (si tu en as une) -->
+  <section class="container">
+    <h2 style="max-width:1200px;margin:0 auto 12px;">Nouveautés</h2>
+    <div class="grid" id="home-collection"></div>
+  </section>
 
   <!-- FOOTER -->
   <footer class="site-footer">
-    <div class="cols wrap">
+    <div class="cols">
       <div>
         <h3>FrenchConnect</h3>
-        <p class="muted">CBD premium • Street drops • Série limitée</p>
+        <p class="muted">CBD Premium • Street Selection</p>
       </div>
-
       <div>
         <h3>Shop</h3>
-        <p class="muted" style="margin:0;">
-          <a href="shop.html?cat=fleurs">Fleurs</a><br>
-          <a href="shop.html?cat=resines">Résines</a><br>
-          <a href="shop.html?cat=extraits">Extraits</a><br>
-          <a href="shop.html?cat=prerolls">Pre Rolls</a>
-        </p>
+        <p class="muted"><a href="shop.html">Boutique</a></p>
+        <p class="muted"><a href="cart.html">Panier</a></p>
+        <p class="muted"><a href="account.html">Mon compte</a></p>
       </div>
-
       <div>
-        <h3>Infos</h3>
-        <p class="muted" style="margin:0;">
-          <a href="contact.html">Contact</a><br>
-          <a href="legal.html">Mentions légales</a><br>
-          <a href="cgv.html">CGV</a>
-        </p>
+        <h3>Contact</h3>
+        <p class="muted"><a href="contact.html">Nous écrire</a></p>
       </div>
     </div>
-
-    <div class="copy wrap">
-      © <span id="year"></span> FrenchConnect — Tous droits réservés
-    </div>
+    <div class="copy">© <span id="year"></span> FrenchConnect</div>
   </footer>
 
-  <!-- JS UI -->
+  <!-- Burger + petites animations -->
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // Ticker simple (safe)
-    (function(){
-      const el = document.getElementById("ticker");
-      if(!el) return;
-      let x = 0;
-      function loop(){
-        x -= 0.55;
-        el.style.transform = "translateX(" + x + "px)";
-        const w = el.scrollWidth / 3;
-        if(Math.abs(x) > w) x = 0;
-        requestAnimationFrame(loop);
-      }
-      requestAnimationFrame(loop);
-    })();
-
-    // Burger menu (safe)
+    // Burger
     (function(){
       const toggle = document.getElementById("navToggle");
       const menu   = document.getElementById("mobileMenu");
       const close  = document.getElementById("menuClose");
       const back   = document.getElementById("menuBackdrop");
-
       if(!toggle || !menu) return;
 
       function openMenu(){
         document.body.classList.add("menu-open");
         menu.classList.add("open");
-        menu.setAttribute("aria-hidden","false");
         toggle.setAttribute("aria-expanded","true");
       }
       function closeMenu(){
         document.body.classList.remove("menu-open");
         menu.classList.remove("open");
-        menu.setAttribute("aria-hidden","true");
         toggle.setAttribute("aria-expanded","false");
       }
 
-      toggle.addEventListener("click", () => {
-        if(menu.classList.contains("open")) closeMenu();
-        else openMenu();
-      });
-
+      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
       if(close) close.addEventListener("click", closeMenu);
       if(back)  back.addEventListener("click", closeMenu);
+      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
+      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
+    })();
 
-      document.addEventListener("keydown", (e) => {
-        if(e.key === "Escape") closeMenu();
-      });
-
-      menu.addEventListener("click", (e) => {
-        const a = e.target.closest("a");
-        if(a) closeMenu();
-      });
+    // Ticker
+    (function(){
+      const t = document.getElementById("ticker");
+      if(!t) return;
+      let x = 0;
+      function loop(){
+        x -= 0.6;
+        if(x < -600) x = 0;
+        t.style.transform = "translateX(" + x + "px)";
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
     })();
   </script>
 
-  <!-- store.js -->
-  <script src="assets/js/store.js?v=20260104"></script>
-</body>
-</html>
-
-
-  <!-- store.js (cache bust) -->
-  <script src="assets/js/store.js?v=20260104"></script>
+  <!-- store.js (1 seule fois) -->
+  <script src="assets/js/store.js?v=20260106"></script>
 </body>
 </html>
 
