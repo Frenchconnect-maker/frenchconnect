@@ -1,15 +1,21 @@
-/* =========================================
-   Account (Client) — Supabase Auth + Orders
-   - Login / Signup
-   - Upsert profile (first/last/phone)
-   - List own orders
-   ========================================= */
+/* ======================================================
+   ACCOUNT — Connexion + Mes commandes (Supabase)
+   - Login / Signup DIRECT sur account.html
+   - Liste orders du user connecté
+   - Détail order_items
+   - Déconnexion
+   ====================================================== */
 
+// ✅ Publishable key uniquement (OK pour GitHub Pages)
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-// IMPORTANT: utilise sb_publishable_..., PAS sb_secret
 const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
 
 (function loadSupabaseCDN(){
+  // Si supabase est déjà chargé (ex: autre page), on init direct
+  if(window.supabase){
+    initAccount();
+    return;
+  }
   const s = document.createElement("script");
   s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   s.defer = true;
@@ -17,291 +23,270 @@ const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
   document.head.appendChild(s);
 })();
 
-function $(id){ return document.getElementById(id); }
-
+function euroFromCents(cents){
+  const n = (Number(cents || 0) / 100);
+  return n.toFixed(2).replace(".", ",") + " €";
+}
+function fmtDate(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString("fr-FR", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  }catch(e){ return iso || ""; }
+}
+function escapeHtml(s){
+  return (s ?? "").toString().replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[c]));
+}
 function showMsg(type, html){
-  const box = $("msg");
+  const box = document.getElementById("msg");
   if(!box) return;
   box.style.display = "block";
-  box.innerHTML = `
-    <div style="font-weight:900;margin-bottom:6px">${type === "ok" ? "OK" : "Erreur"}</div>
-    <div class="muted">${html}</div>
-  `;
-  box.style.border = "1px solid rgba(255,255,255,.14)";
-  box.style.borderRadius = "12px";
-  box.style.padding = "12px";
-  box.style.background = type === "ok" ? "rgba(34,197,94,.12)" : "rgba(239,68,68,.12)";
+  box.innerHTML = `<div class="${type === "ok" ? "ok" : "danger"}" style="font-weight:900;margin-bottom:6px;">${type === "ok" ? "OK" : "Erreur"}</div><div>${html}</div>`;
 }
-
 function hideMsg(){
-  const box = $("msg");
+  const box = document.getElementById("msg");
   if(!box) return;
   box.style.display = "none";
-  box.innerHTML = "";
-}
-
-function euroCents(c){ return (Number(c||0)/100).toFixed(2).replace(".", ",") + " €"; }
-function fmtDate(iso){
-  try { return new Date(iso).toLocaleString("fr-FR"); } catch { return iso; }
+  box.textContent = "";
 }
 
 async function initAccount(){
   if(!window.supabase){
-    showMsg("err", "Supabase n’a pas chargé (CDN).");
+    showMsg("err","Supabase n’a pas chargé (CDN).");
     return;
   }
   if(!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY.startsWith("sb_")){
-    showMsg("err", "Renseigne SUPABASE_URL et SUPABASE_KEY (sb_publishable) dans assets/js/account.js");
+    showMsg("err","Supabase URL / Key manquants dans assets/js/account.js.");
     return;
   }
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // UI refs
-  const form = $("auth-form");
-  const btn = $("submit-btn");
-  const logoutBtn = $("logout-btn");
-  const dash = $("dash");
+  const who = document.getElementById("whoami");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const authBox = document.getElementById("authBox");
+  const authForm = document.getElementById("authForm");
+  const authSubmit = document.getElementById("authSubmit");
 
-  const modeRadios = document.querySelectorAll('input[name="mode"]');
-  function currentMode(){
-    return document.querySelector('input[name="mode"]:checked')?.value || "login";
-  }
-  function syncMode(){
-    const m = currentMode();
-    btn.textContent = (m === "signup") ? "Créer le compte" : "Se connecter";
-  }
-  modeRadios.forEach(r => r.addEventListener("change", syncMode));
-  syncMode();
-
-  // Cart count (si store.js le gère)
-  try { if(typeof updateCartCount === "function") updateCartCount(); } catch(e){}
-
-  async function refreshSessionUI(){
-    hideMsg();
-    const { data } = await sb.auth.getSession();
-    const user = data?.session?.user;
-
-    if(!user){
-      dash.style.display = "none";
-      logoutBtn.style.display = "none";
-      btn.disabled = false;
-      btn.textContent = (currentMode() === "signup") ? "Créer le compte" : "Se connecter";
-      return;
-    }
-
-    logoutBtn.style.display = "inline-flex";
-    dash.style.display = "block";
-
-    // Load profile
-    const prof = await sb.from("profiles").select("email, first_name, last_name, phone, admin").eq("id", user.id).single();
-    const p = prof.data || {};
-    $("me-line").textContent = `${p.email || user.email} • ${p.first_name || ""} ${p.last_name || ""} ${p.phone ? "• " + p.phone : ""}`.trim();
-
-    await loadMyOrders(user.id);
+  // Déconnexion
+  if(logoutBtn){
+    logoutBtn.onclick = async () => {
+      await sb.auth.signOut();
+      location.reload();
+    };
   }
 
-  async function loadMyOrders(userId){
-    const list = $("orders-list");
-    const empty = $("orders-empty");
-    list.innerHTML = "";
+  // Connexion / Signup sur cette page
+  if(authForm){
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideMsg();
 
-    const res = await sb
-      .from("orders")
-      .select("id, status, currency, subtotal_cents, shipping_cents, total_cents, shipping_method, note, created_at")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+      authSubmit.disabled = true;
+      authSubmit.textContent = "Traitement…";
 
-    if(res.error){
-      showMsg("err", "Impossible de charger tes commandes (RLS/Policies).<br>" + (res.error.message || ""));
-      return;
-    }
+      try{
+        const mode = document.querySelector('input[name="authMode"]:checked')?.value || "login";
+        const email = (document.getElementById("email")?.value || "").trim().toLowerCase();
+        const password = document.getElementById("password")?.value || "";
 
-    const orders = res.data || [];
-    if(orders.length === 0){
-      empty.style.display = "block";
-      return;
-    }
-    empty.style.display = "none";
+        if(!email || !password) throw new Error("Email et mot de passe requis.");
 
-    orders.forEach(o => {
-      const el = document.createElement("div");
-      el.className = "card";
-      el.innerHTML = `
-        <div class="pad">
-          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
-            <div>
-              <div style="font-weight:900">Commande #${o.id.slice(0,8).toUpperCase()}</div>
-              <div class="muted">${fmtDate(o.created_at)} • Statut: <strong>${o.status}</strong> • Livraison: ${o.shipping_method || "-"}</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-weight:900">${euroCents(o.total_cents)}</div>
-              <button class="btn ghost" data-order="${o.id}" type="button">Voir détail</button>
-            </div>
-          </div>
-          ${o.note ? `<div class="muted" style="margin-top:8px">Note: ${escapeHtml(o.note)}</div>` : ""}
-        </div>
-      `;
-      list.appendChild(el);
+        if(mode === "signup"){
+          const sign = await sb.auth.signUp({ email, password });
+          if(sign.error) throw sign.error;
+
+          // Si Confirm Email est ON, session peut être vide => on affiche un message propre
+          const { data: s0 } = await sb.auth.getSession();
+          if(!s0?.session){
+            showMsg("ok", "Compte créé ✅ Vérifie tes emails et confirme ton adresse, puis reviens te connecter.");
+            authSubmit.disabled = false;
+            authSubmit.textContent = "Créer le compte";
+            return;
+          }
+        } else {
+          const login = await sb.auth.signInWithPassword({ email, password });
+          if(login.error) throw login.error;
+        }
+
+        // Upsert profile (optionnel)
+        const { data: sess } = await sb.auth.getSession();
+        const user = sess?.session?.user;
+        if(user){
+          const first_name = (document.getElementById("first_name")?.value || "").trim();
+          const last_name  = (document.getElementById("last_name")?.value || "").trim();
+          const phone      = (document.getElementById("phone")?.value || "").trim();
+
+          const up = await sb.from("profiles").upsert({
+            id: user.id,
+            email: user.email,
+            first_name: first_name || null,
+            last_name: last_name || null,
+            phone: phone || null
+          }, { onConflict: "id" });
+
+          if(up.error){
+            // pas bloquant : la connexion marche quand même
+            console.warn("profiles upsert error:", up.error);
+          }
+        }
+
+        location.reload();
+
+      } catch(err){
+        showMsg("err", escapeHtml(err?.message || "Erreur inconnue"));
+      } finally {
+        authSubmit.disabled = false;
+        const m = document.querySelector('input[name="authMode"]:checked')?.value || "login";
+        authSubmit.textContent = (m === "signup") ? "Créer le compte" : "Se connecter";
+      }
     });
 
-    list.querySelectorAll("button[data-order]").forEach(b => {
-      b.addEventListener("click", async () => {
-        const id = b.getAttribute("data-order");
-        await openOrderDetail(id);
+    // Texte bouton selon mode
+    document.querySelectorAll('input[name="authMode"]').forEach(r => {
+      r.addEventListener("change", () => {
+        const m = document.querySelector('input[name="authMode"]:checked')?.value || "login";
+        authSubmit.textContent = (m === "signup") ? "Créer le compte" : "Se connecter";
       });
     });
   }
 
-  async function openOrderDetail(orderId){
-    const wrap = $("order-detail");
-    wrap.style.display = "block";
-    $("detail-items").innerHTML = "";
-    $("detail-meta").textContent = "Chargement…";
-    $("detail-addr").textContent = "";
-    $("detail-total").textContent = "";
+  // Session
+  const { data: sess } = await sb.auth.getSession();
+  const user = sess?.session?.user;
 
-    // order
-    const oRes = await sb
-      .from("orders")
-      .select("id, status, total_cents, shipping_cents, subtotal_cents, shipping_method, created_at")
-      .eq("id", orderId)
-      .single();
-
-    if(oRes.error){
-      showMsg("err", "Impossible de charger la commande.<br>" + (oRes.error.message || ""));
-      return;
-    }
-    const o = oRes.data;
-
-    // items
-    const iRes = await sb
-      .from("order_items")
-      .select("product_name, option_label, qty, line_total_cents")
-      .eq("order_id", orderId)
-      .order("created_at", { ascending: true });
-
-    // addresses (shipping)
-    const aRes = await sb
-      .from("addresses")
-      .select("type, first_name, last_name, address1, address2, city, postal_code, country, phone, email")
-      .eq("order_id", orderId);
-
-    $("detail-meta").textContent =
-      `ID: ${o.id} • ${fmtDate(o.created_at)} • Statut: ${o.status} • Livraison: ${o.shipping_method || "-"}`;
-
-    if(iRes.error){
-      $("detail-items").innerHTML = `<tr><td colspan="2" class="muted" style="padding:10px">Erreur items: ${escapeHtml(iRes.error.message||"")}</td></tr>`;
-    } else {
-      $("detail-items").innerHTML = (iRes.data || []).map(it => {
-        const label = [it.product_name, it.option_label ? `(${it.option_label})` : "", `x${it.qty}`].filter(Boolean).join(" ");
-        return `
-          <tr>
-            <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10)">${escapeHtml(label)}</td>
-            <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10);text-align:right;font-weight:900">${euroCents(it.line_total_cents)}</td>
-          </tr>
-        `;
-      }).join("") || `<tr><td colspan="2" class="muted" style="padding:10px">Aucun item</td></tr>`;
-    }
-
-    // address render
-    if(!aRes.error){
-      const shipping = (aRes.data || []).find(x => x.type === "shipping") || (aRes.data || [])[0];
-      if(shipping){
-        $("detail-addr").innerHTML = `
-          <div style="font-weight:900;margin-bottom:6px">Adresse livraison</div>
-          <div class="muted">
-            ${escapeHtml(shipping.first_name||"")} ${escapeHtml(shipping.last_name||"")}<br>
-            ${escapeHtml(shipping.address1||"")}<br>
-            ${shipping.address2 ? escapeHtml(shipping.address2) + "<br>" : ""}
-            ${escapeHtml(shipping.postal_code||"")} ${escapeHtml(shipping.city||"")}<br>
-            ${escapeHtml(shipping.country||"")}<br>
-            ${shipping.phone ? "📞 " + escapeHtml(shipping.phone) + "<br>" : ""}
-            ✉️ ${escapeHtml(shipping.email||"")}
-          </div>
-        `;
-      }
-    }
-
-    $("detail-total").textContent = `Total: ${euroCents(o.total_cents)} (Sous-total ${euroCents(o.subtotal_cents)} + Livraison ${euroCents(o.shipping_cents)})`;
+  if(!user){
+    if(who) who.innerHTML = `Non connecté.`;
+    if(authBox) authBox.style.display = "";
+    if(logoutBtn) logoutBtn.style.display = "none";
+    renderEmpty();
+    return;
   }
 
-  $("close-detail").addEventListener("click", () => {
-    $("order-detail").style.display = "none";
-  });
+  // Connecté
+  if(authBox) authBox.style.display = "none";
+  if(logoutBtn) logoutBtn.style.display = "";
+  if(who) who.innerHTML = `Connecté : <strong>${escapeHtml(user.email || "")}</strong>`;
 
-  logoutBtn.addEventListener("click", async () => {
-    await sb.auth.signOut();
-    showMsg("ok", "Déconnecté ✔");
-    await refreshSessionUI();
-  });
+  // Charge orders du user
+  const ordersRes = await sb
+    .from("orders")
+    .select("id, status, currency, subtotal_cents, shipping_cents, total_cents, shipping_method, note, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if(ordersRes.error){
+    showMsg("err", "Impossible de lire les commandes (RLS/policies).<br>" + escapeHtml(ordersRes.error.message));
+    renderEmpty();
+    return;
+  }
+
+  const orders = ordersRes.data || [];
+  if(orders.length === 0){
     hideMsg();
-    btn.disabled = true;
+    showMsg("ok","Aucune commande pour le moment. 🔥");
+    renderEmpty();
+    return;
+  }
 
-    try{
-      const email = $("email").value.trim().toLowerCase();
-      const password = $("password").value;
-      const first_name = $("first_name").value.trim();
-      const last_name = $("last_name").value.trim();
-      const phone = $("phone").value.trim();
+  // Items (1 requête)
+  const orderIds = orders.map(o => o.id);
+  const itemsRes = await sb
+    .from("order_items")
+    .select("order_id, product_name, option_label, qty, unit_price_cents, line_total_cents")
+    .in("order_id", orderIds)
+    .order("order_id", { ascending: false });
 
-      if(!email || !password) throw new Error("Email et mot de passe requis.");
+  if(itemsRes.error){
+    showMsg("err", "Commandes OK mais items bloqués (RLS/policies).<br>" + escapeHtml(itemsRes.error.message));
+  }
 
-      const mode = currentMode();
-
-      if(mode === "signup"){
-        const res = await sb.auth.signUp({ email, password });
-        if(res.error) throw res.error;
-
-        // si confirm email est ON, session peut être null : on tente login direct pour dev
-        const { data: ses } = await sb.auth.getSession();
-        if(!ses?.session){
-          const login = await sb.auth.signInWithPassword({ email, password });
-          if(login.error) throw login.error;
-        }
-      } else {
-        const res = await sb.auth.signInWithPassword({ email, password });
-        if(res.error) throw res.error;
-      }
-
-      const { data: sessionData } = await sb.auth.getSession();
-      const user = sessionData?.session?.user;
-      if(!user) throw new Error("Session introuvable. (Confirm email activé ?)");
-
-      // upsert profile (safe)
-      const up = await sb.from("profiles").upsert({
-        id: user.id,
-        email,
-        first_name: first_name || null,
-        last_name: last_name || null,
-        phone: phone || null
-      }, { onConflict: "id" });
-
-      if(up.error) throw up.error;
-
-      showMsg("ok", "Connecté ✔");
-      await refreshSessionUI();
-
-    } catch(err){
-      showMsg("err", escapeHtml(err?.message || "Erreur inconnue"));
-    } finally {
-      btn.disabled = false;
-      syncMode();
-    }
+  const items = itemsRes.data || [];
+  const byOrder = new Map();
+  items.forEach(it => {
+    if(!byOrder.has(it.order_id)) byOrder.set(it.order_id, []);
+    byOrder.get(it.order_id).push(it);
   });
 
-  // auto refresh on load
-  await refreshSessionUI();
+  renderOrders(orders, byOrder);
 }
 
-function escapeHtml(s){
-  return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+function renderEmpty(){
+  const box = document.getElementById("orders");
+  if(box) box.innerHTML = "";
+}
+
+function statusTag(status){
+  const s = (status || "new").toLowerCase();
+  if(s.includes("new")) return `<span class="tag new">NEW</span>`;
+  if(s.includes("paid")) return `<span class="tag paid">PAID</span>`;
+  if(s.includes("ship")) return `<span class="tag shipped">SHIPPED</span>`;
+  if(s.includes("cancel")) return `<span class="tag cancelled">CANCELLED</span>`;
+  return `<span class="tag">${escapeHtml(status || "—")}</span>`;
+}
+
+function renderOrders(orders, byOrder){
+  const box = document.getElementById("orders");
+  if(!box) return;
+
+  box.innerHTML = orders.map(o => {
+    const its = byOrder.get(o.id) || [];
+    const itemsHtml = its.length
+      ? `<div class="items">` + its.map(it => {
+          const opt = it.option_label ? ` • ${escapeHtml(it.option_label)}` : "";
+          return `
+            <div class="item">
+              <div>
+                <strong>${escapeHtml(it.product_name || "Produit")}</strong>
+                <div class="muted-sm">${opt} • x ${Number(it.qty || 1)}</div>
+              </div>
+              <div class="right">
+                <div style="font-weight:900">${euroFromCents(it.line_total_cents)}</div>
+                <div class="muted-sm">${euroFromCents(it.unit_price_cents)} / u</div>
+              </div>
+            </div>
+          `;
+        }).join("") + `</div>`
+      : `<div class="muted-sm" style="margin-top:10px;">Aucun item trouvé.</div>`;
+
+    const meta = `
+      <div class="order-meta">
+        ${statusTag(o.status)}
+        <span>Commande: <strong>#${escapeHtml(o.id)}</strong></span>
+        <span>•</span>
+        <span>${escapeHtml(fmtDate(o.created_at))}</span>
+      </div>
+    `;
+
+    const totals = `
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:10px;">
+        <div class="muted-sm">
+          Sous-total: <strong>${euroFromCents(o.subtotal_cents)}</strong> •
+          Livraison: <strong>${euroFromCents(o.shipping_cents)}</strong> •
+          Méthode: <strong>${escapeHtml(o.shipping_method || "—")}</strong>
+        </div>
+        <div style="font-weight:900;font-size:1.05rem;">
+          Total: ${euroFromCents(o.total_cents)}
+        </div>
+      </div>
+    `;
+
+    const note = o.note ? `<div class="notice muted-sm" style="margin-top:10px;">Note: ${escapeHtml(o.note)}</div>` : "";
+
+    return `
+      <section class="panel-card">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Commande</strong>
+          <span class="muted-sm">${escapeHtml(o.currency || "EUR")}</span>
+        </div>
+        <div class="bd">
+          ${meta}
+          ${totals}
+          ${itemsHtml}
+          ${note}
+        </div>
+      </section>
+    `;
+  }).join("");
 }
