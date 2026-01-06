@@ -5,9 +5,9 @@
    - Compatible avec ton panier localStorage (store.js)
    ========================================= */
 
-// 1) ✅ RENSEIGNE ICI
-const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";     // ex: https://xxxx.supabase.co
-const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM"; // sb_publishable_...
+// ✅ RENSEIGNÉ (OK POUR FRONT)
+const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
 
 // 2) Charger supabase-js depuis CDN (sans build)
 (function loadSupabaseCDN(){
@@ -71,12 +71,9 @@ async function initCheckout(){
   const authRadios = document.querySelectorAll('input[name="authMode"]');
 
   function syncAuthMode(){
-    const mode = document.querySelector('input[name="authMode"]:checked')?.value || "signup";
-    // Compte obligatoire : dans les 2 modes, mdp requis (signup / login)
-    passwordBox.style.display = "block";
-    passwordInp.required = true;
-
-    // Petit texte dans le header du bloc
+    // On garde le mdp requis pour signup & login (compte obligatoire)
+    if(passwordBox) passwordBox.style.display = "block";
+    if(passwordInp) passwordInp.required = true;
     hideMsg();
   }
   authRadios.forEach(r => r.addEventListener("change", syncAuthMode));
@@ -110,9 +107,10 @@ async function initCheckout(){
         authRes = await sb.auth.signUp({ email, password });
         if(authRes.error) throw authRes.error;
 
-        // Si email confirmation activée, session peut être null
-        // On tente une connexion directe pour simplifier le test
-        if(!authRes.data.session){
+        // Si confirm email est activé, session peut être null.
+        // On tente une connexion directe pour éviter blocage en dev.
+        const { data: s0 } = await sb.auth.getSession();
+        if(!s0?.session){
           const loginRes = await sb.auth.signInWithPassword({ email, password });
           if(loginRes.error) throw loginRes.error;
         }
@@ -123,9 +121,12 @@ async function initCheckout(){
 
       const { data: sessionData } = await sb.auth.getSession();
       const user = sessionData?.session?.user;
-      if(!user) throw new Error("Impossible de récupérer la session utilisateur. Vérifie Auth Settings (confirm email peut bloquer).");
 
-      // 2) Update profile (first/last/phone)
+      if(!user){
+        throw new Error("Session introuvable. Si 'Confirm email' est activé, confirme ton email puis reconnecte-toi.");
+      }
+
+      // 2) Update profile
       const profile = {
         id: user.id,
         email,
@@ -134,8 +135,7 @@ async function initCheckout(){
         phone: document.getElementById("phone").value.trim(),
       };
 
-      // RLS: tu as policy insert/update own, + trigger auto profile (email).
-      // On fait un upsert (insert si absent, update si présent)
+      // Upsert (insert si absent, update si présent)
       const up = await sb.from("profiles").upsert(profile, { onConflict: "id" });
       if(up.error) throw up.error;
 
@@ -215,16 +215,13 @@ async function initCheckout(){
 
       // 6) Clear cart + success
       if(typeof setCart === "function") setCart([]);
-      showMsg("ok", `Commande enregistrée ✅ (ID: ${orderId})<br>Tu peux la voir dans Supabase → Table Editor → <strong>orders</strong>.`);
+      showMsg("ok", `Commande enregistrée ✅ (ID: <strong>${orderId}</strong>)<br>Tu peux la voir dans Supabase → Table Editor → <strong>orders</strong>.`);
       btn.textContent = "Commande envoyée ✔";
       btn.disabled = true;
 
-      // Option: rediriger vers une page merci
-      // setTimeout(()=> location.href = "index.html", 1200);
-
     } catch (err) {
       console.error(err);
-      showMsg("err", (err?.message || "Erreur inconnue") + "<br><span class='small-muted'>Astuce: si tu as laissé 'Confirm email' activé, la session peut être vide après signUp. Désactive-le pour tester.</span>");
+      showMsg("err", (err?.message || "Erreur inconnue"));
       btn.disabled = false;
       btn.textContent = "Commander";
     }
@@ -284,3 +281,4 @@ function renderSummary(cart){
   document.getElementById("subtotal").textContent = euro(subtotalCents / 100);
   document.getElementById("total").textContent = euro(totalCents / 100);
 }
+
