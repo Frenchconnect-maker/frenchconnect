@@ -9,12 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="assets/css/style.css?v=20260105" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260106" />
 
   <style>
-    /* Checkout layout (ne touche pas au reste du design) */
-    .checkout-wrap{max-width:1200px;margin:0 auto;padding:18px}
-    .checkout-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+    .wrap-max{max-width:1200px;margin:0 auto;padding:18px}
+    .checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
     @media (max-width: 980px){ .checkout-grid{grid-template-columns:1fr} }
 
     .panel-card{
@@ -27,38 +26,57 @@
     .panel-card .hd{
       padding:14px 14px 10px;
       border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
     }
     .panel-card .bd{padding:14px}
-    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width: 640px){ .field-row{grid-template-columns:1fr} }
-    .field{display:flex;flex-direction:column;gap:6px;margin:10px 0}
-    .field label{font-weight:700}
-    .field input,.field select,.field textarea{
-      padding:10px 12px;border-radius:12px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.03);
-      color:#fff;
-    }
-    .small-muted{color: rgba(255,255,255,.7); font-size:.92rem}
-    .order-table{width:100%;border-collapse:collapse;font-size:.95rem}
-    .order-table th,.order-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.10);vertical-align:top}
-    .order-table th{text-align:left;color:rgba(255,255,255,.75);font-weight:800}
-    .order-lines .row{display:flex;gap:10px;justify-content:space-between}
-    .sum-line{display:flex;justify-content:space-between;gap:10px;margin:8px 0}
-    .sum-line strong{font-weight:900}
-    .radio{display:flex;gap:10px;align-items:flex-start;margin:10px 0;padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(0,0,0,.18)}
-    .radio input{margin-top:3px}
-    .danger{color:#ff7b7b}
-    .ok{color:#7bffb2}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
-    .ghost-link{color:rgba(255,255,255,.85);text-decoration:none}
-    .ghost-link:hover{color:#fff;text-decoration:underline}
+
+    .muted-sm{color: rgba(255,255,255,.70); font-size:.92rem}
     .notice{
       margin-top:10px;padding:10px 12px;border-radius:12px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.18);
     }
+    .danger{color:#ff7b7b}
+    .ok{color:#7bffb2}
+
+    .field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+    .field label{font-weight:900;letter-spacing:.3px}
+    .field input, .field textarea, .field select{
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.03);
+      color:#fff;
+    }
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.10);vertical-align:top}
+    th{font-size:.9rem;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.75);text-align:left}
+    .totals{display:grid;gap:8px;margin-top:12px}
+    .totals .row{display:flex;justify-content:space-between;gap:10px}
+    .totals .row strong{font-weight:1000}
+
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+      font-size:.78rem;
+      white-space:nowrap;
+    }
+
+    .radio-line{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      margin-top:8px;
+    }
+    .radio-line label{display:flex;gap:10px;align-items:center;font-weight:800}
+    .radio-line input{transform:scale(1.1)}
   </style>
 </head>
 
@@ -78,7 +96,6 @@
         <a href="shop.html">Boutique</a>
         <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
         <a href="account.html">Mon compte</a>
-        <a href="contact.html">Contact</a>
       </nav>
 
       <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
@@ -97,216 +114,186 @@
       <div class="links">
         <a href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
-        <a href="shop.html?cat=fleurs">Fleurs</a>
-        <a href="shop.html?cat=resines">Résines</a>
-        <a href="shop.html?cat=extraits">Extraits</a>
-        <a href="shop.html?cat=prerolls">Pre Rolls</a>
         <a href="cart.html">Panier</a>
         <a href="account.html">Mon compte</a>
-        <a href="contact.html">Contact</a>
       </div>
     </div>
   </div>
 
-  <main class="checkout-wrap">
-    <h1 style="margin:6px 0 6px;">Détails de facturation</h1>
-    <p class="small-muted" style="margin:0 0 14px;">
-      Compte obligatoire : tes infos seront enregistrées pour suivre tes commandes.
-    </p>
+  <main class="wrap-max">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div>
+        <h1 style="margin:6px 0;">Finaliser la commande</h1>
+        <div class="muted-sm">
+          <span class="chip" id="cart-mini">—</span>
+          <span class="chip" id="auth-mini">Non connecté</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn ghost" href="cart.html">Retour panier</a>
+        <button class="btn" id="logoutBtn" type="button" style="display:none;">Déconnexion</button>
+      </div>
+    </div>
 
-    <div class="checkout-grid">
-      <!-- LEFT: Billing / Account -->
-      <section class="panel-card">
+    <div id="msg" class="notice" style="display:none;"></div>
+
+    <div class="checkout-grid" style="margin-top:14px;">
+      <!-- ✅ COLONNE GAUCHE : Connexion -->
+      <section class="panel-card" id="login-card">
         <div class="hd">
-          <strong style="letter-spacing:.6px;text-transform:uppercase;">Informations client</strong>
-          <a class="ghost-link" href="cart.html">← Retour panier</a>
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">J’ai déjà un compte</strong>
+          <span class="muted-sm">Connexion rapide</span>
         </div>
         <div class="bd">
-          <!-- Auth mode -->
-          <div class="notice">
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-              <label style="display:flex;gap:8px;align-items:center;margin:0;">
-                <input type="radio" name="authMode" value="signup" checked>
-                <strong>Créer un compte</strong>
-              </label>
-              <label style="display:flex;gap:8px;align-items:center;margin:0;">
-                <input type="radio" name="authMode" value="login">
-                <strong>J’ai déjà un compte</strong>
-              </label>
-            </div>
-            <div class="small-muted" style="margin-top:8px;">
-              Si tu as déjà un compte, connecte-toi pour voir tes commandes et adresses.
-            </div>
-          </div>
-
-          <form id="checkout-form" autocomplete="on">
-            <div class="field-row">
-              <div class="field">
-                <label for="first_name">Prénom *</label>
-                <input id="first_name" required />
-              </div>
-              <div class="field">
-                <label for="last_name">Nom *</label>
-                <input id="last_name" required />
-              </div>
-            </div>
-
+          <form id="login-form">
             <div class="field">
-              <label for="company">Nom de l’entreprise (facultatif)</label>
-              <input id="company" />
+              <label>Email *</label>
+              <input id="login-email" type="email" required placeholder="ex: client@email.com">
             </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="email">Adresse e-mail *</label>
-                <input id="email" type="email" required />
-              </div>
-              <div class="field">
-                <label for="phone">Téléphone *</label>
-                <input id="phone" required />
-              </div>
-            </div>
-
-            <div class="field" id="password_box">
-              <label for="password">Mot de passe *</label>
-              <input id="password" type="password" minlength="6" required />
-              <div class="small-muted">6 caractères minimum.</div>
-            </div>
-
-            <hr style="border:0;border-top:1px solid rgba(255,255,255,.10);margin:14px 0;">
-
             <div class="field">
-              <label for="country">Pays / région *</label>
-              <select id="country" required>
-                <option value="France">France</option>
-                <option value="Belgique">Belgique</option>
-                <option value="Suisse">Suisse</option>
-                <option value="Luxembourg">Luxembourg</option>
-                <option value="Italie">Italie</option>
-                <option value="Espagne">Espagne</option>
-                <option value="Allemagne">Allemagne</option>
-              </select>
+              <label>Mot de passe *</label>
+              <input id="login-password" type="password" required placeholder="••••••••">
             </div>
-
-            <div class="field">
-              <label for="address1">Numéro et nom de rue *</label>
-              <input id="address1" required />
+            <div class="btn-row" style="margin-top:12px;">
+              <button class="btn" id="login-btn" type="submit">Se connecter</button>
+              <a class="btn ghost" href="account.html">Mot de passe oublié ?</a>
             </div>
-
-            <div class="field">
-              <label for="address2">Bâtiment, appartement, lot, etc. (facultatif)</label>
-              <input id="address2" />
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="city">Ville *</label>
-                <input id="city" required />
-              </div>
-              <div class="field">
-                <label for="postal_code">Code postal *</label>
-                <input id="postal_code" required />
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="note">Notes de commande (facultatif)</label>
-              <textarea id="note" rows="3" placeholder="Instructions de livraison…"></textarea>
-            </div>
-
-            <div id="msg" class="notice" style="display:none;"></div>
-
-            <div class="top-actions">
-              <button id="place-order" class="btn" type="submit">Commander</button>
-              <a class="btn ghost" href="shop.html">Retour boutique</a>
+            <div class="muted-sm" style="margin-top:10px;">
+              Si la confirmation email est activée, pense à confirmer ton email avant de te connecter.
             </div>
           </form>
         </div>
       </section>
 
-      <!-- RIGHT: Order summary -->
-      <aside class="panel-card">
+      <!-- ✅ COLONNE DROITE : Compte + Livraison + Commande -->
+      <section class="panel-card" id="order-card">
         <div class="hd">
-          <strong style="letter-spacing:.6px;text-transform:uppercase;">Votre commande</strong>
-          <span class="small-muted" id="cart-mini"></span>
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Livraison & commande</strong>
+          <span class="muted-sm">Compte + adresse</span>
         </div>
-
         <div class="bd">
-          <table class="order-table">
-            <thead>
-              <tr>
-                <th>Produit</th>
-                <th style="text-align:right;">Sous-total</th>
-              </tr>
-            </thead>
-            <tbody id="order-lines"></tbody>
-          </table>
-
-          <div style="margin-top:14px;">
-            <div class="sum-line">
-              <span class="small-muted">Sous-total</span>
-              <strong id="subtotal">0,00 €</strong>
+          <!-- Bloc création de compte (visible seulement si NON connecté) -->
+          <div id="signup-cred-box" style="margin-bottom:12px;">
+            <div class="notice muted-sm" style="margin-top:0;">
+              <strong>Pas de compte ?</strong> Crée-le ici (1ère commande). Si la confirmation email est activée, tu devras confirmer l’email puis revenir te connecter.
             </div>
 
-            <div style="margin:12px 0 6px; font-weight:900;">Expédition</div>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="relay" data-cents="1000" checked>
-              <div>
-                <div><strong>Point Relais colis 100% assuré</strong> : 10,00 €</div>
-                <div class="small-muted">Sélection du point de retrait (à intégrer plus tard).</div>
+            <div class="grid-2">
+              <div class="field">
+                <label>Email *</label>
+                <input id="signup-email" type="email" placeholder="ex: client@email.com">
               </div>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="signature" data-cents="1200">
-              <div>
-                <div><strong>Livraison signature colis 100% assuré</strong> : 12,00 €</div>
-                <div class="small-muted">Livraison à domicile avec signature.</div>
+              <div class="field">
+                <label>Mot de passe *</label>
+                <input id="signup-password" type="password" placeholder="••••••••">
               </div>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="swiss" data-cents="1754">
-              <div>
-                <div><strong>Suisse</strong> : 17,54 €</div>
-              </div>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="lux" data-cents="1000">
-              <div>
-                <div><strong>Luxembourg colis 100% assuré</strong> : 10,00 €</div>
-              </div>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="eu" data-cents="2000">
-              <div>
-                <div><strong>Italie / Espagne / Allemagne</strong> : 20,00 €</div>
-              </div>
-            </label>
-
-            <hr style="border:0;border-top:1px solid rgba(255,255,255,.10);margin:14px 0;">
-
-            <div class="sum-line" style="font-size:1.05rem;">
-              <span>Total</span>
-              <strong id="total">0,00 €</strong>
-            </div>
-
-            <div style="margin-top:14px;">
-              <div style="font-weight:900;">Paiement</div>
-              <div class="notice small-muted">
-                Paiement carte / Stripe : on branche après. Là, on valide le flux commande + comptes + back-office.
-              </div>
-            </div>
-
-            <div class="notice small-muted">
-              Vos données personnelles sont utilisées pour traiter la commande et créer votre compte.
             </div>
           </div>
+
+          <form id="order-form">
+            <div class="grid-2">
+              <div class="field">
+                <label>Prénom *</label>
+                <input id="first_name" type="text" required placeholder="Prénom">
+              </div>
+              <div class="field">
+                <label>Nom *</label>
+                <input id="last_name" type="text" required placeholder="Nom">
+              </div>
+              <div class="field">
+                <label>Téléphone *</label>
+                <input id="phone" type="text" required placeholder="06…">
+              </div>
+              <div class="field">
+                <label>Société</label>
+                <input id="company" type="text" placeholder="(optionnel)">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label>Pays *</label>
+                <input id="country" type="text" required value="France">
+              </div>
+              <div class="field">
+                <label>Adresse *</label>
+                <input id="address1" type="text" required placeholder="N°, rue…">
+              </div>
+              <div class="field">
+                <label>Complément</label>
+                <input id="address2" type="text" placeholder="Bâtiment, étage…">
+              </div>
+              <div class="field">
+                <label>Ville *</label>
+                <input id="city" type="text" required placeholder="Ville">
+              </div>
+              <div class="field">
+                <label>Code postal *</label>
+                <input id="postal_code" type="text" required placeholder="75000">
+              </div>
+              <div class="field">
+                <label>Note (optionnel)</label>
+                <input id="note" type="text" placeholder="Infos livraison…">
+              </div>
+            </div>
+
+            <div style="margin-top:12px;">
+              <div style="font-weight:1000;text-transform:uppercase;letter-spacing:.6px;">Livraison</div>
+
+              <div class="radio-line">
+                <label>
+                  <input type="radio" name="shipping" value="relay" data-cents="0" checked>
+                  Point relais
+                </label>
+                <div style="font-weight:1000;">0,00 €</div>
+              </div>
+
+              <div class="radio-line">
+                <label>
+                  <input type="radio" name="shipping" value="home" data-cents="500">
+                  Domicile
+                </label>
+                <div style="font-weight:1000;">5,00 €</div>
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top:14px;">
+              <button class="btn" id="place-order" type="submit">Commander</button>
+              <a class="btn ghost" href="shop.html">Ajouter des produits</a>
+            </div>
+          </form>
         </div>
-      </aside>
+      </section>
+
+      <!-- ✅ Récap commande (pleine largeur) -->
+      <section class="panel-card" style="grid-column:1 / -1;">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Récapitulatif</strong>
+          <span class="muted-sm">Détail panier</span>
+        </div>
+        <div class="bd">
+          <div style="overflow:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Produit</th>
+                  <th style="text-align:right;">Total</th>
+                </tr>
+              </thead>
+              <tbody id="order-lines"></tbody>
+            </table>
+          </div>
+
+          <div class="totals">
+            <div class="row"><span>Sous-total</span><strong id="subtotal">—</strong></div>
+            <div class="row"><span>Total</span><strong id="total">—</strong></div>
+          </div>
+
+          <div class="muted-sm" style="margin-top:10px;">
+            Paiement : tu peux garder ce système “commande enregistrée” puis paiement plus tard, ou on branche Stripe ensuite.
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -314,31 +301,37 @@
     <div class="copy wrap">© <span id="year"></span> FrenchConnect</div>
   </footer>
 
-  <!-- Burger JS (safe) -->
   <script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-  (function(){
-    const toggle = document.getElementById("navToggle");
-    const menu   = document.getElementById("mobileMenu");
-    const close  = document.getElementById("menuClose");
-    const back   = document.getElementById("menuBackdrop");
-    if(!toggle || !menu) return;
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    function openMenu(){ document.body.classList.add("menu-open"); menu.classList.add("open"); toggle.setAttribute("aria-expanded","true"); }
-    function closeMenu(){ document.body.classList.remove("menu-open"); menu.classList.remove("open"); toggle.setAttribute("aria-expanded","false"); }
+    // burger
+    (function(){
+      const toggle = document.getElementById("navToggle");
+      const menu   = document.getElementById("mobileMenu");
+      const close  = document.getElementById("menuClose");
+      const back   = document.getElementById("menuBackdrop");
+      if(!toggle || !menu) return;
 
-    toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
-    if(close) close.addEventListener("click", closeMenu);
-    if(back)  back.addEventListener("click", closeMenu);
-    document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
-    menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
-  })();
+      function openMenu(){
+        document.body.classList.add("menu-open");
+        menu.classList.add("open");
+        toggle.setAttribute("aria-expanded","true");
+      }
+      function closeMenu(){
+        document.body.classList.remove("menu-open");
+        menu.classList.remove("open");
+        toggle.setAttribute("aria-expanded","false");
+      }
+
+      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
+      if(close) close.addEventListener("click", closeMenu);
+      if(back)  back.addEventListener("click", closeMenu);
+      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
+      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
+    })();
   </script>
 
-  <!-- store.js (cart count, helpers) -->
-  <script src="assets/js/store.js?v=20260105"></script>
-
-  <!-- checkout logic -->
-  <script src="assets/js/checkout.js?v=20260105"></script>
+  <script src="assets/js/store.js?v=20260106"></script>
+  <script src="assets/js/checkout.js?v=20260106"></script>
 </body>
 </html>
