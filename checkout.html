@@ -2,248 +2,337 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>FrenchConnect — Checkout</title>
-  <link rel="stylesheet" href="style.css?v=20260106" />
-</head>
-<body>
 
-  <div class="age-banner">Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%</div>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/style.css?v=20260106" />
+
+  <style>
+    .wrap-max{max-width:1200px;margin:0 auto;padding:18px}
+    .checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+    @media (max-width: 980px){ .checkout-grid{grid-template-columns:1fr} }
+
+    .panel-card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      overflow:hidden;
+      backdrop-filter: blur(6px);
+    }
+    .panel-card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    }
+    .panel-card .bd{padding:14px}
+
+    .muted-sm{color: rgba(255,255,255,.70); font-size:.92rem}
+    .notice{
+      margin-top:10px;padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .danger{color:#ff7b7b}
+    .ok{color:#7bffb2}
+
+    .field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+    .field label{font-weight:900;letter-spacing:.3px}
+    .field input, .field textarea, .field select{
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.03);
+      color:#fff;
+    }
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.10);vertical-align:top}
+    th{font-size:.9rem;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.75);text-align:left}
+    .totals{display:grid;gap:8px;margin-top:12px}
+    .totals .row{display:flex;justify-content:space-between;gap:10px}
+    .totals .row strong{font-weight:1000}
+
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+      font-size:.78rem;
+      white-space:nowrap;
+    }
+
+    .radio-line{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      margin-top:8px;
+    }
+    .radio-line label{display:flex;gap:10px;align-items:center;font-weight:800}
+    .radio-line input{transform:scale(1.1)}
+  </style>
+</head>
+
+<body>
+  <div class="age-banner">
+    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
+  </div>
 
   <header class="site-header">
     <div class="wrap">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div style="font-weight:900;color:#39ff14">FrenchConnect</div>
-      </div>
+      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
+        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
+      </a>
 
       <nav class="nav" aria-label="Navigation principale">
-        <a href="/frenchconnect/index.html">ACCUEIL</a>
-        <a href="/frenchconnect/shop.html">BOUTIQUE</a>
-        <a class="cart-link" href="/frenchconnect/cart.html">PANIER <span id="cart-count">0</span></a>
-        <a href="/frenchconnect/account.html">MON COMPTE</a>
-        <a href="/frenchconnect/contact.html">CONTACT</a>
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+        <a href="account.html">Mon compte</a>
       </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
-  <main class="container" style="max-width:1200px;margin:0 auto;">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-      <h1 style="margin:0;">Détails de facturation</h1>
-      <a class="btn ghost" href="/frenchconnect/cart.html">← Retour panier</a>
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="backdrop" id="menuBackdrop"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="head">
+        <strong>FRENCHCONNECT</strong>
+        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
+      </div>
+      <div class="links">
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a href="cart.html">Panier</a>
+        <a href="account.html">Mon compte</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap-max">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div>
+        <h1 style="margin:6px 0;">Finaliser la commande</h1>
+        <div class="muted-sm">
+          <span class="chip" id="cart-mini">—</span>
+          <span class="chip" id="auth-mini">Non connecté</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn ghost" href="cart.html">Retour panier</a>
+        <button class="btn" id="logoutBtn" type="button" style="display:none;">Déconnexion</button>
+      </div>
     </div>
 
-    <div class="muted" style="margin-bottom:14px;">
-      Compte obligatoire : tes infos seront enregistrées pour suivre tes commandes.
-    </div>
+    <div id="msg" class="notice" style="display:none;"></div>
 
-    <div class="grid" style="grid-template-columns: 1.15fr .85fr; gap:18px;">
-      <!-- LEFT -->
-      <section class="card" style="padding:16px;">
-        <form id="checkout-form">
-          <div style="font-weight:900;margin-bottom:8px;">Informations client</div>
-
-          <div style="display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px;">
-            <label class="radio" style="display:flex;align-items:center;gap:8px;">
-              <input type="radio" name="authMode" value="signup" checked>
-              <span>Créer un compte</span>
-            </label>
-            <label class="radio" style="display:flex;align-items:center;gap:8px;">
-              <input type="radio" name="authMode" value="login">
-              <span>J’ai déjà un compte</span>
-            </label>
-          </div>
-
-          <div id="msg" class="panel mini" style="display:none;margin:0 0 12px;"></div>
-
-          <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div>
-              <label class="muted" for="first_name">Prénom *</label>
-              <input id="first_name" type="text" required style="width:100%;padding:10px 12px;border-radius:12px;">
+    <div class="checkout-grid" style="margin-top:14px;">
+      <!-- ✅ COLONNE GAUCHE : Connexion -->
+      <section class="panel-card" id="login-card">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">J’ai déjà un compte</strong>
+          <span class="muted-sm">Connexion rapide</span>
+        </div>
+        <div class="bd">
+          <form id="login-form">
+            <div class="field">
+              <label>Email *</label>
+              <input id="login-email" type="email" required placeholder="ex: client@email.com">
             </div>
-            <div>
-              <label class="muted" for="last_name">Nom *</label>
-              <input id="last_name" type="text" required style="width:100%;padding:10px 12px;border-radius:12px;">
+            <div class="field">
+              <label>Mot de passe *</label>
+              <input id="login-password" type="password" required placeholder="••••••••">
             </div>
-          </div>
-
-          <div style="margin-bottom:10px;">
-            <label class="muted" for="company">Nom de l’entreprise (facultatif)</label>
-            <input id="company" type="text" style="width:100%;padding:10px 12px;border-radius:12px;">
-          </div>
-
-          <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div>
-              <label class="muted" for="email">Adresse e-mail *</label>
-              <input id="email" type="email" required autocomplete="email" style="width:100%;padding:10px 12px;border-radius:12px;">
+            <div class="btn-row" style="margin-top:12px;">
+              <button class="btn" id="login-btn" type="submit">Se connecter</button>
+              <a class="btn ghost" href="account.html">Mot de passe oublié ?</a>
             </div>
-            <div>
-              <label class="muted" for="phone">Téléphone *</label>
-              <input id="phone" type="tel" required autocomplete="tel" style="width:100%;padding:10px 12px;border-radius:12px;">
+            <div class="muted-sm" style="margin-top:10px;">
+              Si la confirmation email est activée, pense à confirmer ton email avant de te connecter.
             </div>
-          </div>
-
-          <div id="password_box" style="margin-bottom:12px;">
-            <label class="muted" for="password">Mot de passe *</label>
-            <input id="password" type="password" minlength="6" required autocomplete="current-password"
-                   style="width:100%;padding:10px 12px;border-radius:12px;">
-            <div class="small-muted" style="margin-top:6px;">6 caractères minimum.</div>
-          </div>
-
-          <div style="font-weight:900;margin:14px 0 8px;">Adresse</div>
-
-          <div style="margin-bottom:10px;">
-            <label class="muted" for="country">Pays / région *</label>
-            <select id="country" required style="width:100%;padding:10px 12px;border-radius:12px;">
-              <option value="France" selected>France</option>
-              <option value="Belgique">Belgique</option>
-              <option value="Luxembourg">Luxembourg</option>
-              <option value="Suisse">Suisse</option>
-              <option value="Italie">Italie</option>
-              <option value="Espagne">Espagne</option>
-              <option value="Allemagne">Allemagne</option>
-              <option value="Portugal">Portugal</option>
-              <option value="Pays-Bas">Pays-Bas</option>
-              <option value="Autre">Autre</option>
-            </select>
-          </div>
-
-          <div style="margin-bottom:10px;">
-            <label class="muted" for="address1">Numéro et nom de rue *</label>
-            <input id="address1" type="text" required autocomplete="address-line1"
-                   style="width:100%;padding:10px 12px;border-radius:12px;"
-                   placeholder="Numéro de voie et nom de la rue">
-          </div>
-
-          <div style="margin-bottom:10px;">
-            <label class="muted" for="address2">Bâtiment, appartement, lot, etc. (facultatif)</label>
-            <input id="address2" type="text" autocomplete="address-line2"
-                   style="width:100%;padding:10px 12px;border-radius:12px;">
-          </div>
-
-          <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div>
-              <label class="muted" for="city">Ville *</label>
-              <input id="city" type="text" required autocomplete="address-level2"
-                     style="width:100%;padding:10px 12px;border-radius:12px;">
-            </div>
-            <div>
-              <label class="muted" for="postal_code">Code postal *</label>
-              <input id="postal_code" type="text" required autocomplete="postal-code"
-                     style="width:100%;padding:10px 12px;border-radius:12px;">
-            </div>
-          </div>
-
-          <div style="margin:14px 0 10px;">
-            <label class="muted" for="note">Notes de commande (facultatif)</label>
-            <textarea id="note" rows="3" style="width:100%;padding:10px 12px;border-radius:12px;"
-                      placeholder="Instructions de livraison…"></textarea>
-          </div>
-
-          <button id="place-order" class="btn" type="submit" style="width:100%;padding:12px 14px;">
-            Commander
-          </button>
-
-          <div style="margin-top:10px;text-align:center;">
-            <a class="btn ghost" href="/frenchconnect/shop.html">Retour boutique</a>
-          </div>
-        </form>
+          </form>
+        </div>
       </section>
 
-      <!-- RIGHT -->
-      <section class="card" style="padding:16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="font-weight:900;">Votre commande</div>
-          <div class="muted"><span id="cart-mini">0 article(s)</span></div>
+      <!-- ✅ COLONNE DROITE : Compte + Livraison + Commande -->
+      <section class="panel-card" id="order-card">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Livraison & commande</strong>
+          <span class="muted-sm">Compte + adresse</span>
         </div>
-
-        <div style="margin-top:12px;">
-          <table style="width:100%;border-collapse:collapse;">
-            <thead>
-              <tr>
-                <th style="text-align:left;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.12);">Produit</th>
-                <th style="text-align:right;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.12);">Sous-total</th>
-              </tr>
-            </thead>
-            <tbody id="order-lines"></tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:14px;">
-          <div class="sum-line" style="display:flex;justify-content:space-between;gap:10px;">
-            <span class="muted">Sous-total</span>
-            <strong id="subtotal">0,00 €</strong>
-          </div>
-
-          <!-- ✅ SHIPPING (MIS À JOUR) -->
-          <div style="margin:12px 0 6px; font-weight:900;">Expédition</div>
-
-          <div class="panel mini" style="margin:0 0 10px;">
-            <div class="small-muted" style="margin-bottom:10px;">
-              • <strong>Frais d'envoi</strong> à prendre en compte selon le transporteur 🚚<br>
-              • <strong>RESHIP</strong> : pour toute commande, renvoi 100% garanti en cas de souci 🛡️
+        <div class="bd">
+          <!-- Bloc création de compte (visible seulement si NON connecté) -->
+          <div id="signup-cred-box" style="margin-bottom:12px;">
+            <div class="notice muted-sm" style="margin-top:0;">
+              <strong>Pas de compte ?</strong> Crée-le ici (1ère commande). Si la confirmation email est activée, tu devras confirmer l’email puis revenir te connecter.
             </div>
 
-            <div style="font-weight:900; margin:8px 0 6px;">FR → FR 🇫🇷</div>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="fr_mondial_relay" data-cents="0" checked>
-              <span> Mondial Relay — <strong>0 €</strong> <span class="small-muted">(48/72h)</span></span>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="fr_colissimo" data-cents="1000">
-              <span> Colissimo — <strong>10 €</strong> <span class="small-muted">(48h)</span></span>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="fr_chronopost" data-cents="3000">
-              <span> Chronopost — <strong>30 €</strong> <span class="small-muted">(24h)</span></span>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="fr_ups" data-cents="1500">
-              <span> UPS — <strong>15 €</strong> <span class="small-muted">(48h)</span></span>
-            </label>
-
-            <div style="height:10px"></div>
-            <div style="font-weight:900; margin:8px 0 6px;">FR → EUROPE 🇪🇺</div>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="eu_inpost" data-cents="1500">
-              <span> InPost — <strong>15 €</strong> <span class="small-muted">(5/8j)</span></span>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="eu_national_post" data-cents="2000">
-              <span> National Post — <strong>20 €</strong> <span class="small-muted">(3/7j)</span></span>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="eu_chronopost_express" data-cents="6000">
-              <span> Chronopost Express — <strong>60 €</strong> <span class="small-muted">(48h)</span></span>
-            </label>
-
-            <label class="radio">
-              <input type="radio" name="shipping" value="eu_ups" data-cents="4000">
-              <span> UPS — <strong>40 €</strong> <span class="small-muted">(72h)</span></span>
-            </label>
-          </div>
-          <!-- /shipping -->
-
-          <div class="sum-line" style="display:flex;justify-content:space-between;gap:10px;margin-top:8px;">
-            <span class="muted">Total</span>
-            <strong id="total">0,00 €</strong>
+            <div class="grid-2">
+              <div class="field">
+                <label>Email *</label>
+                <input id="signup-email" type="email" placeholder="ex: client@email.com">
+              </div>
+              <div class="field">
+                <label>Mot de passe *</label>
+                <input id="signup-password" type="password" placeholder="••••••••">
+              </div>
+            </div>
           </div>
 
-          <div class="small-muted" style="margin-top:10px;">
-            Paiement : (à brancher ensuite sur Stripe / lien de paiement). Pour l’instant, on enregistre la commande dans Supabase.
+          <form id="order-form">
+            <div class="grid-2">
+              <div class="field">
+                <label>Prénom *</label>
+                <input id="first_name" type="text" required placeholder="Prénom">
+              </div>
+              <div class="field">
+                <label>Nom *</label>
+                <input id="last_name" type="text" required placeholder="Nom">
+              </div>
+              <div class="field">
+                <label>Téléphone *</label>
+                <input id="phone" type="text" required placeholder="06…">
+              </div>
+              <div class="field">
+                <label>Société</label>
+                <input id="company" type="text" placeholder="(optionnel)">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label>Pays *</label>
+                <input id="country" type="text" required value="France">
+              </div>
+              <div class="field">
+                <label>Adresse *</label>
+                <input id="address1" type="text" required placeholder="N°, rue…">
+              </div>
+              <div class="field">
+                <label>Complément</label>
+                <input id="address2" type="text" placeholder="Bâtiment, étage…">
+              </div>
+              <div class="field">
+                <label>Ville *</label>
+                <input id="city" type="text" required placeholder="Ville">
+              </div>
+              <div class="field">
+                <label>Code postal *</label>
+                <input id="postal_code" type="text" required placeholder="75000">
+              </div>
+              <div class="field">
+                <label>Note (optionnel)</label>
+                <input id="note" type="text" placeholder="Infos livraison…">
+              </div>
+            </div>
+
+            <div style="margin-top:12px;">
+              <div style="font-weight:1000;text-transform:uppercase;letter-spacing:.6px;">Livraison</div>
+
+              <div class="radio-line">
+                <label>
+                  <input type="radio" name="shipping" value="relay" data-cents="0" checked>
+                  Point relais
+                </label>
+                <div style="font-weight:1000;">0,00 €</div>
+              </div>
+
+              <div class="radio-line">
+                <label>
+                  <input type="radio" name="shipping" value="home" data-cents="500">
+                  Domicile
+                </label>
+                <div style="font-weight:1000;">5,00 €</div>
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top:14px;">
+              <button class="btn" id="place-order" type="submit">Commander</button>
+              <a class="btn ghost" href="shop.html">Ajouter des produits</a>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ✅ Récap commande (pleine largeur) -->
+      <section class="panel-card" style="grid-column:1 / -1;">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Récapitulatif</strong>
+          <span class="muted-sm">Détail panier</span>
+        </div>
+        <div class="bd">
+          <div style="overflow:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Produit</th>
+                  <th style="text-align:right;">Total</th>
+                </tr>
+              </thead>
+              <tbody id="order-lines"></tbody>
+            </table>
+          </div>
+
+          <div class="totals">
+            <div class="row"><span>Sous-total</span><strong id="subtotal">—</strong></div>
+            <div class="row"><span>Total</span><strong id="total">—</strong></div>
+          </div>
+
+          <div class="muted-sm" style="margin-top:10px;">
+            Paiement : tu peux garder ce système “commande enregistrée” puis paiement plus tard, ou on branche Stripe ensuite.
           </div>
         </div>
       </section>
     </div>
   </main>
 
+  <footer class="site-footer" style="margin-top: 34px;">
+    <div class="copy wrap">© <span id="year"></span> FrenchConnect</div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // burger
+    (function(){
+      const toggle = document.getElementById("navToggle");
+      const menu   = document.getElementById("mobileMenu");
+      const close  = document.getElementById("menuClose");
+      const back   = document.getElementById("menuBackdrop");
+      if(!toggle || !menu) return;
+
+      function openMenu(){
+        document.body.classList.add("menu-open");
+        menu.classList.add("open");
+        toggle.setAttribute("aria-expanded","true");
+      }
+      function closeMenu(){
+        document.body.classList.remove("menu-open");
+        menu.classList.remove("open");
+        toggle.setAttribute("aria-expanded","false");
+      }
+
+      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
+      if(close) close.addEventListener("click", closeMenu);
+      if(back)  back.addEventListener("click", closeMenu);
+      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
+      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
+    })();
+  </script>
+
   <script src="assets/js/store.js?v=20260106"></script>
   <script src="assets/js/checkout.js?v=20260106"></script>
 </body>
 </html>
+
