@@ -1,54 +1,62 @@
-
 /* =========================================
-   Admin Orders — Supabase
-   - Login
-   - Check profiles.admin = true
-   - List all orders
-   - Detail: items + shipping address
-   - Update status
+   Admin Orders — Supabase (GitHub Pages friendly)
+   - Connexion (email + mot de passe)
+   - Vérifie le flag admin dans public.profiles (colonne: is_admin boolean)
+   - Liste les commandes + items + adresses
    ========================================= */
 
+// 1) ✅ RENSEIGNE ICI (publishable only)
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-// IMPORTANT: utilise sb_publishable_..., PAS sb_secret
 const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
 
+// 2) Load supabase-js from CDN (no build)
 (function loadSupabaseCDN(){
   const s = document.createElement("script");
   s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   s.defer = true;
-  s.onload = initAdmin;
+  s.onload = () => initAdmin().catch(console.error);
   document.head.appendChild(s);
 })();
 
-function $(id){ return document.getElementById(id); }
+// ---------- helpers ----------
+const $ = (id) => document.getElementById(id);
 
-function showMsg(type, html){
+function escapeHtml(str){
+  return (""+(str ?? "")).replace(/[&<>"']/g, (m) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+function euroFromCents(c){
+  const n = (Number(c || 0) / 100);
+  return n.toFixed(2).replace(".", ",") + " €";
+}
+function fmtDate(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString("fr-FR");
+  }catch(e){ return iso || ""; }
+}
+function showMsg(type, text){
   const box = $("msg");
   if(!box) return;
   box.style.display = "block";
   box.innerHTML = `
-    <div style="font-weight:900;margin-bottom:6px">${type === "ok" ? "OK" : "Erreur"}</div>
-    <div class="muted">${html}</div>
+    <div class="${type === "ok" ? "ok" : "danger"}" style="font-weight:900;margin-bottom:6px;">
+      ${type === "ok" ? "OK" : "Erreur"}
+    </div>
+    <div>${text}</div>
   `;
-  box.style.border = "1px solid rgba(255,255,255,.14)";
-  box.style.borderRadius = "12px";
-  box.style.padding = "12px";
-  box.style.background = type === "ok" ? "rgba(34,197,94,.12)" : "rgba(239,68,68,.12)";
 }
-
 function hideMsg(){
   const box = $("msg");
   if(!box) return;
   box.style.display = "none";
-  box.innerHTML = "";
+  box.textContent = "";
 }
-
-function euroCents(c){ return (Number(c||0)/100).toFixed(2).replace(".", ",") + " €"; }
-function fmtDate(iso){ try { return new Date(iso).toLocaleString("fr-FR"); } catch { return iso; } }
 
 async function initAdmin(){
   if(!window.supabase){
-    showMsg("err", "Supabase n’a pas chargé (CDN).");
+    showMsg("err", "Supabase n’a pas chargé (CDN). Vérifie ta connexion.");
     return;
   }
   if(!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY.startsWith("sb_")){
@@ -58,268 +66,276 @@ async function initAdmin(){
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Cart count
-  try { if(typeof updateCartCount === "function") updateCartCount(); } catch(e){}
-
+  // DOM refs (match admin.html)
+  const loginBox  = $("login-box");
   const loginForm = $("login-form");
-  const loginBtn = $("login-btn");
-  const logoutBtn = $("logout-btn");
-  const refreshBtn = $("refresh-btn");
-  const panel = $("panel");
-  const adminInfo = $("admin-info");
+  const emailInp  = $("login-email");
+  const passInp   = $("login-password");
+  const logoutBtn = $("logoutBtn");
+  const refreshBtn= $("refreshBtn");
+  const qInp      = $("q");
+  const statusSel = $("status");
+  const ordersBox = $("orders");
+  const whoami    = $("whoami");
 
-  let currentAdminId = null;
-  let currentDetailOrderId = null;
+  // Guard: if admin.html missing something, avoid crash
+  if(!loginForm || !emailInp || !passInp || !ordersBox){
+    showMsg("err", "admin.html ne contient pas les éléments attendus (login-form / login-email / login-password / orders).");
+    return;
+  }
 
-  async function verifyAdmin(user){
-    const prof = await sb
-      .from("profiles")
-      .select("email, first_name, last_name, admin, is_admin")
+  function setLoggedOutUI(){
+    if(loginBox) loginBox.style.display = "block";
+    if(whoami) whoami.textContent = "Non connecté";
+    if(logoutBtn) logoutBtn.style.display = "none";
+    if(refreshBtn) refreshBtn.disabled = true;
+    ordersBox.innerHTML = `<p class="muted">Connecte-toi pour voir les commandes.</p>`;
+  }
+
+  function setLoggedInUI(userEmail){
+    if(loginBox) loginBox.style.display = "none";
+    if(whoami) whoami.textContent = userEmail || "Connecté";
+    if(logoutBtn) logoutBtn.style.display = "inline-flex";
+    if(refreshBtn) refreshBtn.disabled = false;
+  }
+
+  async function requireAdmin(user){
+    // On vérifie la colonne is_admin dans public.profiles
+    const prof = await sb.from("profiles")
+      .select("id,email,is_admin")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
-    if(prof.error) throw prof.error;
-    if(!(prof.data?.admin || prof.data?.is_admin)) return { ok:false, profile: prof.data };
-    return { ok:true, profile: prof.data };
+    if(prof.error){
+      throw new Error("Impossible de lire profiles. Vérifie: table profiles + colonne is_admin + policies RLS.");
+    }
+    if(!prof.data?.is_admin){
+      throw new Error("Accès refusé: ton compte n'est pas admin (profiles.is_admin = false).");
+    }
+    return true;
   }
 
-  async function refreshUI(){
+  async function loadOrders(){
     hideMsg();
-    const { data } = await sb.auth.getSession();
-    const user = data?.session?.user;
+    ordersBox.innerHTML = `<p class="muted">Chargement…</p>`;
 
-    if(!user){
-      panel.style.display = "none";
-      logoutBtn.style.display = "none";
-      refreshBtn.style.display = "none";
-      adminInfo.style.display = "none";
-      currentAdminId = null;
-      return;
-    }
-
-    const v = await verifyAdmin(user);
-    if(!v.ok){
-      panel.style.display = "none";
-      logoutBtn.style.display = "inline-flex";
-      refreshBtn.style.display = "none";
-      adminInfo.style.display = "block";
-      adminInfo.textContent = `Connecté en tant que ${v.profile?.email || user.email} — Accès refusé (pas admin).`;
-      showMsg("err", "Accès refusé : ce compte n’est pas admin (profiles.admin = false).");
-      return;
-    }
-
-    currentAdminId = user.id;
-    adminInfo.style.display = "block";
-    adminInfo.textContent = `Admin : ${v.profile?.email || user.email}`;
-    logoutBtn.style.display = "inline-flex";
-    refreshBtn.style.display = "inline-flex";
-    panel.style.display = "block";
-
-    await loadAllOrders();
-  }
-
-  async function loadAllOrders(){
-    const rows = $("rows");
-    rows.innerHTML = `<tr><td colspan="5" class="muted" style="padding:10px">Chargement…</td></tr>`;
-
-    // récupère toutes les commandes
-    const res = await sb
+    // 1) fetch orders (basic)
+    let query = sb
       .from("orders")
-      .select("id, user_id, status, total_cents, currency, created_at")
-      .order("created_at", { ascending: false });
+      .select("id,user_id,status,currency,subtotal_cents,shipping_cents,total_cents,shipping_method,note,created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
 
-    if(res.error){
-      showMsg("err", "Impossible de charger les commandes (RLS/Policies admin manquantes).<br>" + escapeHtml(res.error.message||""));
-      rows.innerHTML = "";
+    const status = (statusSel?.value || "").trim();
+    if(status) query = query.eq("status", status);
+
+    const { data: orders, error: e1 } = await query;
+    if(e1) throw e1;
+
+    if(!orders || orders.length === 0){
+      ordersBox.innerHTML = `<p class="muted">Aucune commande.</p>`;
       return;
     }
 
-    const orders = res.data || [];
-    $("count").textContent = `${orders.length} commande(s)`;
+    const q = (qInp?.value || "").trim().toLowerCase();
 
-    // on récupère les emails via profiles en une fois
+    // 2) fetch items for all orders
+    const orderIds = orders.map(o => o.id);
+    const { data: items, error: e2 } = await sb
+      .from("order_items")
+      .select("order_id,product_name,option_label,qty,unit_price_cents,line_total_cents")
+      .in("order_id", orderIds);
+    if(e2) throw e2;
+
+    // 3) fetch addresses for all orders (shipping only)
+    const { data: addrs, error: e3 } = await sb
+      .from("addresses")
+      .select("order_id,type,first_name,last_name,company,country,address1,address2,city,postal_code,email,phone")
+      .in("order_id", orderIds);
+    if(e3) throw e3;
+
+    // 4) fetch profiles for all users (nice display)
     const userIds = [...new Set(orders.map(o => o.user_id).filter(Boolean))];
-    let profilesById = {};
+    let profiles = [];
     if(userIds.length){
-      const pRes = await sb.from("profiles").select("id, email, first_name, last_name, phone").in("id", userIds);
-      if(!pRes.error){
-        (pRes.data||[]).forEach(p => { profilesById[p.id] = p; });
-      }
+      const { data, error } = await sb
+        .from("profiles")
+        .select("id,email,first_name,last_name,phone")
+        .in("id", userIds);
+      if(error) throw error;
+      profiles = data || [];
+    }
+    const profById = Object.fromEntries((profiles||[]).map(p => [p.id, p]));
+
+    const itemsByOrder = {};
+    (items || []).forEach(it => {
+      (itemsByOrder[it.order_id] ||= []).push(it);
+    });
+
+    const shipAddrByOrder = {};
+    (addrs || []).forEach(a => {
+      if(a.type === "shipping") shipAddrByOrder[a.order_id] = a;
+    });
+
+    // 5) filter by search (email / id / produit)
+    const filtered = !q ? orders : orders.filter(o => {
+      const p = profById[o.user_id];
+      const email = (p?.email || "").toLowerCase();
+      const id = (o.id || "").toLowerCase();
+      const hasProduct = (itemsByOrder[o.id] || []).some(it => (it.product_name || "").toLowerCase().includes(q));
+      return email.includes(q) || id.includes(q) || hasProduct;
+    });
+
+    if(filtered.length === 0){
+      ordersBox.innerHTML = `<p class="muted">Aucun résultat pour “${escapeHtml(q)}”.</p>`;
+      return;
     }
 
-    rows.innerHTML = orders.map(o => {
-      const p = profilesById[o.user_id] || {};
-      const who = (p.email || o.user_id || "-");
-      const name = [p.first_name, p.last_name].filter(Boolean).join(" ");
-      const clientLine = `${escapeHtml(who)}${name ? "<br><span class='muted'>" + escapeHtml(name) + "</span>" : ""}`;
+    ordersBox.innerHTML = filtered.map(o => {
+      const p = profById[o.user_id] || {};
+      const addr = shipAddrByOrder[o.id] || {};
+      const its = itemsByOrder[o.id] || [];
+
+      const clientName = [p.first_name, p.last_name].filter(Boolean).join(" ").trim() || "Client";
+      const clientEmail = p.email || "";
+      const clientPhone = p.phone || "";
+
+      const addrLine = [
+        [addr.address1, addr.address2].filter(Boolean).join(" "),
+        [addr.postal_code, addr.city].filter(Boolean).join(" "),
+        addr.country
+      ].filter(Boolean).join(" • ");
+
+      const itemsHtml = its.map(it => `
+        <div style="display:flex;justify-content:space-between;gap:10px;">
+          <div>
+            <strong>${escapeHtml(it.product_name)}</strong>
+            <div class="muted" style="font-size:.9rem">
+              ${it.option_label ? escapeHtml(it.option_label) + " • " : ""}x ${Number(it.qty||1)}
+            </div>
+          </div>
+          <div style="white-space:nowrap;font-weight:900">${euroFromCents(it.line_total_cents)}</div>
+        </div>
+      `).join("");
 
       return `
-        <tr>
-          <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10)">${escapeHtml(fmtDate(o.created_at))}</td>
-          <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10)">${clientLine}</td>
-          <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10)"><strong>${escapeHtml(o.status||"")}</strong></td>
-          <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10);text-align:right;font-weight:900">${euroCents(o.total_cents)}</td>
-          <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10);text-align:right">
-            <button class="btn ghost" data-view="${o.id}" type="button">Détail</button>
-          </td>
-        </tr>
-      `;
-    }).join("") || `<tr><td colspan="5" class="muted" style="padding:10px">Aucune commande.</td></tr>`;
-
-    document.querySelectorAll("button[data-view]").forEach(b => {
-      b.addEventListener("click", async () => {
-        await openDetail(b.getAttribute("data-view"));
-      });
-    });
-  }
-
-  async function openDetail(orderId){
-    currentDetailOrderId = orderId;
-    $("detail").style.display = "block";
-    $("meta").textContent = "Chargement…";
-    $("items").innerHTML = "";
-    $("addr").innerHTML = "";
-    $("total").textContent = "";
-    $("status-msg").textContent = "";
-
-    const oRes = await sb
-      .from("orders")
-      .select("id, user_id, status, subtotal_cents, shipping_cents, total_cents, shipping_method, created_at, note")
-      .eq("id", orderId)
-      .single();
-
-    if(oRes.error){
-      showMsg("err", "Erreur détail commande: " + escapeHtml(oRes.error.message||""));
-      return;
-    }
-    const o = oRes.data;
-
-    const iRes = await sb
-      .from("order_items")
-      .select("product_name, option_label, qty, line_total_cents")
-      .eq("order_id", orderId)
-      .order("created_at", { ascending: true });
-
-    const aRes = await sb
-      .from("addresses")
-      .select("type, first_name, last_name, address1, address2, city, postal_code, country, phone, email")
-      .eq("order_id", orderId);
-
-    $("meta").innerHTML =
-      `ID: <strong>${escapeHtml(o.id)}</strong> • ${escapeHtml(fmtDate(o.created_at))} • Statut: <strong>${escapeHtml(o.status)}</strong> • Livraison: ${escapeHtml(o.shipping_method||"-")}
-      ${o.note ? `<br><span class="muted">Note: ${escapeHtml(o.note)}</span>` : ""}`;
-
-    if(iRes.error){
-      $("items").innerHTML = `<tr><td colspan="2" class="muted" style="padding:10px">Erreur items: ${escapeHtml(iRes.error.message||"")}</td></tr>`;
-    } else {
-      $("items").innerHTML = (iRes.data || []).map(it => {
-        const label = [it.product_name, it.option_label ? `(${it.option_label})` : "", `x${it.qty}`].filter(Boolean).join(" ");
-        return `
-          <tr>
-            <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10)">${escapeHtml(label)}</td>
-            <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.10);text-align:right;font-weight:900">${euroCents(it.line_total_cents)}</td>
-          </tr>
-        `;
-      }).join("") || `<tr><td colspan="2" class="muted" style="padding:10px">Aucun item</td></tr>`;
-    }
-
-    if(!aRes.error){
-      const shipping = (aRes.data || []).find(x => x.type === "shipping") || (aRes.data || [])[0];
-      if(shipping){
-        $("addr").innerHTML = `
-          <div style="font-weight:900;margin-bottom:6px">Adresse</div>
-          <div class="muted">
-            ${escapeHtml(shipping.first_name||"")} ${escapeHtml(shipping.last_name||"")}<br>
-            ${escapeHtml(shipping.address1||"")}<br>
-            ${shipping.address2 ? escapeHtml(shipping.address2) + "<br>" : ""}
-            ${escapeHtml(shipping.postal_code||"")} ${escapeHtml(shipping.city||"")}<br>
-            ${escapeHtml(shipping.country||"")}<br>
-            ${shipping.phone ? "📞 " + escapeHtml(shipping.phone) + "<br>" : ""}
-            ✉️ ${escapeHtml(shipping.email||"")}
+        <article class="card" style="padding:14px">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+            <div>
+              <div class="pill outline">#${escapeHtml(o.id)}</div>
+              <div style="font-weight:900;margin-top:8px">${escapeHtml(clientName)} <span class="muted" style="font-weight:600">(${escapeHtml(clientEmail)})</span></div>
+              ${clientPhone ? `<div class="muted">${escapeHtml(clientPhone)}</div>` : ""}
+              <div class="muted" style="margin-top:6px">${escapeHtml(fmtDate(o.created_at))} • statut: <strong>${escapeHtml(o.status)}</strong></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:1.05rem;font-weight:1000">${euroFromCents(o.total_cents)}</div>
+              <div class="muted" style="font-size:.9rem">Sous-total ${euroFromCents(o.subtotal_cents)} • Livraison ${euroFromCents(o.shipping_cents)}</div>
+              <div class="muted" style="font-size:.9rem">${escapeHtml(o.shipping_method || "")}</div>
+            </div>
           </div>
-        `;
-      }
-    }
 
-    $("total").textContent =
-      `Total: ${euroCents(o.total_cents)} (Sous-total ${euroCents(o.subtotal_cents)} + Livraison ${euroCents(o.shipping_cents)})`;
+          <div style="margin-top:12px;display:grid;gap:10px">
+            <div style="padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03)">
+              ${itemsHtml || `<div class="muted">Aucun article</div>`}
+            </div>
+
+            <div style="padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03)">
+              <div style="font-weight:900;margin-bottom:6px">Livraison</div>
+              <div class="muted">${escapeHtml(addrLine || "—")}</div>
+            </div>
+
+            ${o.note ? `
+            <div style="padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03)">
+              <div style="font-weight:900;margin-bottom:6px">Note</div>
+              <div class="muted">${escapeHtml(o.note)}</div>
+            </div>` : ``}
+          </div>
+        </article>
+      `;
+    }).join("");
   }
 
-  async function setStatus(newStatus){
-    if(!currentDetailOrderId) return;
-    $("status-msg").textContent = "Mise à jour…";
+  async function boot(){
+    const { data: sessionData } = await sb.auth.getSession();
+    const user = sessionData?.session?.user;
 
-    const res = await sb
-      .from("orders")
-      .update({ status: newStatus })
-      .eq("id", currentDetailOrderId);
-
-    if(res.error){
-      $("status-msg").textContent = "Erreur: " + (res.error.message || "");
+    if(!user){
+      setLoggedOutUI();
       return;
     }
-    $("status-msg").textContent = "Statut mis à jour ✔";
-    await openDetail(currentDetailOrderId);
-    await loadAllOrders();
+
+    await requireAdmin(user);
+
+    setLoggedInUI(user.email);
+    await loadOrders();
   }
 
-  $("close-detail").addEventListener("click", () => {
-    $("detail").style.display = "none";
-    currentDetailOrderId = null;
-  });
-
-  document.querySelectorAll("#detail button[data-status]").forEach(b => {
-    b.addEventListener("click", async () => {
-      await setStatus(b.getAttribute("data-status"));
+  // Events
+  if(refreshBtn){
+    refreshBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      boot().catch(err => showMsg("err", escapeHtml(err?.message || "Erreur")));
     });
-  });
-
-  refreshBtn.addEventListener("click", async () => {
-    await loadAllOrders();
-  });
-
-  logoutBtn.addEventListener("click", async () => {
-    await sb.auth.signOut();
-    showMsg("ok", "Déconnecté ✔");
-    await refreshUI();
-  });
+  }
+  if(qInp){
+    qInp.addEventListener("input", () => loadOrders().catch(err => showMsg("err", escapeHtml(err?.message || "Erreur"))));
+  }
+  if(statusSel){
+    statusSel.addEventListener("change", () => loadOrders().catch(err => showMsg("err", escapeHtml(err?.message || "Erreur"))));
+  }
+  if(logoutBtn){
+    logoutBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await sb.auth.signOut();
+      setLoggedOutUI();
+      showMsg("ok", "Déconnecté ✔");
+    });
+  }
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideMsg();
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Connexion…";
+
+    const email = (emailInp.value || "").trim().toLowerCase();
+    const password = passInp.value || "";
+    if(!email || !password){
+      showMsg("err", "Email et mot de passe requis.");
+      return;
+    }
 
     try{
-      const email = $("email").value.trim().toLowerCase();
-      const password = $("password").value;
       const res = await sb.auth.signInWithPassword({ email, password });
       if(res.error) throw res.error;
 
-      showMsg("ok", "Connecté ✔");
-      await refreshUI();
+      const { data } = await sb.auth.getSession();
+      const user = data?.session?.user;
+      if(!user) throw new Error("Session introuvable après connexion.");
 
-    } catch(err){
-      const rawMsg = (err?.message || "Erreur de connexion");
-      const lower = rawMsg.toLowerCase();
-      const nice = (lower.includes("email not confirmed") || lower.includes("not confirmed"))
-        ? "Email non confirmé : ouvre ton mail de confirmation Supabase puis reconnecte-toi."
-        : rawMsg;
-      showMsg("err", escapeHtml(nice));
-    } finally {
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Se connecter";
+      await requireAdmin(user);
+
+      setLoggedInUI(user.email);
+      await loadOrders();
+      showMsg("ok", "Connecté ✔");
+    }catch(err){
+      console.error(err);
+      showMsg("err", escapeHtml(err?.message || "Erreur de connexion."));
+      setLoggedOutUI();
     }
   });
 
-  await refreshUI();
-}
+  // initial
+  try{
+    await boot();
+  }catch(err){
+    console.error(err);
+    showMsg("err", escapeHtml(err?.message || "Erreur"));
+    setLoggedOutUI();
+  }
 
-function escapeHtml(s){
-  return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  // keep UI synced on auth changes
+  sb.auth.onAuthStateChange((_event, session) => {
+    if(!session?.user){
+      setLoggedOutUI();
+    }
+  });
 }
