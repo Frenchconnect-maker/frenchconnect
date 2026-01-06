@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FrenchConnect — Mes commandes</title>
+  <title>FrenchConnect — Mon compte</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
+  <!-- ✅ ton style street global -->
   <link rel="stylesheet" href="assets/css/style.css?v=20260106" />
 
   <style>
@@ -28,6 +29,46 @@
     }
     .panel-card .bd{padding:14px}
 
+    .muted-sm{color: rgba(255,255,255,.70); font-size:.92rem}
+    .notice{
+      margin-top:10px;padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .danger{color:#ff7b7b}
+    .ok{color:#7bffb2}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
+
+    .field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+    .field label{font-weight:900;letter-spacing:.3px}
+    .field input{
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.03);
+      color:#fff;
+    }
+
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab-btn{
+      cursor:pointer;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color:#fff;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+    }
+    .tab-btn.active{
+      border-color: rgba(0,229,255,.35);
+      box-shadow: 0 0 18px rgba(0,229,255,.12);
+    }
+    .tab{display:none}
+    .tab.active{display:block}
+
     .order-meta{
       display:flex; gap:10px; flex-wrap:wrap; align-items:center;
       color: rgba(255,255,255,.8);
@@ -42,6 +83,7 @@
       text-transform:uppercase;
       letter-spacing:.7px;
       font-size:.78rem;
+      white-space:nowrap;
     }
     .tag.new{ border-color: rgba(57,255,20,.35); }
     .tag.shipped{ border-color: rgba(0,229,255,.35); }
@@ -62,36 +104,16 @@
       background: rgba(0,0,0,.18);
     }
     .item strong{font-weight:900}
-    .muted-sm{color: rgba(255,255,255,.70); font-size:.92rem}
     .right{text-align:right}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .notice{
-      margin-top:10px;padding:10px 12px;border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-    }
-    .danger{color:#ff7b7b}
-    .ok{color:#7bffb2}
 
-    /* Auth box */
-    .auth-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width:720px){
-      .auth-grid{grid-template-columns:1fr;}
-    }
-    .auth-grid input{
-      width:100%;
-    }
-    .radio-row{
-      display:flex; gap:14px; flex-wrap:wrap; align-items:center;
-      margin-bottom:10px;
-    }
-    .radio-row label{
-      display:flex; gap:8px; align-items:center;
-      cursor:pointer;
+    .link-btn{
+      background: none;
+      border: none;
+      padding: 0;
+      color: #fff;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 900;
     }
   </style>
 </head>
@@ -142,7 +164,8 @@
         <h1 style="margin:6px 0;">Mon compte</h1>
         <div class="muted-sm" id="whoami">Chargement…</div>
       </div>
-      <div class="top-actions">
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <a class="btn ghost" href="shop.html">Continuer shopping</a>
         <button class="btn" id="logoutBtn" type="button" style="display:none;">Déconnexion</button>
       </div>
@@ -150,52 +173,130 @@
 
     <div id="msg" class="notice" style="display:none;"></div>
 
-    <!-- ✅ AUTH BOX (s'affiche uniquement si déconnecté) -->
-    <section class="panel-card" id="authBox" style="display:none;">
+    <!-- ✅ Reset password: visible uniquement quand on arrive depuis un lien de reset -->
+    <section class="panel-card" id="resetBox" style="display:none;">
       <div class="hd">
-        <strong style="letter-spacing:.6px;text-transform:uppercase;">Connexion</strong>
-        <span class="muted-sm">Accès à tes commandes</span>
+        <strong style="letter-spacing:.6px;text-transform:uppercase;">Nouveau mot de passe</strong>
+        <span class="muted-sm">Finaliser la récupération</span>
       </div>
       <div class="bd">
-        <div class="radio-row">
-          <label><input type="radio" name="authMode" value="login" checked> J’ai déjà un compte</label>
-          <label><input type="radio" name="authMode" value="signup"> Créer un compte</label>
-        </div>
-
-        <form id="authForm">
-          <div class="auth-grid">
-            <div style="grid-column:1/-1">
-              <label class="muted-sm">Email *</label>
-              <input id="email" type="email" required placeholder="ex: moi@gmail.com">
+        <form id="resetForm">
+          <div class="grid-2">
+            <div class="field">
+              <label>Nouveau mot de passe *</label>
+              <input id="new_password" type="password" required placeholder="••••••••">
             </div>
-            <div style="grid-column:1/-1">
-              <label class="muted-sm">Mot de passe *</label>
-              <input id="password" type="password" required placeholder="••••••••">
-            </div>
-
-            <div>
-              <label class="muted-sm">Prénom (optionnel)</label>
-              <input id="first_name" type="text" placeholder="Prénom">
-            </div>
-            <div>
-              <label class="muted-sm">Nom (optionnel)</label>
-              <input id="last_name" type="text" placeholder="Nom">
-            </div>
-            <div style="grid-column:1/-1">
-              <label class="muted-sm">Téléphone (optionnel)</label>
-              <input id="phone" type="text" placeholder="06…">
+            <div class="field">
+              <label>Confirmer *</label>
+              <input id="new_password2" type="password" required placeholder="••••••••">
             </div>
           </div>
-
-          <div class="btn-row" style="margin-top:12px">
-            <button class="btn" id="authSubmit" type="submit">Se connecter</button>
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn" id="resetBtn" type="submit">Mettre à jour</button>
+            <button class="btn ghost" id="resetCancel" type="button">Annuler</button>
+          </div>
+          <div class="muted-sm" style="margin-top:10px;">
+            Tu peux ensuite te connecter normalement avec ton nouveau mot de passe.
           </div>
         </form>
       </div>
     </section>
 
-    <h2 style="margin:18px 0 8px;">Mes commandes</h2>
-    <div id="orders"></div>
+    <!-- LOGIN -->
+    <section class="panel-card" id="loginBox" style="display:none;">
+      <div class="hd">
+        <strong style="letter-spacing:.6px;text-transform:uppercase;">Connexion</strong>
+        <span class="muted-sm">Accède à tes commandes</span>
+      </div>
+      <div class="bd">
+        <form id="loginForm">
+          <div class="grid-2">
+            <div class="field">
+              <label>Email *</label>
+              <input id="email" type="email" required placeholder="ex: client@email.com">
+            </div>
+            <div class="field">
+              <label>Mot de passe *</label>
+              <input id="password" type="password" required placeholder="••••••••">
+            </div>
+          </div>
+
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn" id="loginBtn" type="submit">Se connecter</button>
+            <a class="btn ghost" href="checkout.html">Créer un compte (1ère commande)</a>
+          </div>
+
+          <div class="muted-sm" style="margin-top:10px;">
+            <button class="link-btn" id="forgotOpen" type="button">Mot de passe oublié ?</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- FORGOT PASSWORD -->
+    <section class="panel-card" id="forgotBox" style="display:none;">
+      <div class="hd">
+        <strong style="letter-spacing:.6px;text-transform:uppercase;">Récupération</strong>
+        <span class="muted-sm">Envoi d’un lien par email</span>
+      </div>
+      <div class="bd">
+        <form id="forgotForm">
+          <div class="field" style="max-width:560px;">
+            <label>Email du compte *</label>
+            <input id="forgot_email" type="email" required placeholder="ex: client@email.com">
+          </div>
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn" id="forgotBtn" type="submit">Envoyer le lien</button>
+            <button class="btn ghost" id="forgotBack" type="button">Retour</button>
+          </div>
+          <div class="muted-sm" style="margin-top:10px;">
+            Tu recevras un email avec un lien qui te renvoie ici pour définir un nouveau mot de passe.
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ACCOUNT -->
+    <section class="panel-card" id="accountBox" style="display:none;">
+      <div class="hd">
+        <strong style="letter-spacing:.6px;text-transform:uppercase;">Espace client</strong>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-orders" type="button">Commandes</button>
+          <button class="tab-btn" data-tab="tab-profile" type="button">Profil</button>
+        </div>
+      </div>
+
+      <div class="bd">
+        <div class="tab active" id="tab-orders">
+          <div id="orders"></div>
+        </div>
+
+        <div class="tab" id="tab-profile">
+          <div class="grid-2">
+            <div class="field">
+              <label>Prénom</label>
+              <input id="p_first" type="text" disabled>
+            </div>
+            <div class="field">
+              <label>Nom</label>
+              <input id="p_last" type="text" disabled>
+            </div>
+            <div class="field">
+              <label>Téléphone</label>
+              <input id="p_phone" type="text" disabled>
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input id="p_email" type="text" disabled>
+            </div>
+          </div>
+
+          <div class="notice muted-sm" style="margin-top:12px;">
+            Ton profil est rempli automatiquement lors de la première commande.
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer" style="margin-top: 34px;">
@@ -204,6 +305,8 @@
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    // burger
     (function(){
       const toggle = document.getElementById("navToggle");
       const menu   = document.getElementById("mobileMenu");
@@ -211,14 +314,35 @@
       const back   = document.getElementById("menuBackdrop");
       if(!toggle || !menu) return;
 
-      function openMenu(){ document.body.classList.add("menu-open"); menu.classList.add("open"); toggle.setAttribute("aria-expanded","true"); }
-      function closeMenu(){ document.body.classList.remove("menu-open"); menu.classList.remove("open"); toggle.setAttribute("aria-expanded","false"); }
+      function openMenu(){
+        document.body.classList.add("menu-open");
+        menu.classList.add("open");
+        toggle.setAttribute("aria-expanded","true");
+      }
+      function closeMenu(){
+        document.body.classList.remove("menu-open");
+        menu.classList.remove("open");
+        toggle.setAttribute("aria-expanded","false");
+      }
 
       toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
       if(close) close.addEventListener("click", closeMenu);
       if(back)  back.addEventListener("click", closeMenu);
       document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
       menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
+    })();
+
+    // tabs
+    (function(){
+      const btns = document.querySelectorAll(".tab-btn");
+      btns.forEach(b => b.addEventListener("click", () => {
+        btns.forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+        const id = b.getAttribute("data-tab");
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        const tab = document.getElementById(id);
+        if(tab) tab.classList.add("active");
+      }));
     })();
   </script>
 
