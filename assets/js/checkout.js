@@ -155,23 +155,41 @@ function setAuthUI(user){
 
 /* ================================
    STRIPE CHECKOUT (Edge Function)
+   ✅ Fix JWT: ne jamais envoyer un Bearer vide
+   ✅ tente refreshSession si session absente
 ================================ */
 async function startStripeCheckout(sb, orderId){
-  // ⚠️ on garde la vérification utilisateur (tes tables en dépendent)
-  const { data: sess } = await sb.auth.getSession();
-  const accessToken = sess?.session?.access_token;
-  if(!accessToken) throw new Error("Session introuvable. Connecte-toi puis réessaie.");
+  // 1) Session
+  let { data: sess } = await sb.auth.getSession();
+  let accessToken = sess?.session?.access_token || null;
 
-  // ✅ Appel de l’Edge Function déployée (URL publique functions.supabase.co)
+  // 2) Si pas de session -> tente un refresh
+  if(!accessToken){
+    try{
+      await sb.auth.refreshSession();
+      ({ data: sess } = await sb.auth.getSession());
+      accessToken = sess?.session?.access_token || null;
+    }catch(e){
+      // ignore
+    }
+  }
+
+  // 3) Toujours rien = pas connecté (on stop proprement)
+  if(!accessToken){
+    throw new Error("Tu dois être connecté pour payer. Clique sur “Se connecter”, puis réessaie.");
+  }
+
+  // ✅ Appel de l’Edge Function déployée
   const res = await fetch(
     "https://mnsqfagfdahvhlfopfah.functions.supabase.co/stripe-create-checkout",
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // ✅ Auth utilisateur
+        "Accept": "application/json",
+        // ✅ JWT utilisateur
         "Authorization": `Bearer ${accessToken}`,
-        // ✅ Clé projet Supabase (publishable)
+        // ✅ key projet (publishable)
         "apikey": SUPABASE_KEY
       },
       body: JSON.stringify({ order_id: orderId })
@@ -182,7 +200,7 @@ async function startStripeCheckout(sb, orderId){
   try { out = await res.json(); } catch(e){ /* ignore */ }
 
   if(!res.ok){
-    const msg = out?.error || out?.message || "Erreur Stripe (création de session).";
+    const msg = out?.error || out?.message || `Erreur Stripe (HTTP ${res.status})`;
     throw new Error(msg);
   }
 
