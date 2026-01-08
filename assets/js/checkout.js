@@ -14,7 +14,7 @@
    PAS une clé "sb_publishable_..."
 ================================ */
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ"; // <-- eyJ...
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ"; // <-- remets ta clé ici
 
 // Load supabase-js (CDN)
 (function loadSupabaseCDN() {
@@ -212,9 +212,12 @@ async function startStripeCheckout(sb, orderId) {
     );
   }
 
-  // 4) Appel Edge Function
+  // 4) Appel Edge Function ✅ FIX: on force apikey dans les headers
   const { data, error } = await sb.functions.invoke("stripe-create-checkout", {
     body: { order_id: orderId },
+    headers: {
+      apikey: SUPABASE_KEY,
+    },
   });
 
   if (error) {
@@ -468,9 +471,6 @@ async function initCheckout() {
         { order_id: orderId, type: "shipping", ...addrBase },
       ]);
       if (addrInsert.error) throw addrInsert.error;
-
-      // ✅ Ici on NE vide PAS le panier avant paiement
-      // Le panier sera vidé sur success.html après retour Stripe.
 
       setAuthUI(userNow);
       showMsg(
