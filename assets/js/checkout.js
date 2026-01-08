@@ -4,6 +4,7 @@
    - Carte 2: Livraison + Commande
      - si pas connecté: création compte (email+mdp)
      - si connecté: commande directe
+   - Stripe Checkout (redirect) après création de commande
    - Compatible panier localStorage (store.js)
    ========================================= */
 
@@ -150,6 +151,38 @@ function setAuthUI(user){
     if(signupCred) signupCred.style.display = ""; // visible
     if(logoutBtn) logoutBtn.style.display = "none";
   }
+}
+
+/* ================================
+   STRIPE CHECKOUT (Edge Function)
+================================ */
+async function startStripeCheckout(sb, orderId){
+  const { data: sess } = await sb.auth.getSession();
+  const accessToken = sess?.session?.access_token;
+  if(!accessToken) throw new Error("Session introuvable. Connecte-toi puis réessaie.");
+
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-create-checkout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${accessToken}`,
+      "apikey": SUPABASE_KEY
+    },
+    body: JSON.stringify({ order_id: orderId })
+  });
+
+  let out = {};
+  try { out = await res.json(); } catch(e){ /* ignore */ }
+
+  if(!res.ok){
+    const msg = out?.error || "Erreur Stripe (création de session).";
+    throw new Error(msg);
+  }
+
+  if(!out.url) throw new Error("Stripe n’a pas renvoyé d’URL de paiement.");
+
+  // Redirect Stripe
+  window.location.href = out.url;
 }
 
 async function initCheckout(){
@@ -352,13 +385,14 @@ async function initCheckout(){
       ]);
       if(addrInsert.error) throw addrInsert.error;
 
-      // clear cart
-      if(typeof setCart === "function") setCart([]);
+      // ✅ Ici on NE vide PAS le panier avant paiement
+      // Le panier sera vidé sur success.html après retour Stripe.
 
       setAuthUI(userNow);
-      showMsg("ok", `Commande enregistrée ✅ (ID: <strong>${orderId}</strong>)<br>Tu peux retrouver tes commandes dans “Mon compte”.`);
-      btn.textContent = "Commande envoyée ✔";
-      btn.disabled = true;
+      showMsg("ok", `Commande créée ✅ (ID: <strong>${orderId}</strong>)<br>Redirection vers le paiement…`);
+
+      // Lance Stripe Checkout
+      await startStripeCheckout(sb, orderId);
 
     }catch(err){
       showMsg("err", (err?.message || "Erreur inconnue"));
