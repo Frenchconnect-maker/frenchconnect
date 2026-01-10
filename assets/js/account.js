@@ -1,9 +1,10 @@
-/* ======================================================
+//* ======================================================
    ACCOUNT — Espace client (Supabase)
    - Login depuis account.html
    - Mot de passe oublié (envoi email)
    - Nouveau mot de passe (recovery)
    - Affiche profil + commandes du user
+   - ✅ Affiche suivi colis (carrier / tracking / url / shipped_at)
    ====================================================== */
 
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
@@ -98,13 +99,11 @@ async function initAccount(){
   const passInp    = $("password");
 
   const forgotOpen = $("forgotOpen");
-  const forgotBox  = $("forgotBox");
   const forgotForm = $("forgotForm");
   const forgotBtn  = $("forgotBtn");
   const forgotBack = $("forgotBack");
   const forgotEmail= $("forgot_email");
 
-  const resetBox   = $("resetBox");
   const resetForm  = $("resetForm");
   const resetBtn   = $("resetBtn");
   const resetCancel= $("resetCancel");
@@ -127,140 +126,123 @@ async function initAccount(){
   if(logoutBtn){
     logoutBtn.onclick = async () => {
       await sb.auth.signOut();
-      // Nettoie le hash au cas où
       if(location.hash) history.replaceState({}, "", location.pathname + location.search);
       location.reload();
     };
   }
 
   // UI: open forgot
-  if(forgotOpen){
-    forgotOpen.addEventListener("click", () => {
-      hideMsg();
-      if(forgotEmail && emailInp?.value) forgotEmail.value = emailInp.value.trim();
-      showOnly("forgotBox");
-    });
-  }
-  if(forgotBack){
-    forgotBack.addEventListener("click", () => {
-      hideMsg();
-      showOnly("loginBox");
-    });
-  }
+  $("forgotOpen")?.addEventListener("click", () => {
+    hideMsg();
+    if(forgotEmail && emailInp?.value) forgotEmail.value = emailInp.value.trim();
+    showOnly("forgotBox");
+  });
+
+  $("forgotBack")?.addEventListener("click", () => {
+    hideMsg();
+    showOnly("loginBox");
+  });
 
   // Forgot password: send email
-  if(forgotForm){
-    forgotForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideMsg();
-      forgotBtn.disabled = true;
-      forgotBtn.textContent = "Envoi…";
+  forgotForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideMsg();
+    forgotBtn.disabled = true;
+    forgotBtn.textContent = "Envoi…";
 
-      try{
-        const email = (forgotEmail.value || "").trim().toLowerCase();
-        if(!email) throw new Error("Email requis.");
+    try{
+      const email = (forgotEmail.value || "").trim().toLowerCase();
+      if(!email) throw new Error("Email requis.");
 
-        // important: redirect back to account.html
-        const redirectTo = location.origin + location.pathname.replace(/\/[^/]*$/, "/account.html");
+      // important: redirect back to account.html
+      const redirectTo = location.origin + location.pathname.replace(/\/[^/]*$/, "/account.html");
 
-        const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
-        if(error) throw error;
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+      if(error) throw error;
 
-        showMsg("ok", "Email envoyé ✅ Vérifie ta boîte mail (et les spams).");
-      }catch(err){
-        showMsg("err", escapeHtml(err?.message || "Erreur envoi email"));
-      }finally{
-        forgotBtn.disabled = false;
-        forgotBtn.textContent = "Envoyer le lien";
-      }
-    });
-  }
+      showMsg("ok", "Email envoyé ✅ Vérifie ta boîte mail (et les spams).");
+    }catch(err){
+      showMsg("err", escapeHtml(err?.message || "Erreur envoi email"));
+    }finally{
+      forgotBtn.disabled = false;
+      forgotBtn.textContent = "Envoyer le lien";
+    }
+  });
 
   // Reset password form (recovery)
-  if(resetCancel){
-    resetCancel.addEventListener("click", async () => {
-      hideMsg();
-      // On enlève le hash et on retourne au login
+  resetCancel?.addEventListener("click", async () => {
+    hideMsg();
+    if(location.hash) history.replaceState({}, "", location.pathname + location.search);
+    showOnly("loginBox");
+  });
+
+  resetForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideMsg();
+
+    const p1 = newPass1.value || "";
+    const p2 = newPass2.value || "";
+    if(!p1 || p1.length < 6) { showMsg("err", "Mot de passe trop court (min 6)."); return; }
+    if(p1 !== p2) { showMsg("err", "Les mots de passe ne correspondent pas."); return; }
+
+    resetBtn.disabled = true;
+    resetBtn.textContent = "Mise à jour…";
+
+    try{
+      const { data: sess } = await sb.auth.getSession();
+      if(!sess?.session?.user){
+        throw new Error("Session de récupération introuvable. Re-clique le lien reçu par email.");
+      }
+
+      const { error } = await sb.auth.updateUser({ password: p1 });
+      if(error) throw error;
+
+      showMsg("ok", "Mot de passe mis à jour ✅ Tu peux te connecter.");
       if(location.hash) history.replaceState({}, "", location.pathname + location.search);
       showOnly("loginBox");
-    });
-  }
-
-  if(resetForm){
-    resetForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideMsg();
-
-      const p1 = newPass1.value || "";
-      const p2 = newPass2.value || "";
-      if(!p1 || p1.length < 6) { showMsg("err", "Mot de passe trop court (min 6)."); return; }
-      if(p1 !== p2) { showMsg("err", "Les mots de passe ne correspondent pas."); return; }
-
-      resetBtn.disabled = true;
-      resetBtn.textContent = "Mise à jour…";
-
-      try{
-        // À l’ouverture du lien, supabase-js lit souvent les tokens dans le hash
-        // et crée une session. On tente updateUser().
-        const { data: sess } = await sb.auth.getSession();
-        if(!sess?.session?.user){
-          throw new Error("Session de récupération introuvable. Re-clique le lien reçu par email.");
-        }
-
-        const { error } = await sb.auth.updateUser({ password: p1 });
-        if(error) throw error;
-
-        showMsg("ok", "Mot de passe mis à jour ✅ Tu peux te connecter.");
-        // Nettoie le hash
-        if(location.hash) history.replaceState({}, "", location.pathname + location.search);
-        showOnly("loginBox");
-      }catch(err){
-        showMsg("err", escapeHtml(err?.message || "Erreur mise à jour"));
-      }finally{
-        resetBtn.disabled = false;
-        resetBtn.textContent = "Mettre à jour";
-      }
-    });
-  }
+    }catch(err){
+      showMsg("err", escapeHtml(err?.message || "Erreur mise à jour"));
+    }finally{
+      resetBtn.disabled = false;
+      resetBtn.textContent = "Mettre à jour";
+    }
+  });
 
   // Login form
-  if(loginForm){
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideMsg();
+  loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideMsg();
 
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Connexion…";
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Connexion…";
 
-      try{
-        const email = (emailInp.value || "").trim().toLowerCase();
-        const password = passInp.value || "";
-        if(!email || !password) throw new Error("Email et mot de passe requis.");
+    try{
+      const email = (emailInp.value || "").trim().toLowerCase();
+      const password = passInp.value || "";
+      if(!email || !password) throw new Error("Email et mot de passe requis.");
 
-        const res = await sb.auth.signInWithPassword({ email, password });
-        if(res.error) throw res.error;
+      const res = await sb.auth.signInWithPassword({ email, password });
+      if(res.error) throw res.error;
 
-        const { data } = await sb.auth.getSession();
-        const user = data?.session?.user;
-        if(!user) throw new Error("Session introuvable après connexion.");
+      const { data } = await sb.auth.getSession();
+      const user = data?.session?.user;
+      if(!user) throw new Error("Session introuvable après connexion.");
 
-        setLoggedIn(user.email);
-        await hydrateProfile(sb, user.id, user.email);
-        await hydrateOrders(sb, user.id);
+      setLoggedIn(user.email);
+      await hydrateProfile(sb, user.id, user.email);
+      await hydrateOrders(sb, user.id);
 
-        showMsg("ok", "Connexion OK ✔");
-      }catch(err){
-        showMsg("err", escapeHtml(err?.message || "Erreur connexion"));
-        setLoggedOut();
-      }finally{
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Se connecter";
-      }
-    });
-  }
+      showMsg("ok", "Connexion OK ✔");
+    }catch(err){
+      showMsg("err", escapeHtml(err?.message || "Erreur connexion"));
+      setLoggedOut();
+    }finally{
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Se connecter";
+    }
+  });
 
   // ---- BOOT ----
-  // Si l'utilisateur arrive via un lien reset password
   if(hasRecoveryInHash()){
     if(whoami) whoami.textContent = "Récupération en cours…";
     if(logoutBtn) logoutBtn.style.display = "none";
@@ -269,7 +251,6 @@ async function initAccount(){
     return;
   }
 
-  // Session normale
   const { data: sess } = await sb.auth.getSession();
   const user = sess?.session?.user;
 
@@ -314,7 +295,7 @@ async function hydrateOrders(sb, userId){
 
   const ordersRes = await sb
     .from("orders")
-    // ✅ FIX: inclut les champs de suivi colis
+    // ✅ inclut le suivi colis
     .select("id, status, currency, subtotal_cents, shipping_cents, total_cents, shipping_method, note, created_at, shipped_at, carrier, tracking_number, tracking_url")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -387,34 +368,32 @@ async function hydrateOrders(sb, userId){
       </div>
     `;
 
-    // ✅ NEW: bloc suivi colis
+    // ✅ Suivi colis (affiché si shipped / tracking / url / shipped_at)
     const trackingUrl = (o.tracking_url || "").trim();
+    const showTracking =
+      String(o.status || "").toLowerCase().includes("ship") ||
+      !!o.tracking_number ||
+      !!trackingUrl ||
+      !!o.shipped_at;
 
-    const trackingBlock =
-      (String(o.status || "").toLowerCase().includes("ship") ||
-        o.tracking_number ||
-        trackingUrl ||
-        o.shipped_at)
-        ? `
+    const trackingBlock = showTracking ? `
       <div class="notice muted-sm" style="margin-top:12px;">
         <div style="font-weight:900;margin-bottom:6px;">Suivi colis</div>
         <div><strong>Transporteur :</strong> ${escapeHtml(o.carrier || "Mondial Relay")}</div>
         <div><strong>N° :</strong> <span class="mono">${escapeHtml(o.tracking_number || "—")}</span></div>
-        ${
-          trackingUrl
-            ? `<div style="margin-top:8px;"><a class="btn ghost" href="${escapeHtml(trackingUrl)}" target="_blank" rel="noopener">Suivre mon colis</a></div>`
-            : ``
-        }
-        ${
-          o.shipped_at
-            ? `<div class="muted-sm" style="margin-top:6px;">Expédiée le ${escapeHtml(fmtDate(o.shipped_at))}</div>`
-            : ``
-        }
+        ${trackingUrl ? `
+          <div style="margin-top:8px;">
+            <a class="btn ghost" href="${escapeHtml(trackingUrl)}" target="_blank" rel="noopener">Suivre mon colis</a>
+          </div>` : ``}
+        ${o.shipped_at ? `
+          <div class="muted-sm" style="margin-top:6px;">Expédiée le ${escapeHtml(fmtDate(o.shipped_at))}</div>
+        ` : ``}
       </div>
-    `
-        : "";
+    ` : "";
 
-    const note = o.note ? `<div class="notice muted-sm" style="margin-top:10px;">Note: ${escapeHtml(o.note)}</div>` : "";
+    const note = o.note
+      ? `<div class="notice muted-sm" style="margin-top:10px;">Note: ${escapeHtml(o.note)}</div>`
+      : "";
 
     return `
       <section class="panel-card">
