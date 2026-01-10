@@ -76,8 +76,10 @@ async function initAccount(){
     showMsg("err","Supabase n’a pas chargé (CDN).");
     return;
   }
-  if(!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY.startsWith("sb_")){
-    showMsg("err","Renseigne SUPABASE_URL et SUPABASE_KEY (publishable) dans assets/js/account.js.");
+
+  // ✅ FIX: on accepte la vraie ANON KEY (eyJ...)
+  if(!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY || SUPABASE_KEY.length < 40){
+    showMsg("err","Renseigne SUPABASE_URL et SUPABASE_KEY (ANON key eyJ...) dans assets/js/account.js.");
     return;
   }
 
@@ -312,7 +314,8 @@ async function hydrateOrders(sb, userId){
 
   const ordersRes = await sb
     .from("orders")
-    .select("id, status, currency, subtotal_cents, shipping_cents, total_cents, shipping_method, note, created_at")
+    // ✅ FIX: inclut les champs de suivi colis
+    .select("id, status, currency, subtotal_cents, shipping_cents, total_cents, shipping_method, note, created_at, shipped_at, carrier, tracking_number, tracking_url")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -384,6 +387,33 @@ async function hydrateOrders(sb, userId){
       </div>
     `;
 
+    // ✅ NEW: bloc suivi colis
+    const trackingUrl = (o.tracking_url || "").trim();
+
+    const trackingBlock =
+      (String(o.status || "").toLowerCase().includes("ship") ||
+        o.tracking_number ||
+        trackingUrl ||
+        o.shipped_at)
+        ? `
+      <div class="notice muted-sm" style="margin-top:12px;">
+        <div style="font-weight:900;margin-bottom:6px;">Suivi colis</div>
+        <div><strong>Transporteur :</strong> ${escapeHtml(o.carrier || "Mondial Relay")}</div>
+        <div><strong>N° :</strong> <span class="mono">${escapeHtml(o.tracking_number || "—")}</span></div>
+        ${
+          trackingUrl
+            ? `<div style="margin-top:8px;"><a class="btn ghost" href="${escapeHtml(trackingUrl)}" target="_blank" rel="noopener">Suivre mon colis</a></div>`
+            : ``
+        }
+        ${
+          o.shipped_at
+            ? `<div class="muted-sm" style="margin-top:6px;">Expédiée le ${escapeHtml(fmtDate(o.shipped_at))}</div>`
+            : ``
+        }
+      </div>
+    `
+        : "";
+
     const note = o.note ? `<div class="notice muted-sm" style="margin-top:10px;">Note: ${escapeHtml(o.note)}</div>` : "";
 
     return `
@@ -395,6 +425,7 @@ async function hydrateOrders(sb, userId){
         <div class="bd">
           ${meta}
           ${totals}
+          ${trackingBlock}
           ${itemsHtml}
           ${note}
         </div>
@@ -402,3 +433,4 @@ async function hydrateOrders(sb, userId){
     `;
   }).join("");
 }
+
