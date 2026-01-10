@@ -7,7 +7,7 @@
    - Export CSV
 
    IMPORTANT (sécurité):
-   - Utilise uniquement la publishable key côté navigateur.
+   - Utilise uniquement la ANON key côté navigateur.
    - La protection réelle = RLS + policies (is_admin).
    ========================================================== */
 
@@ -55,9 +55,12 @@ let profilesById = new Map();
 async function initAdmin(){
   try{
     if(!window.supabase) throw new Error("Supabase CDN non chargé.");
-    if(!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY.startsWith("sb_")){
-      throw new Error("SUPABASE_URL / SUPABASE_KEY manquants dans assets/js/admin.js");
+
+    // ✅ FIX: accepte ANON KEY (eyJ...) + évite le vieux check sb_
+    if(!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY || SUPABASE_KEY.length < 40){
+      throw new Error("SUPABASE_URL / SUPABASE_KEY manquants dans assets/js/admin.js (ANON key eyJ...)");
     }
+
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // Bind UI
@@ -161,7 +164,8 @@ async function loadAndRender(){
   // 1) commandes + items + addresses
   const res = await sb
     .from("orders")
-    .select("id,user_id,status,created_at,currency,subtotal_cents,shipping_cents,total_cents,shipping_method,note,order_items(*),addresses(*)")
+    // ✅ NEW: inclut les champs expédition
+    .select("id,user_id,status,created_at,currency,subtotal_cents,shipping_cents,total_cents,shipping_method,note,carrier,tracking_number,tracking_url,shipped_at,order_items(*),addresses(*)")
     .order("created_at", { ascending:false })
     .limit(200);
 
@@ -201,6 +205,8 @@ function filteredOrders(){
       o.id,
       o.status,
       o.shipping_method,
+      o.carrier,
+      o.tracking_number,
       prof.email,
       prof.first_name,
       prof.last_name,
@@ -232,6 +238,8 @@ function render(){
     const save = qs(`save_${o.id}`);
     const ship = qs(`ship_${o.id}`);
 
+    const shipSave = qs(`shipSave_${o.id}`);
+
     if(sel && save){
       sel.addEventListener("change", () => {
         save.disabled = false;
@@ -242,9 +250,17 @@ function render(){
       });
     }
 
+    // bouton existant: shipped sans tracking
     if(ship){
       ship.addEventListener("click", async () => {
         await updateStatus(o.id, "shipped");
+      });
+    }
+
+    // ✅ NEW: Enregistrer + shipped + tracking
+    if(shipSave){
+      shipSave.addEventListener("click", async () => {
+        await saveShipment(o.id);
       });
     }
   });
@@ -283,6 +299,22 @@ function renderOrderCard(o){
 
   const note = o.note ? `<div class="admin-note"><span class="muted">Note:</span> ${safeText(o.note)}</div>` : "";
 
+  // ✅ NEW: bloc expédition / suivi
+  const shipBlock = `
+    <div class="admin-addr" style="margin-top:10px;">
+      <div class="muted" style="font-weight:900; margin-bottom:6px;">Expédition (Mondial Relay)</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input id="car_${safeText(o.id)}" class="input" placeholder="Transporteur" value="${safeText(o.carrier || "Mondial Relay")}">
+        <input id="trk_${safeText(o.id)}" class="input" placeholder="N° de suivi" value="${safeText(o.tracking_number || "")}">
+        <input id="url_${safeText(o.id)}" class="input" placeholder="Lien suivi (optionnel)" value="${safeText(o.tracking_url || "")}">
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+        <button id="shipSave_${safeText(o.id)}" class="btn">Enregistrer + shipped</button>
+        ${o.shipped_at ? `<div class="muted" style="align-self:center;">Expédiée le ${safeText(fmtDate(o.shipped_at))}</div>` : ``}
+      </div>
+    </div>
+  `;
+
   return `
     <article class="admin-card">
       <div class="admin-top">
@@ -317,9 +349,53 @@ function renderOrderCard(o){
         <div class="muted" style="font-weight:900; margin-bottom:6px;">Livraison</div>
         <div>${safeText(addrLine)}</div>
       </div>
+
+      ${shipBlock}
       ${note}
     </article>
   `;
+}
+
+async function saveShipment(orderId){
+  try{
+    setMsg("");
+    const btn = qs(`shipSave_${orderId}`);
+    if(btn){ btn.disabled = true; btn.textContent = "…"; }
+
+    const carrier = (qs(`car_${orderId}`)?.value || "Mondial Relay").trim();
+    const tracking_number = (qs(`trk_${orderId}`)?.value || "").trim();
+    const tracking_url = (qs(`url_${orderId}`)?.value || "").trim();
+
+    // ✅ update shipped + tracking
+    const up = await sb.from("orders").update({
+      status: "shipped",
+      shipped_at: new Date().toISOString(),
+      carrier: carrier || "Mondial Relay",
+      tracking_number: tracking_number || null,
+      tracking_url: tracking_url || null,
+    }).eq("id", orderId);
+
+    if(up.error) throw up.error;
+
+    // update local cache
+    const o = ordersCache.find(x => x.id === orderId);
+    if(o){
+      o.status = "shipped";
+      o.shipped_at = new Date().toISOString();
+      o.carrier = carrier || "Mondial Relay";
+      o.tracking_number = tracking_number || null;
+      o.tracking_url = tracking_url || null;
+    }
+
+    render();
+    setMsg("✅ Expédition enregistrée (shipped + suivi)", "ok");
+  } catch(err){
+    console.error(err);
+    setMsg(err?.message || "Erreur enregistrement expédition", "err");
+  } finally {
+    const btn = qs(`shipSave_${orderId}`);
+    if(btn){ btn.disabled = false; btn.textContent = "Enregistrer + shipped"; }
+  }
 }
 
 async function updateStatus(orderId, status){
@@ -353,6 +429,7 @@ function exportCSV(){
   rows.push([
     "order_id","created_at","status","customer_email","customer_name","phone",
     "subtotal_eur","shipping_eur","total_eur","shipping_method",
+    "carrier","tracking_number","tracking_url","shipped_at",
     "address","items"
   ]);
 
@@ -379,6 +456,10 @@ function exportCSV(){
       (Number(o.shipping_cents||0)/100).toFixed(2),
       (Number(o.total_cents||0)/100).toFixed(2),
       o.shipping_method || "",
+      o.carrier || "",
+      o.tracking_number || "",
+      o.tracking_url || "",
+      o.shipped_at || "",
       address,
       items
     ]);
@@ -400,4 +481,5 @@ function exportCSV(){
   a.click();
   a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  setMsg("CSV exporté ✔", "ok");
 }
