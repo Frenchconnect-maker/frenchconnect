@@ -14,7 +14,8 @@
    PAS une clé "sb_publishable_..."
 ================================ */
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ"; // <-- remets ta clé ici
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
 // Load supabase-js (CDN)
 (function loadSupabaseCDN() {
@@ -184,22 +185,18 @@ function setAuthUI(user) {
 /* ================================
    ✅ STRIPE CHECKOUT (Edge Function)
    On utilise sb.functions.invoke() :
-   - gère apikey + authorization automatiquement
-   - évite les erreurs d’URL
+   - gère apikey automatiquement
+   - on force Authorization au cas où (GitHub Pages)
 ================================ */
 async function startStripeCheckout(sb, orderId) {
-  // 1) Vérifier session
-  let {
-    data: { session },
-  } = await sb.auth.getSession();
+  // 1) Récupérer session
+  let { data: { session } } = await sb.auth.getSession();
 
   // 2) Si pas de session -> tenter refresh
   if (!session?.access_token) {
     try {
       await sb.auth.refreshSession();
-      ({
-        data: { session },
-      } = await sb.auth.getSession());
+      ({ data: { session } } = await sb.auth.getSession());
     } catch (e) {
       // ignore
     }
@@ -207,21 +204,18 @@ async function startStripeCheckout(sb, orderId) {
 
   // 3) Toujours rien => stop
   if (!session?.access_token) {
-    throw new Error(
-      "Tu dois être connecté pour payer. Clique sur “Se connecter”, puis réessaie."
-    );
+    throw new Error("Tu dois être connecté pour payer. Connecte-toi puis réessaie.");
   }
 
-  // 4) Appel Edge Function ✅ FIX: on force apikey dans les headers
+  // 4) Appel Edge Function avec Authorization ✅
   const { data, error } = await sb.functions.invoke("stripe-create-checkout", {
     body: { order_id: orderId },
     headers: {
-      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${session.access_token}`,
     },
   });
 
   if (error) {
-    // error.message est souvent parlant (401/403/500)
     throw new Error(error.message || "Erreur Edge Function");
   }
 
@@ -490,3 +484,4 @@ async function initCheckout() {
     }
   });
 }
+
