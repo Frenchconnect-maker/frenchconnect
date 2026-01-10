@@ -13,7 +13,7 @@
 
 // ✅ RENSEIGNE ICI (mêmes valeurs que checkout.js)
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
+const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
 
 // Charge supabase-js depuis CDN
 (function loadSupabaseCDN(){
