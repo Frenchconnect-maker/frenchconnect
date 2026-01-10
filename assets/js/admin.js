@@ -4,19 +4,20 @@
    - Accès réservé aux profils is_admin = true
    - Liste commandes + recherche / filtre
    - Actions: changer statut + bouton "Marquer expédiée"
+   - Expédition: transporteur + suivi + lien
    - Export CSV
 
    IMPORTANT (sécurité):
-   - Utilise uniquement la ANON key côté navigateur.
+   - Utilise uniquement la ANON key (eyJ...) côté navigateur.
    - La protection réelle = RLS + policies (is_admin).
    ========================================================== */
 
-// ✅ RENSEIGNE ICI (mêmes valeurs que checkout.js)
+// ✅ MÊMES VALEURS QUE checkout.js (ANON KEY = eyJ...)
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
 // Charge supabase-js depuis CDN
-(function loadSupabaseCDN(){
+(function loadSupabaseCDN() {
   const s = document.createElement("script");
   s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
   s.defer = true;
@@ -25,25 +26,36 @@ const SUPABASE_KEY = "sb_publishable_ZR6JsAS82JL3r8stv_Zdhw_X9UGtmqM";
 })();
 
 // ----------------- utils -----------------
-const euro = (cents) => (Number(cents || 0) / 100).toFixed(2).replace(".", ",") + " €";
+const euro = (cents) =>
+  (Number(cents || 0) / 100).toFixed(2).replace(".", ",") + " €";
+
 const fmtDate = (iso) => {
-  if(!iso) return "";
+  if (!iso) return "";
   const d = new Date(iso);
-  return d.toLocaleString(undefined, { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  return d.toLocaleString("fr-FR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
-function qs(id){ return document.getElementById(id); }
-function setMsg(text, type="info"){
+function qs(id) {
+  return document.getElementById(id);
+}
+function setMsg(text, type = "info") {
   const box = qs("msg");
-  if(!box) return;
+  if (!box) return;
   box.style.display = text ? "block" : "none";
   box.textContent = text || "";
   box.className = "";
   box.classList.add(type === "err" ? "danger" : "ok");
 }
-
-function safeText(s){
-  return (s ?? "").toString().replace(/[<>&]/g, (c)=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+function safeText(s) {
+  return (s ?? "")
+    .toString()
+    .replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
 }
 
 // ----------------- state -----------------
@@ -52,13 +64,19 @@ let currentUser = null;
 let ordersCache = [];
 let profilesById = new Map();
 
-async function initAdmin(){
-  try{
-    if(!window.supabase) throw new Error("Supabase CDN non chargé.");
+async function initAdmin() {
+  try {
+    if (!window.supabase) throw new Error("Supabase CDN non chargé.");
 
-    // ✅ FIX: accepte ANON KEY (eyJ...) + évite le vieux check sb_
-    if(!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY || SUPABASE_KEY.length < 40){
-      throw new Error("SUPABASE_URL / SUPABASE_KEY manquants dans assets/js/admin.js (ANON key eyJ...)");
+    // ✅ accepte ANON KEY (eyJ...)
+    if (
+      !SUPABASE_URL.startsWith("http") ||
+      !SUPABASE_KEY ||
+      SUPABASE_KEY.length < 40
+    ) {
+      throw new Error(
+        "SUPABASE_URL / SUPABASE_KEY manquants dans assets/js/admin.js (ANON key eyJ...)"
+      );
     }
 
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -75,64 +93,74 @@ async function initAdmin(){
     const { data } = await sb.auth.getSession();
     currentUser = data?.session?.user || null;
 
-    if(currentUser){
+    if (currentUser) {
       await enterAdmin();
     } else {
       showLogin();
     }
-  } catch(err){
+  } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur init admin", "err");
     showLogin();
   }
 }
 
-function showLogin(){
+function showLogin() {
   qs("admin-login")?.classList.remove("hidden");
   qs("admin-app")?.classList.add("hidden");
 }
-
-function showApp(){
+function showApp() {
   qs("admin-login")?.classList.add("hidden");
   qs("admin-app")?.classList.remove("hidden");
 }
 
-async function onLogin(e){
+async function onLogin(e) {
   e.preventDefault();
   setMsg("");
+
   const email = (qs("login-email")?.value || "").trim().toLowerCase();
   const password = qs("login-password")?.value || "";
-  if(!email || !password){
+  if (!email || !password) {
     setMsg("Email et mot de passe requis.", "err");
     return;
   }
+
   const btn = qs("login-btn");
-  if(btn){ btn.disabled = true; btn.textContent = "Connexion…"; }
-  try{
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Connexion…";
+  }
+
+  try {
     const res = await sb.auth.signInWithPassword({ email, password });
-    if(res.error) throw res.error;
+    if (res.error) throw res.error;
+
     const { data } = await sb.auth.getSession();
     currentUser = data?.session?.user || null;
-    if(!currentUser) throw new Error("Connexion OK mais session introuvable.");
+    if (!currentUser) throw new Error("Connexion OK mais session introuvable.");
+
     await enterAdmin();
-  } catch(err){
+  } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur connexion", "err");
   } finally {
-    if(btn){ btn.disabled = false; btn.textContent = "Se connecter"; }
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Se connecter";
+    }
   }
 }
 
-async function onLogout(){
+async function onLogout() {
   await sb.auth.signOut();
   currentUser = null;
   ordersCache = [];
   profilesById = new Map();
-  qs("orders") && (qs("orders").innerHTML = "");
+  if (qs("orders")) qs("orders").innerHTML = "";
   showLogin();
 }
 
-async function enterAdmin(){
+async function enterAdmin() {
   // Vérifie is_admin
   const prof = await sb
     .from("profiles")
@@ -140,10 +168,9 @@ async function enterAdmin(){
     .eq("id", currentUser.id)
     .maybeSingle();
 
-  if(prof.error){
-    throw prof.error;
-  }
-  if(!prof.data || prof.data.is_admin !== true){
+  if (prof.error) throw prof.error;
+
+  if (!prof.data || prof.data.is_admin !== true) {
     await sb.auth.signOut();
     currentUser = null;
     showLogin();
@@ -151,55 +178,61 @@ async function enterAdmin(){
     return;
   }
 
-  qs("admin-email") && (qs("admin-email").textContent = prof.data.email || currentUser.email || "");
+  if (qs("admin-email"))
+    qs("admin-email").textContent = prof.data.email || currentUser.email || "";
+
   showApp();
   await loadAndRender();
 }
 
 // ----------------- data -----------------
-async function loadAndRender(){
+async function loadAndRender() {
   setMsg("");
-  qs("orders") && (qs("orders").innerHTML = "<div class='muted'>Chargement…</div>");
+  if (qs("orders")) qs("orders").innerHTML = "<div class='muted'>Chargement…</div>";
 
-  // 1) commandes + items + addresses
+  // commandes + items + addresses + champs expédition
   const res = await sb
     .from("orders")
-    // ✅ NEW: inclut les champs expédition
-    .select("id,user_id,status,created_at,currency,subtotal_cents,shipping_cents,total_cents,shipping_method,note,carrier,tracking_number,tracking_url,shipped_at,order_items(*),addresses(*)")
-    .order("created_at", { ascending:false })
+    .select(
+      "id,user_id,status,created_at,currency,subtotal_cents,shipping_cents,total_cents,shipping_method,note,carrier,tracking_number,tracking_url,shipped_at,order_items(*),addresses(*)"
+    )
+    .order("created_at", { ascending: false })
     .limit(200);
 
-  if(res.error){
+  if (res.error) {
     console.error(res.error);
     setMsg(res.error.message || "Erreur chargement commandes", "err");
-    qs("orders") && (qs("orders").innerHTML = "");
+    if (qs("orders")) qs("orders").innerHTML = "";
     return;
   }
+
   ordersCache = res.data || [];
 
-  // 2) profils des clients
-  const userIds = [...new Set(ordersCache.map(o => o.user_id).filter(Boolean))];
+  // profils clients
+  const userIds = [...new Set(ordersCache.map((o) => o.user_id).filter(Boolean))];
   profilesById = new Map();
-  if(userIds.length){
+
+  if (userIds.length) {
     const pr = await sb
       .from("profiles")
       .select("id,email,first_name,last_name,phone")
       .in("id", userIds);
-    if(pr.error){
+
+    if (pr.error) {
       console.warn("profiles fetch failed", pr.error);
     } else {
-      (pr.data || []).forEach(p => profilesById.set(p.id, p));
+      (pr.data || []).forEach((p) => profilesById.set(p.id, p));
     }
   }
 
   render();
 }
 
-function filteredOrders(){
+function filteredOrders() {
   const q = (qs("q")?.value || "").trim().toLowerCase();
   const st = (qs("status")?.value || "").trim();
 
-  return (ordersCache || []).filter(o => {
+  return (ordersCache || []).filter((o) => {
     const prof = profilesById.get(o.user_id) || {};
     const hay = [
       o.id,
@@ -210,37 +243,37 @@ function filteredOrders(){
       prof.email,
       prof.first_name,
       prof.last_name,
-      (o.order_items || []).map(i => i.product_name).join(" ")
-    ].join(" ").toLowerCase();
+      (o.order_items || []).map((i) => i.product_name).join(" "),
+    ]
+      .join(" ")
+      .toLowerCase();
 
     const okQ = !q || hay.includes(q);
-    const okS = !st || (o.status === st);
+    const okS = !st || o.status === st;
     return okQ && okS;
   });
 }
 
 // ----------------- render -----------------
-function render(){
+function render() {
   const box = qs("orders");
-  if(!box) return;
+  if (!box) return;
 
   const list = filteredOrders();
-  if(!list.length){
+  if (!list.length) {
     box.innerHTML = "<div class='muted'>Aucune commande.</div>";
     return;
   }
 
   box.innerHTML = list.map(renderOrderCard).join("");
 
-  // bind actions per card
-  list.forEach(o => {
+  list.forEach((o) => {
     const sel = qs(`st_${o.id}`);
     const save = qs(`save_${o.id}`);
     const ship = qs(`ship_${o.id}`);
-
     const shipSave = qs(`shipSave_${o.id}`);
 
-    if(sel && save){
+    if (sel && save) {
       sel.addEventListener("change", () => {
         save.disabled = false;
         save.textContent = "Enregistrer";
@@ -250,15 +283,13 @@ function render(){
       });
     }
 
-    // bouton existant: shipped sans tracking
-    if(ship){
+    if (ship) {
       ship.addEventListener("click", async () => {
         await updateStatus(o.id, "shipped");
       });
     }
 
-    // ✅ NEW: Enregistrer + shipped + tracking
-    if(shipSave){
+    if (shipSave) {
       shipSave.addEventListener("click", async () => {
         await saveShipment(o.id);
       });
@@ -266,51 +297,63 @@ function render(){
   });
 }
 
-function renderOrderCard(o){
+function renderOrderCard(o) {
   const prof = profilesById.get(o.user_id) || {};
-  const fullName = [prof.first_name, prof.last_name].filter(Boolean).join(" ") || "Client";
+  const fullName =
+    [prof.first_name, prof.last_name].filter(Boolean).join(" ") || "Client";
   const email = prof.email || "";
   const phone = prof.phone || "";
 
-  const items = (o.order_items || []).map(i => {
-    const opt = i.option_label ? ` • ${safeText(i.option_label)}` : "";
-    const qty = Number(i.qty || 1);
-    return `
+  const items = (o.order_items || [])
+    .map((i) => {
+      const opt = i.option_label ? ` • ${safeText(i.option_label)}` : "";
+      const qty = Number(i.qty || 1);
+      return `
       <div class="admin-item">
         <div class="admin-item-name">${safeText(i.product_name || i.product_id)}<span class="muted">${opt}</span></div>
         <div class="admin-item-meta">x ${qty}</div>
         <div class="admin-item-price">${euro(i.line_total_cents)}</div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
-  const shipAddr = (o.addresses || []).find(a => a.type === "shipping") || (o.addresses || [])[0] || null;
-  const addrLine = shipAddr ? [
-    shipAddr.address1,
-    shipAddr.address2,
-    shipAddr.postal_code,
-    shipAddr.city,
-    shipAddr.country
-  ].filter(Boolean).join(" • ") : "—";
+  const shipAddr =
+    (o.addresses || []).find((a) => a.type === "shipping") ||
+    (o.addresses || [])[0] ||
+    null;
 
-  const statusOptions = ["new","paid","shipped","cancelled"].map(s =>
-    `<option value="${s}" ${o.status===s?"selected":""}>${s}</option>`
-  ).join("");
+  const addrLine = shipAddr
+    ? [shipAddr.address1, shipAddr.address2, shipAddr.postal_code, shipAddr.city, shipAddr.country]
+        .filter(Boolean)
+        .join(" • ")
+    : "—";
 
-  const note = o.note ? `<div class="admin-note"><span class="muted">Note:</span> ${safeText(o.note)}</div>` : "";
+  const statusOptions = ["new", "paid", "shipped", "cancelled"]
+    .map((s) => `<option value="${s}" ${o.status === s ? "selected" : ""}>${s}</option>`)
+    .join("");
 
-  // ✅ NEW: bloc expédition / suivi
+  const note = o.note
+    ? `<div class="admin-note"><span class="muted">Note:</span> ${safeText(o.note)}</div>`
+    : "";
+
   const shipBlock = `
     <div class="admin-addr" style="margin-top:10px;">
-      <div class="muted" style="font-weight:900; margin-bottom:6px;">Expédition (Mondial Relay)</div>
+      <div class="muted" style="font-weight:900; margin-bottom:6px;">Expédition</div>
+
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <input id="car_${safeText(o.id)}" class="input" placeholder="Transporteur" value="${safeText(o.carrier || "Mondial Relay")}">
         <input id="trk_${safeText(o.id)}" class="input" placeholder="N° de suivi" value="${safeText(o.tracking_number || "")}">
         <input id="url_${safeText(o.id)}" class="input" placeholder="Lien suivi (optionnel)" value="${safeText(o.tracking_url || "")}">
       </div>
+
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
         <button id="shipSave_${safeText(o.id)}" class="btn">Enregistrer + shipped</button>
-        ${o.shipped_at ? `<div class="muted" style="align-self:center;">Expédiée le ${safeText(fmtDate(o.shipped_at))}</div>` : ``}
+        ${
+          o.shipped_at
+            ? `<div class="muted" style="align-self:center;">Expédiée le ${safeText(fmtDate(o.shipped_at))}</div>`
+            : ``
+        }
       </div>
     </div>
   `;
@@ -328,6 +371,7 @@ function renderOrderCard(o){
           <div class="muted">${safeText(email)}${phone ? ` • ${safeText(phone)}` : ""}</div>
           <div class="muted">${fmtDate(o.created_at)} • statut: <strong>${safeText(o.status)}</strong></div>
         </div>
+
         <div class="admin-actions">
           <select id="st_${safeText(o.id)}" class="admin-select">
             ${statusOptions}
@@ -341,9 +385,7 @@ function renderOrderCard(o){
         <div class="muted">Sous-total ${euro(o.subtotal_cents)} • Livraison ${euro(o.shipping_cents)} • ${safeText(o.shipping_method || "")}</div>
       </div>
 
-      <div class="admin-items">
-        ${items}
-      </div>
+      <div class="admin-items">${items}</div>
 
       <div class="admin-addr">
         <div class="muted" style="font-weight:900; margin-bottom:6px;">Livraison</div>
@@ -356,30 +398,34 @@ function renderOrderCard(o){
   `;
 }
 
-async function saveShipment(orderId){
-  try{
+async function saveShipment(orderId) {
+  try {
     setMsg("");
     const btn = qs(`shipSave_${orderId}`);
-    if(btn){ btn.disabled = true; btn.textContent = "…"; }
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "…";
+    }
 
     const carrier = (qs(`car_${orderId}`)?.value || "Mondial Relay").trim();
     const tracking_number = (qs(`trk_${orderId}`)?.value || "").trim();
     const tracking_url = (qs(`url_${orderId}`)?.value || "").trim();
 
-    // ✅ update shipped + tracking
-    const up = await sb.from("orders").update({
-      status: "shipped",
-      shipped_at: new Date().toISOString(),
-      carrier: carrier || "Mondial Relay",
-      tracking_number: tracking_number || null,
-      tracking_url: tracking_url || null,
-    }).eq("id", orderId);
+    const up = await sb
+      .from("orders")
+      .update({
+        status: "shipped",
+        shipped_at: new Date().toISOString(),
+        carrier: carrier || "Mondial Relay",
+        tracking_number: tracking_number || null,
+        tracking_url: tracking_url || null,
+      })
+      .eq("id", orderId);
 
-    if(up.error) throw up.error;
+    if (up.error) throw up.error;
 
-    // update local cache
-    const o = ordersCache.find(x => x.id === orderId);
-    if(o){
+    const o = ordersCache.find((x) => x.id === orderId);
+    if (o) {
       o.status = "shipped";
       o.shipped_at = new Date().toISOString();
       o.carrier = carrier || "Mondial Relay";
@@ -389,61 +435,93 @@ async function saveShipment(orderId){
 
     render();
     setMsg("✅ Expédition enregistrée (shipped + suivi)", "ok");
-  } catch(err){
+  } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur enregistrement expédition", "err");
   } finally {
     const btn = qs(`shipSave_${orderId}`);
-    if(btn){ btn.disabled = false; btn.textContent = "Enregistrer + shipped"; }
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Enregistrer + shipped";
+    }
   }
 }
 
-async function updateStatus(orderId, status){
-  try{
+async function updateStatus(orderId, status) {
+  try {
     const saveBtn = qs(`save_${orderId}`);
-    if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = "…"; }
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "…";
+    }
 
     const up = await sb.from("orders").update({ status }).eq("id", orderId);
-    if(up.error) throw up.error;
+    if (up.error) throw up.error;
 
-    // update local cache
-    const o = ordersCache.find(x => x.id === orderId);
-    if(o) o.status = status;
+    const o = ordersCache.find((x) => x.id === orderId);
+    if (o) o.status = status;
+
     render();
     setMsg("Statut mis à jour ✔", "ok");
-  } catch(err){
+  } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur update status", "err");
   }
 }
 
 // ----------------- CSV export -----------------
-function exportCSV(){
+function exportCSV() {
   const list = filteredOrders();
-  if(!list.length){
+  if (!list.length) {
     setMsg("Aucune commande à exporter.", "err");
     return;
   }
 
   const rows = [];
   rows.push([
-    "order_id","created_at","status","customer_email","customer_name","phone",
-    "subtotal_eur","shipping_eur","total_eur","shipping_method",
-    "carrier","tracking_number","tracking_url","shipped_at",
-    "address","items"
+    "order_id",
+    "created_at",
+    "status",
+    "customer_email",
+    "customer_name",
+    "phone",
+    "subtotal_eur",
+    "shipping_eur",
+    "total_eur",
+    "shipping_method",
+    "carrier",
+    "tracking_number",
+    "tracking_url",
+    "shipped_at",
+    "address",
+    "items",
   ]);
 
-  list.forEach(o => {
+  list.forEach((o) => {
     const prof = profilesById.get(o.user_id) || {};
     const fullName = [prof.first_name, prof.last_name].filter(Boolean).join(" ");
-    const shipAddr = (o.addresses || []).find(a => a.type === "shipping") || (o.addresses || [])[0] || {};
-    const address = [shipAddr.address1, shipAddr.address2, shipAddr.postal_code, shipAddr.city, shipAddr.country]
-      .filter(Boolean).join(" ");
 
-    const items = (o.order_items || []).map(i => {
-      const opt = i.option_label ? ` (${i.option_label})` : "";
-      return `${i.product_name || i.product_id}${opt} x${i.qty}`;
-    }).join(" | ");
+    const shipAddr =
+      (o.addresses || []).find((a) => a.type === "shipping") ||
+      (o.addresses || [])[0] ||
+      {};
+
+    const address = [
+      shipAddr.address1,
+      shipAddr.address2,
+      shipAddr.postal_code,
+      shipAddr.city,
+      shipAddr.country,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const items = (o.order_items || [])
+      .map((i) => {
+        const opt = i.option_label ? ` (${i.option_label})` : "";
+        return `${i.product_name || i.product_id}${opt} x${i.qty}`;
+      })
+      .join(" | ");
 
     rows.push([
       o.id,
@@ -452,34 +530,39 @@ function exportCSV(){
       prof.email || "",
       fullName || "",
       prof.phone || "",
-      (Number(o.subtotal_cents||0)/100).toFixed(2),
-      (Number(o.shipping_cents||0)/100).toFixed(2),
-      (Number(o.total_cents||0)/100).toFixed(2),
+      (Number(o.subtotal_cents || 0) / 100).toFixed(2),
+      (Number(o.shipping_cents || 0) / 100).toFixed(2),
+      (Number(o.total_cents || 0) / 100).toFixed(2),
       o.shipping_method || "",
       o.carrier || "",
       o.tracking_number || "",
       o.tracking_url || "",
       o.shipped_at || "",
       address,
-      items
+      items,
     ]);
   });
 
-  const csv = rows.map(r => r.map(cell => {
-    const s = (cell ?? "").toString();
-    // CSV safe
-    if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
-    return s;
-  }).join(",")).join("\n");
+  const csv = rows
+    .map((r) =>
+      r
+        .map((cell) => {
+          const s = (cell ?? "").toString();
+          if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        })
+        .join(",")
+    )
+    .join("\n");
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `commandes_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `commandes_${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(a);
   a.click();
   a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
   setMsg("CSV exporté ✔", "ok");
 }
