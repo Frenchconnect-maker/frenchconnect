@@ -173,6 +173,16 @@ const STORE = [
 
   // ===== PRE ROLLS (SANS GRAMMAGE) =====
   {
+    id: "RuntZ-haze-pre-roll",
+    name: "Runtz Haze Pre Roll",
+    price: 14.90,
+    image: "assets/images/RuntZ-haze-pre-roll.jpg",
+    category: "prerolls",
+    badge: "Pre Roll",
+    desc: "Pre roll CBD prêt à l’emploi, roulé avec des fleurs Runtz Haze soigneusement sélectionnées. Saveurs Agrumes douces, combustion régulière et roulage premium. THC < 0,3 %.",
+    payment_link: ""
+  },
+  {
     id: "strawberry-haze-pre-roll",
     name: "Strawberry Haze Pre Roll",
     price: 12.90,
