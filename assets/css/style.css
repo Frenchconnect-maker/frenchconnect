@@ -689,7 +689,7 @@ body.menu-open .nav-toggle span:nth-child(3){
 ========================================= */
 
 /* Hero: voile plus léger sur la home */
-html.home .hero::before{
+{
   background: linear-gradient(
     180deg,
     rgba(7,7,11,.30),
