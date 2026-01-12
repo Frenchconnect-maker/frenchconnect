@@ -32,10 +32,8 @@ a{ color:inherit; text-decoration:none; }
 a:hover{ color: var(--neon3); }
 
 /* ================================
-   BACKGROUND (MAX STREET)
-================================ */
-/* ================================
    BACKGROUND GLOBAL — IDENTIQUE PARTOUT (PANIER STYLE)
+   ✅ FIX .com : chemin relatif (IMPORTANT)
 ================================ */
 html{
   background: #07070b;
@@ -44,8 +42,12 @@ html{
 body{
   position: relative;
   min-height: 100vh;
-  background: transparent;
   overflow-x: hidden;
+
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--ink);
+  background: transparent;
+  line-height:1.55;
 }
 
 /* Image de fond (même cadrage partout) */
@@ -55,7 +57,8 @@ body::before{
   inset: 0;
   z-index: -2;
 
-  background-image: url("/frenchconnect/assets/images/background.webp");
+  /* ✅ Chemin RELATIF depuis assets/css/style.css -> assets/images/ */
+  background-image: url("../images/background.webp");
   background-repeat: no-repeat;
   background-size: cover;
 
@@ -88,13 +91,6 @@ html.home body::after{
     rgba(0,0,0,.30),
     rgba(0,0,0,.52)
   );
-}
-
-body{
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: var(--ink);
-  background: transparent;
-  line-height:1.55;
 }
 
 /* Titres (street) */
@@ -438,7 +434,6 @@ input:focus, select:focus{
 
 /* ================================
    STICKERS PROMO (MAX STREET TAG)
-   Toujours au-dessus
 ================================ */
 .sticker{
   position:absolute !important;
@@ -463,10 +458,8 @@ input:focus, select:focus{
 
   transform: rotate(-8deg) !important;
 
-  /* tag cut */
   clip-path: polygon(0 0, 95% 0, 100% 50%, 95% 100%, 0 100%, 4% 50%);
 
-  /* grain */
   background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px) !important;
   background-size: 6px 6px !important;
 }
@@ -532,11 +525,10 @@ input:focus, select:focus{
 @media (prefers-reduced-motion: reduce){
   .sticker{ animation:none !important; }
 }
+
 /* =========================================================
    STREET NAV — BURGER + OVERLAY (SAFE)
-   Colle tout en bas de style.css
-   ========================================================= */
-
+================================ */
 .nav-toggle{
   display:none;
   width:44px;
@@ -683,20 +675,10 @@ body.menu-open .nav-toggle span:nth-child(3){
   top:21px;
   transform: translateX(-50%) rotate(-45deg);
 }
-/* =========================================
-   HOME ONLY (index.html) — background visible
-   Garde panier/shop inchangés
-========================================= */
 
-/* Hero: voile plus léger sur la home */
-{
-  background: linear-gradient(
-    180deg,
-    rgba(7,7,11,.30),
-    rgba(7,7,11,.18)
-  ) !important;
-  backdrop-filter: blur(1px) !important;
-}
+/* =========================================
+   HOME ONLY (index.html)
+========================================= */
 
 /* Cards sur home: plus transparentes (pour voir le background) */
 html.home .card{
