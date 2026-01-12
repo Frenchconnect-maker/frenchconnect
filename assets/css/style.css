@@ -33,11 +33,9 @@ a:hover{ color: var(--neon3); }
 
 /* ================================
    BACKGROUND GLOBAL — IDENTIQUE PARTOUT (PANIER STYLE)
-   ✅ FIX .com : chemin relatif (IMPORTANT)
+   ✅ FIX .com : chemin relatif
 ================================ */
-html{
-  background: #07070b;
-}
+html{ background:#07070b; }
 
 body{
   position: relative;
@@ -57,7 +55,7 @@ body::before{
   inset: 0;
   z-index: -2;
 
-  /* ✅ Chemin RELATIF depuis assets/css/style.css -> assets/images/ */
+  /* ✅ IMPORTANT : chemin RELATIF depuis assets/css/style.css */
   background-image: url("../images/background.webp");
   background-repeat: no-repeat;
   background-size: cover;
@@ -69,7 +67,7 @@ body::before{
   will-change: transform;
 }
 
-/* Voile global */
+/* Voile global léger */
 body::after{
   content:"";
   position: fixed;
@@ -84,7 +82,7 @@ body::after{
   );
 }
 
-/* Home = voile plus léger (BONUS) */
+/* Home = voile un peu plus léger */
 html.home body::after{
   background: linear-gradient(
     180deg,
@@ -109,10 +107,7 @@ h1,h2,h3{
    LAYOUT
 ================================ */
 .container{ padding:24px; }
-.wrap{
-  max-width:var(--maxw);
-  margin:0 auto;
-}
+.wrap{ max-width:var(--maxw); margin:0 auto; }
 
 /* ================================
    HEADER (CLUB / STREET)
@@ -188,7 +183,7 @@ h1,h2,h3{
 }
 
 /* ================================
-   HERO (si présent)
+   HERO
 ================================ */
 .hero{ padding:40px 24px; }
 .hero-inner{
@@ -243,7 +238,6 @@ h1,h2,h3{
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
 }
 
-/* Dashed + tape (derrière) */
 .card::after{
   content:"";
   position:absolute;
@@ -284,7 +278,6 @@ h1,h2,h3{
   filter: saturate(1.06) contrast(1.02);
 }
 
-/* Image / contenu en couches (stickers au-dessus) */
 .card .thumb{
   width:100%;
   aspect-ratio: 1/1;
@@ -298,8 +291,6 @@ h1,h2,h3{
   position: relative;
   z-index: 2;
 }
-
-/* Spray glow en bas */
 .card .pad::after{
   content:"";
   position:absolute;
@@ -317,7 +308,6 @@ h1,h2,h3{
   pointer-events:none;
 }
 
-/* Pills (tag) */
 .pill{
   display:inline-block;
   font-size:.78rem;
@@ -333,7 +323,6 @@ h1,h2,h3{
   box-shadow: 0 0 18px rgba(255,43,214,.10);
 }
 
-/* Price tag (spray underline) */
 .price-tag{
   position: relative;
   font-weight: 900;
@@ -351,7 +340,7 @@ h1,h2,h3{
 }
 
 /* ================================
-   BUTTONS (MAX NEON)
+   BUTTONS
 ================================ */
 .btn{
   padding: 10px 14px;
@@ -387,7 +376,7 @@ h1,h2,h3{
 }
 
 /* ================================
-   INPUTS / SELECTS (GLASS)
+   INPUTS / SELECTS
 ================================ */
 input, select{
   background: rgba(255,255,255,.03) !important;
@@ -402,7 +391,7 @@ input:focus, select:focus{
 }
 
 /* ================================
-   GRAMMAGE (lisibilité)
+   GRAMMAGE
 ================================ */
 #grammage-box select,
 #grammage-box option{
@@ -433,7 +422,7 @@ input:focus, select:focus{
 }
 
 /* ================================
-   STICKERS PROMO (MAX STREET TAG)
+   STICKERS PROMO
 ================================ */
 .sticker{
   position:absolute !important;
@@ -457,36 +446,15 @@ input:focus, select:focus{
     0 0 22px rgba(57,255,20,.20) !important;
 
   transform: rotate(-8deg) !important;
-
   clip-path: polygon(0 0, 95% 0, 100% 50%, 95% 100%, 0 100%, 4% 50%);
 
   background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px) !important;
   background-size: 6px 6px !important;
 }
-.sticker.right{
-  left:auto !important;
-  right:14px !important;
-  transform: rotate(8deg) !important;
-}
-.sticker.pink{
-  background: var(--neon2) !important;
-  box-shadow:
-    0 12px 34px rgba(0,0,0,.45),
-    0 0 22px rgba(255,43,214,.20) !important;
-}
-.sticker.cyan{
-  background: var(--neon3) !important;
-  box-shadow:
-    0 12px 34px rgba(0,0,0,.45),
-    0 0 22px rgba(0,229,255,.18) !important;
-}
-.sticker.black{
-  background: rgba(255,255,255,.92) !important;
-  color:#000 !important;
-  box-shadow:
-    0 12px 34px rgba(0,0,0,.45),
-    0 0 18px rgba(255,255,255,.10) !important;
-}
+.sticker.right{ left:auto !important; right:14px !important; transform: rotate(8deg) !important; }
+.sticker.pink{ background: var(--neon2) !important; }
+.sticker.cyan{ background: var(--neon3) !important; }
+.sticker.black{ background: rgba(255,255,255,.92) !important; color:#000 !important; }
 
 /* ================================
    FOOTER
@@ -513,7 +481,7 @@ input:focus, select:focus{
 }
 
 /* ================================
-   Micro animation (street vibe)
+   Micro animation
 ================================ */
 @keyframes neonPulse{
   0%{ filter: brightness(1); }
@@ -521,13 +489,12 @@ input:focus, select:focus{
   100%{ filter: brightness(1); }
 }
 .sticker{ animation: neonPulse 2.2s ease-in-out infinite; }
-
 @media (prefers-reduced-motion: reduce){
   .sticker{ animation:none !important; }
 }
 
 /* =========================================================
-   STREET NAV — BURGER + OVERLAY (SAFE)
+   STREET NAV — BURGER + OVERLAY
 ================================ */
 .nav-toggle{
   display:none;
@@ -560,7 +527,6 @@ input:focus, select:focus{
   box-shadow: 0 0 22px rgba(57,255,20,.10);
 }
 
-/* Overlay */
 .mobile-menu{
   position: fixed;
   inset: 0;
@@ -606,10 +572,7 @@ input:focus, select:focus{
 }
 
 .mobile-menu.open{ display:block; }
-.mobile-menu.open .panel{
-  transform: translateY(0);
-  opacity:1;
-}
+.mobile-menu.open .panel{ transform: translateY(0); opacity:1; }
 
 .mobile-menu .head{
   display:flex;
@@ -657,20 +620,16 @@ input:focus, select:focus{
   box-shadow: 0 0 18px rgba(57,255,20,.10);
 }
 
-/* Affichage mobile : nav desktop cachée */
 @media (max-width: 860px){
   .site-header .nav{ display:none; }
   .nav-toggle{ display:inline-block; }
 }
 
-/* Animation burger -> X quand ouvert */
 body.menu-open .nav-toggle span:nth-child(1){
   top:21px;
   transform: translateX(-50%) rotate(45deg);
 }
-body.menu-open .nav-toggle span:nth-child(2){
-  opacity:0;
-}
+body.menu-open .nav-toggle span:nth-child(2){ opacity:0; }
 body.menu-open .nav-toggle span:nth-child(3){
   top:21px;
   transform: translateX(-50%) rotate(-45deg);
@@ -679,18 +638,15 @@ body.menu-open .nav-toggle span:nth-child(3){
 /* =========================================
    HOME ONLY (index.html)
 ========================================= */
-
-/* Cards sur home: plus transparentes (pour voir le background) */
 html.home .card{
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02)) !important;
   border-color: rgba(0,229,255,.18) !important;
 }
-
-/* Sections container: un peu moins "plein" */
 html.home .container{
   padding-top: 18px;
   padding-bottom: 18px;
 }
+
 
 
 
