@@ -87,21 +87,22 @@
     </div>
   </div>
 
-  <!-- HERO -->
+  <!-- HERO (MOBILE FIRST : centré + boutons en colonne) -->
   <section class="hero">
     <div class="hero-inner">
-      <div class="hero-text">
+      <div class="hero-text" style="text-align:center;margin:0 auto;">
         <h1>CBD Premium •<br>Street Selection</h1>
 
-        <p class="muted">
+        <p class="muted" style="margin-left:auto;margin-right:auto;">
           Fleurs, Résines, Extraits, Pre Rolls — <strong>drops limités</strong>, terpènes naturels, sélection clean.
           <br>
           <strong>Conforme UE • THC &lt; 0,3%</strong>
         </p>
 
-        <div class="btn-row" style="margin-top:16px;">
-          <a class="btn" href="shop.html">Accéder à la boutique</a>
-          <a class="btn ghost" href="#bestsellers">Best sellers</a>
+        <!-- ✅ BONUS MOBILE : wrap + colonne + centre -->
+        <div class="btn-row" style="margin-top:16px;justify-content:center;flex-wrap:wrap;gap:10px;flex-direction:column;align-items:center;">
+          <a class="btn" href="shop.html" style="min-width:min(420px, 100%);text-align:center;">Accéder à la boutique</a>
+          <a class="btn ghost" href="#bestsellers" style="min-width:min(420px, 100%);text-align:center;">Best sellers</a>
         </div>
 
         <p style="margin-top:12px;font-size:13px;opacity:.78;">
@@ -115,7 +116,7 @@
 
   <!-- 🔥 BLOC PUNCHLINE -->
   <section class="container" id="about-shop">
-    <div class="card" style="max-width:900px;margin:0 auto;padding:22px 20px;">
+    <div class="card" style="max-width:900px;margin:0 auto;padding:22px 20px;text-align:center;">
       <h2 style="margin:0 0 10px;line-height:1.1;">
         FrenchConnect 🖤 — Street Selection 🌿
       </h2>
@@ -140,7 +141,7 @@
         Des <strong>drops limités</strong> 🧊, une vraie sélection, une identité.
       </p>
 
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;justify-content:center;">
         <span style="padding:6px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;">🧪 Conforme UE</span>
         <span style="padding:6px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;">⚖️ THC &lt; 0,3%</span>
         <span style="padding:6px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;">🚚 Expédition rapide</span>
@@ -151,16 +152,17 @@
         Pas de masse. Pas de compromis. Juste du clean, du vrai, du street. 😮‍💨
       </p>
 
-      <div class="btn-row" style="margin-top:16px;">
-        <a class="btn" href="shop.html">Découvrir la boutique 🛒</a>
-        <a class="btn ghost" href="#bestsellers">Top ventes 🔥</a>
+      <!-- ✅ BONUS MOBILE : boutons en colonne -->
+      <div class="btn-row" style="margin-top:16px;justify-content:center;flex-wrap:wrap;gap:10px;flex-direction:column;align-items:center;">
+        <a class="btn" href="shop.html" style="min-width:min(420px, 100%);text-align:center;">Découvrir la boutique 🛒</a>
+        <a class="btn ghost" href="#bestsellers" style="min-width:min(420px, 100%);text-align:center;">Top ventes 🔥</a>
       </div>
     </div>
   </section>
 
-  <!-- POURQUOI NOUS -->
+  <!-- POURQUOI NOUS (mobile first : 1 colonne via inline) -->
   <section class="container">
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;">
+    <div class="grid" style="grid-template-columns:1fr;gap:14px;">
       <div class="card">
         <h3>🌿 Sélection clean</h3>
         <p class="muted">On garde le meilleur : terpènes, aspect, constance. Pas de masse, que du solide.</p>
@@ -182,21 +184,21 @@
 
   <!-- BEST SELLERS -->
   <section class="container" id="bestsellers">
-    <h2 style="max-width:1200px;margin:0 auto 8px;">Best sellers</h2>
-    <p class="muted" style="max-width:1200px;margin:0 auto 16px;">
+    <h2 style="max-width:1200px;margin:0 auto 8px;text-align:center;">Best sellers</h2>
+    <p class="muted" style="max-width:1200px;margin:0 auto 16px;text-align:center;">
       Les plus demandés du moment. (Auto depuis tes cartes produits)
     </p>
 
     <div class="grid" id="home-bestsellers"></div>
 
     <div style="text-align:center;margin-top:18px;">
-      <a class="btn ghost" href="shop.html">Voir toute la boutique</a>
+      <a class="btn ghost" href="shop.html" style="min-width:min(420px, 100%);text-align:center;">Voir toute la boutique</a>
     </div>
   </section>
 
   <!-- NOUVEAUTÉS -->
   <section class="container">
-    <h2 style="max-width:1200px;margin:0 auto 12px;">Nouveautés</h2>
+    <h2 style="max-width:1200px;margin:0 auto 12px;text-align:center;">Nouveautés</h2>
     <div class="grid" id="home-collection"></div>
   </section>
 
@@ -209,9 +211,9 @@
         <br><br>
         Pas une marketplace. <strong>Une sélection.</strong> <strong>Une vibe.</strong> <strong>Une communauté.</strong>
       </p>
-      <div class="btn-row" style="justify-content:center;margin-top:14px;">
-        <a class="btn" href="shop.html">Je veux la sélection</a>
-        <a class="btn ghost" href="contact.html">Une question ?</a>
+      <div class="btn-row" style="justify-content:center;margin-top:14px;flex-wrap:wrap;gap:10px;flex-direction:column;align-items:center;">
+        <a class="btn" href="shop.html" style="min-width:min(420px, 100%);text-align:center;">Je veux la sélection</a>
+        <a class="btn ghost" href="contact.html" style="min-width:min(420px, 100%);text-align:center;">Une question ?</a>
       </div>
     </div>
   </section>
