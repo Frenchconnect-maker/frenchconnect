@@ -34,16 +34,60 @@ a:hover{ color: var(--neon3); }
 /* ================================
    BACKGROUND (MAX STREET)
 ================================ */
+/* ================================
+   BACKGROUND GLOBAL — IDENTIQUE PARTOUT (PANIER STYLE)
+================================ */
 html{
-  background:
-    radial-gradient(1200px 700px at 15% 10%, rgba(57,255,20,.18), transparent 55%),
-    radial-gradient(1000px 700px at 85% 15%, rgba(255,43,214,.16), transparent 55%),
-    radial-gradient(900px 700px at 55% 92%, rgba(0,229,255,.14), transparent 60%),
-    linear-gradient(180deg, rgba(0,0,0,.70), rgba(0,0,0,.82)),
-    url("/frenchconnect/assets/images/background.webp") center/cover no-repeat fixed;
+  background: #07070b;
 }
-@media (max-width: 1024px){
-  html{ background-attachment: scroll; }
+
+body{
+  position: relative;
+  min-height: 100vh;
+  background: transparent;
+  overflow-x: hidden;
+}
+
+/* Image de fond (même cadrage partout) */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+
+  background-image: url("/frenchconnect/assets/images/background.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  /* 🎯 Position comme ton panier */
+  background-position: 65% center;
+
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Voile global */
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.45),
+    rgba(0,0,0,.65)
+  );
+}
+
+/* Home = voile plus léger (BONUS) */
+html.home body::after{
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.30),
+    rgba(0,0,0,.52)
+  );
 }
 
 body{
