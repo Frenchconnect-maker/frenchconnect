@@ -639,6 +639,33 @@ body.menu-open .nav-toggle span:nth-child(3){
   top:21px;
   transform: translateX(-50%) rotate(-45deg);
 }
+/* =========================================
+   HOME ONLY (index.html) — background visible
+   Garde panier/shop inchangés
+========================================= */
+
+/* Hero: voile plus léger sur la home */
+html.home .hero::before{
+  background: linear-gradient(
+    180deg,
+    rgba(7,7,11,.30),
+    rgba(7,7,11,.18)
+  ) !important;
+  backdrop-filter: blur(1px) !important;
+}
+
+/* Cards sur home: plus transparentes (pour voir le background) */
+html.home .card{
+  background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02)) !important;
+  border-color: rgba(0,229,255,.18) !important;
+}
+
+/* Sections container: un peu moins "plein" */
+html.home .container{
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
 
 
 
