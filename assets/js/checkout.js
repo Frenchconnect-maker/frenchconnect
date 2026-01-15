@@ -1,15 +1,16 @@
 /* =========================================
-   Checkout — Mollie (redirect)
-   - Crée commande + items + adresses
-   - Puis appelle Edge Function "mollie-create-checkout"
-   - Redirige vers Mollie payment URL
+   Checkout — Option A (UI propre)
+   - Carte 1: Login (email + mdp)
+   - Carte 2: Livraison + Commande
+     - si pas connecté: création compte (email+mdp)
+     - si connecté: commande directe
+   - Mollie Checkout (redirect) après création de commande
+   - Compatible panier localStorage (store.js)
    ========================================= */
 
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
 const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
-
-const PAYMENT_FUNCTION = "mollie-create-checkout"; // ✅ Edge function name
 
 // Load supabase-js (CDN)
 (function loadSupabaseCDN() {
@@ -89,7 +90,6 @@ function renderSummary(cart) {
           p && line.optionId && typeof getOption === "function"
             ? getOption(p, line.optionId)?.label || ""
             : "";
-
         const unit = p
           ? typeof priceFor === "function"
             ? priceFor(p, line.optionId)
@@ -177,8 +177,6 @@ function setAuthUI(user) {
 
 /* ================================
    ✅ MOLLIE CHECKOUT (Edge Function)
-   - sb.functions.invoke("mollie-create-checkout", { order_id })
-   - return { url, payment_id }
 ================================ */
 async function startMollieCheckout(sb, orderId) {
   let { data: { session } } = await sb.auth.getSession();
@@ -187,14 +185,14 @@ async function startMollieCheckout(sb, orderId) {
     try {
       await sb.auth.refreshSession();
       ({ data: { session } } = await sb.auth.getSession());
-    } catch (_) {}
+    } catch (e) {}
   }
 
   if (!session?.access_token) {
     throw new Error("Tu dois être connecté pour payer. Connecte-toi puis réessaie.");
   }
 
-  const { data, error } = await sb.functions.invoke(PAYMENT_FUNCTION, {
+  const { data, error } = await sb.functions.invoke("mollie-create-checkout", {
     body: { order_id: orderId },
     headers: {
       Authorization: `Bearer ${session.access_token}`,
@@ -203,30 +201,6 @@ async function startMollieCheckout(sb, orderId) {
 
   if (error) throw new Error(error.message || "Erreur Edge Function Mollie");
   if (!data?.url) throw new Error("Mollie n’a pas renvoyé d’URL de paiement.");
-
-  // ✅ Essaie d’enregistrer payment_id proprement (si colonnes existent)
-  if (data.payment_id) {
-    // 1) mode clean (payment_id/payment_status/payment_provider)
-    const upd1 = await sb
-      .from("orders")
-      .update({
-        payment_provider: "mollie",
-        payment_status: "open",
-        payment_id: data.payment_id,
-      })
-      .eq("id", orderId);
-
-    // 2) fallback si tes colonnes n’existent pas encore:
-    if (upd1.error) {
-      await sb
-        .from("orders")
-        .update({
-          stripe_session_id: data.payment_id, // fallback (temporaire)
-          status: "pending_payment",
-        })
-        .eq("id", orderId);
-    }
-  }
 
   window.location.href = data.url;
 }
@@ -265,10 +239,9 @@ async function initCheckout() {
 
   setAuthUI(user);
   if (user) {
-    try { await hydrateFromAccount(sb, user.id); } catch (_) {}
+    try { await hydrateFromAccount(sb, user.id); } catch (e) {}
   }
 
-  // LOGIN
   $("login-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideMsg();
@@ -298,7 +271,6 @@ async function initCheckout() {
     }
   });
 
-  // ORDER
   $("order-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideMsg();
@@ -325,7 +297,7 @@ async function initCheckout() {
 
         if (!userNow) {
           throw new Error(
-            "Compte créé ✅ Vérifie ton email pour le confirmer, puis reviens ici et connecte-toi."
+            "Compte créé ✅ Vérifie ton email pour le confirmer, puis reviens ici et connecte-toi avec “J’ai déjà un compte”."
           );
         }
       }
@@ -360,12 +332,11 @@ async function initCheckout() {
       const ship = getSelectedShipping();
       const totalCents = subtotalCents + ship.cents;
 
-      // ✅ IMPORTANT: on insère UNIQUEMENT des colonnes qui existent chez toi
       const orderInsert = await sb
         .from("orders")
         .insert([{
           user_id: userNow.id,
-          status: "pending_payment",
+          status: "new",
           currency: "EUR",
           subtotal_cents: subtotalCents,
           shipping_cents: ship.cents,
@@ -375,8 +346,8 @@ async function initCheckout() {
         }])
         .select("id")
         .single();
-
       if (orderInsert.error) throw orderInsert.error;
+
       const orderId = orderInsert.data.id;
 
       const itemsPayload = cartNow.map((line) => {
@@ -411,11 +382,14 @@ async function initCheckout() {
       if (itemsInsert.error) throw itemsInsert.error;
 
       const addrBase = {
-        first_name, last_name,
+        first_name,
+        last_name,
         company: company || null,
-        country, address1,
+        country,
+        address1,
         address2: address2 || null,
-        city, postal_code,
+        city,
+        postal_code,
         email: userNow.email,
         phone,
       };
