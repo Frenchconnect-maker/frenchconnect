@@ -1,5 +1,5 @@
 /* =========================================
-   Checkout — Mollie (UI propre)
+   Checkout — Option A (UI propre)
    - Carte 1: Login (email + mdp)
    - Carte 2: Livraison + Commande
      - si pas connecté: création compte (email+mdp)
@@ -11,6 +11,7 @@
 /* ================================
    ✅ IMPORTANT
    Mets ici la VRAIE ANON KEY Supabase (elle commence par "eyJ...")
+   PAS une clé "sb_publishable_..."
 ================================ */
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
 const SUPABASE_KEY =
@@ -121,6 +122,7 @@ function renderSummary(cart) {
 }
 
 async function hydrateFromAccount(sb, userId) {
+  // profil
   const profRes = await sb
     .from("profiles")
     .select("email, first_name, last_name, phone")
@@ -132,6 +134,7 @@ async function hydrateFromAccount(sb, userId) {
   if (p.last_name) $("last_name").value = p.last_name;
   if (p.phone) $("phone").value = p.phone;
 
+  // dernière adresse shipping via dernière commande
   const lastOrder = await sb
     .from("orders")
     .select("id")
@@ -181,13 +184,14 @@ function setAuthUI(user) {
 
 /* ================================
    ✅ MOLLIE CHECKOUT (Edge Function)
-   - function: mollie-create-checkout
-   - renvoie: { url }
+   - user doit être connecté
+   - appelle sb.functions.invoke("mollie-create-checkout")
 ================================ */
 async function startMollieCheckout(sb, orderId) {
-  // 1) session Supabase (pour Authorization si besoin)
+  // 1) session
   let { data: { session } } = await sb.auth.getSession();
 
+  // 2) refresh si besoin
   if (!session?.access_token) {
     try {
       await sb.auth.refreshSession();
@@ -195,24 +199,21 @@ async function startMollieCheckout(sb, orderId) {
     } catch (e) {}
   }
 
-  // ⚠️ Si ton Edge Function a "Verify JWT" = OFF,
-  // tu pourrais même ne pas envoyer Authorization.
-  // Mais on l’envoie quand même si dispo.
-  const headers = session?.access_token
-    ? { Authorization: `Bearer ${session.access_token}` }
-    : {};
+  // 3) stop si pas connecté
+  if (!session?.access_token) {
+    throw new Error("Tu dois être connecté pour payer. Connecte-toi puis réessaie.");
+  }
 
+  // 4) call function
   const { data, error } = await sb.functions.invoke("mollie-create-checkout", {
     body: { order_id: orderId },
-    headers,
+    headers: { Authorization: `Bearer ${session.access_token}` },
   });
 
-  if (error) throw new Error(error.message || "Erreur Edge Function Mollie");
+  if (error) throw new Error(error.message || "Erreur Edge Function (Mollie)");
+  if (!data?.url) throw new Error("Mollie n’a pas renvoyé d’URL de paiement.");
 
-  const url = data?.url || data?._links?.checkout?.href;
-  if (!url) throw new Error("Mollie n’a pas renvoyé d’URL de paiement.");
-
-  window.location.href = url;
+  window.location.href = data.url;
 }
 
 async function initCheckout() {
@@ -256,7 +257,7 @@ async function initCheckout() {
     try { await hydrateFromAccount(sb, user.id); } catch (e) {}
   }
 
-  // -------- LOGIN --------
+  // LOGIN
   $("login-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideMsg();
@@ -286,7 +287,7 @@ async function initCheckout() {
     }
   });
 
-  // -------- ORDER FORM --------
+  // ORDER FORM
   $("order-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideMsg();
@@ -299,11 +300,13 @@ async function initCheckout() {
       const { data: { session: s0 } } = await sb.auth.getSession();
       let userNow = s0?.user || null;
 
-      // si pas connecté => création compte
+      // si pas connecté => sign up
       if (!userNow) {
         const email = ($("signup-email").value || "").trim().toLowerCase();
         const password = $("signup-password").value || "";
-        if (!email || !password) throw new Error("Pour créer un compte: email + mot de passe requis.");
+        if (!email || !password) {
+          throw new Error("Pour créer un compte: email + mot de passe requis.");
+        }
 
         const sign = await sb.auth.signUp({ email, password });
         if (sign.error) throw sign.error;
@@ -312,11 +315,13 @@ async function initCheckout() {
         userNow = s1?.user || null;
 
         if (!userNow) {
-          throw new Error("Compte créé ✅ Vérifie ton email pour le confirmer, puis reviens ici et connecte-toi.");
+          throw new Error(
+            "Compte créé ✅ Vérifie ton email pour le confirmer, puis reviens ici et connecte-toi."
+          );
         }
       }
 
-      // champs
+      // fields
       const first_name = ($("first_name").value || "").trim();
       const last_name = ($("last_name").value || "").trim();
       const phone = ($("phone").value || "").trim();
@@ -329,14 +334,18 @@ async function initCheckout() {
       const company = ($("company").value || "").trim();
       const note = ($("note").value || "").trim();
 
-      if (!first_name || !last_name || !phone) throw new Error("Infos client incomplètes (prénom/nom/téléphone).");
-      if (!country || !address1 || !city || !postal_code) throw new Error("Adresse incomplète (pays/adresse/ville/code postal).");
+      if (!first_name || !last_name || !phone)
+        throw new Error("Infos client incomplètes (prénom/nom/téléphone).");
+      if (!country || !address1 || !city || !postal_code)
+        throw new Error("Adresse incomplète (pays/adresse/ville/code postal).");
 
       // upsert profile
-      const up = await sb.from("profiles").upsert(
-        { id: userNow.id, email: userNow.email, first_name, last_name, phone },
-        { onConflict: "id" }
-      );
+      const up = await sb
+        .from("profiles")
+        .upsert(
+          { id: userNow.id, email: userNow.email, first_name, last_name, phone },
+          { onConflict: "id" }
+        );
       if (up.error) throw up.error;
 
       // create order
@@ -345,16 +354,22 @@ async function initCheckout() {
       const ship = getSelectedShipping();
       const totalCents = subtotalCents + ship.cents;
 
-      const orderInsert = await sb.from("orders").insert([{
-        user_id: userNow.id,
-        status: "new",
-        currency: "EUR",
-        subtotal_cents: subtotalCents,
-        shipping_cents: ship.cents,
-        total_cents: totalCents,
-        shipping_method: ship.method,
-        note: note || null,
-      }]).select("id").single();
+      const orderInsert = await sb
+        .from("orders")
+        .insert([
+          {
+            user_id: userNow.id,
+            status: "new",
+            currency: "EUR",
+            subtotal_cents: subtotalCents,
+            shipping_cents: ship.cents,
+            total_cents: totalCents,
+            shipping_method: ship.method,
+            note: note || null,
+          },
+        ])
+        .select("id")
+        .single();
 
       if (orderInsert.error) throw orderInsert.error;
       const orderId = orderInsert.data.id;
@@ -362,8 +377,16 @@ async function initCheckout() {
       // items
       const itemsPayload = cartNow.map((line) => {
         const p = typeof findProduct === "function" ? findProduct(line.id) : null;
-        const opt = p && line.optionId && typeof getOption === "function" ? getOption(p, line.optionId) : null;
-        const unitPrice = p ? (typeof priceFor === "function" ? priceFor(p, line.optionId) : (p.price || 0)) : 0;
+        const opt =
+          p && line.optionId && typeof getOption === "function"
+            ? getOption(p, line.optionId)
+            : null;
+
+        const unitPrice = p
+          ? typeof priceFor === "function"
+            ? priceFor(p, line.optionId)
+            : p.price || 0
+          : 0;
 
         const unitCents = toCents(unitPrice);
         const qty = Number(line.qty || 1);
@@ -404,11 +427,13 @@ async function initCheckout() {
       if (addrInsert.error) throw addrInsert.error;
 
       setAuthUI(userNow);
-      showMsg("ok", `Commande créée ✅ (ID: <strong>${orderId}</strong>)<br>Redirection vers Mollie…`);
+      showMsg(
+        "ok",
+        `Commande créée ✅ (ID: <strong>${orderId}</strong>)<br>Redirection vers Mollie…`
+      );
 
-      // ✅ Lance Mollie Checkout
+      // ✅ Mollie redirect
       await startMollieCheckout(sb, orderId);
-
     } catch (err) {
       showMsg("err", err?.message || "Erreur lors de la commande.");
     } finally {
