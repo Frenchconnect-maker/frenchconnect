@@ -1,21 +1,20 @@
 /* =========================================
-   Checkout — Option A (UI propre)
-   - Carte 1: Login (email + mdp)
-   - Carte 2: Livraison + Commande
-     - si pas connecté: création compte (email+mdp)
-     - si connecté: commande directe
-   - Mollie Checkout (redirect) après création de commande
-   - Compatible panier localStorage (store.js)
+   Checkout — Mollie (UI propre)
+   - Login / Signup Supabase
+   - Création commande + order_items + addresses
+   - Redirection vers Mollie Checkout via Edge Function
    ========================================= */
 
 /* ================================
    ✅ IMPORTANT
    Mets ici la VRAIE ANON KEY Supabase (elle commence par "eyJ...")
-   PAS une clé "sb_publishable_..."
 ================================ */
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
 const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
+
+// ✅ nom exact de ta fonction Supabase
+const MOLLIE_FUNCTION = "mollie-create-checkout";
 
 // Load supabase-js (CDN)
 (function loadSupabaseCDN() {
@@ -122,7 +121,6 @@ function renderSummary(cart) {
 }
 
 async function hydrateFromAccount(sb, userId) {
-  // profil
   const profRes = await sb
     .from("profiles")
     .select("email, first_name, last_name, phone")
@@ -134,7 +132,6 @@ async function hydrateFromAccount(sb, userId) {
   if (p.last_name) $("last_name").value = p.last_name;
   if (p.phone) $("phone").value = p.phone;
 
-  // dernière adresse shipping via dernière commande
   const lastOrder = await sb
     .from("orders")
     .select("id")
@@ -184,14 +181,12 @@ function setAuthUI(user) {
 
 /* ================================
    ✅ MOLLIE CHECKOUT (Edge Function)
-   - user doit être connecté
-   - appelle sb.functions.invoke("mollie-create-checkout")
+   - Appel : sb.functions.invoke("mollie-create-checkout")
+   - Retour attendu : { url: "https://checkout.mollie.com/..." }
 ================================ */
 async function startMollieCheckout(sb, orderId) {
-  // 1) session
   let { data: { session } } = await sb.auth.getSession();
 
-  // 2) refresh si besoin
   if (!session?.access_token) {
     try {
       await sb.auth.refreshSession();
@@ -199,19 +194,24 @@ async function startMollieCheckout(sb, orderId) {
     } catch (e) {}
   }
 
-  // 3) stop si pas connecté
   if (!session?.access_token) {
     throw new Error("Tu dois être connecté pour payer. Connecte-toi puis réessaie.");
   }
 
-  // 4) call function
-  const { data, error } = await sb.functions.invoke("mollie-create-checkout", {
+  const { data, error } = await sb.functions.invoke(MOLLIE_FUNCTION, {
     body: { order_id: orderId },
-    headers: { Authorization: `Bearer ${session.access_token}` },
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
   });
 
-  if (error) throw new Error(error.message || "Erreur Edge Function (Mollie)");
-  if (!data?.url) throw new Error("Mollie n’a pas renvoyé d’URL de paiement.");
+  if (error) {
+    throw new Error(error.message || "Erreur Edge Function Mollie");
+  }
+
+  if (!data?.url) {
+    throw new Error("Mollie n’a pas renvoyé d’URL de paiement.");
+  }
 
   window.location.href = data.url;
 }
@@ -228,7 +228,6 @@ async function initCheckout() {
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // cart
   const cart = typeof getCart === "function" ? getCart() : [];
   if (!cart || cart.length === 0) {
     showMsg("err", "Ton panier est vide. Retourne à la boutique.");
@@ -236,34 +235,35 @@ async function initCheckout() {
     return;
   }
 
-  // summary
   renderSummary(cart);
   document.querySelectorAll('input[name="shipping"]').forEach((r) => {
     r.addEventListener("change", () => renderSummary(getCart()));
   });
 
-  // logout
   $("logoutBtn")?.addEventListener("click", async () => {
     await sb.auth.signOut();
     location.reload();
   });
 
-  // boot session
   const { data: { session } } = await sb.auth.getSession();
   const user = session?.user || null;
 
   setAuthUI(user);
   if (user) {
-    try { await hydrateFromAccount(sb, user.id); } catch (e) {}
+    try {
+      await hydrateFromAccount(sb, user.id);
+    } catch (e) {}
   }
 
-  // LOGIN
   $("login-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideMsg();
 
     const btn = $("login-btn");
-    if (btn) { btn.disabled = true; btn.textContent = "Connexion…"; }
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Connexion…";
+    }
 
     try {
       const email = ($("login-email").value || "").trim().toLowerCase();
@@ -279,28 +279,31 @@ async function initCheckout() {
 
       setAuthUI(u);
       await hydrateFromAccount(sb, u.id);
-      showMsg("ok", "Connecté ✔ Tu peux maintenant valider ta commande.");
+      showMsg("ok", "Connecté ✔ Tu peux maintenant payer.");
     } catch (err) {
       showMsg("err", err?.message || "Erreur de connexion.");
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = "Se connecter"; }
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Se connecter";
+      }
     }
   });
 
-  // ORDER FORM
   $("order-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideMsg();
 
     const btn = $("place-order");
-    if (btn) { btn.disabled = true; btn.textContent = "Traitement…"; }
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Traitement…";
+    }
 
     try {
-      // session?
       const { data: { session: s0 } } = await sb.auth.getSession();
       let userNow = s0?.user || null;
 
-      // si pas connecté => sign up
       if (!userNow) {
         const email = ($("signup-email").value || "").trim().toLowerCase();
         const password = $("signup-password").value || "";
@@ -321,7 +324,6 @@ async function initCheckout() {
         }
       }
 
-      // fields
       const first_name = ($("first_name").value || "").trim();
       const last_name = ($("last_name").value || "").trim();
       const phone = ($("phone").value || "").trim();
@@ -339,16 +341,20 @@ async function initCheckout() {
       if (!country || !address1 || !city || !postal_code)
         throw new Error("Adresse incomplète (pays/adresse/ville/code postal).");
 
-      // upsert profile
       const up = await sb
         .from("profiles")
         .upsert(
-          { id: userNow.id, email: userNow.email, first_name, last_name, phone },
+          {
+            id: userNow.id,
+            email: userNow.email,
+            first_name,
+            last_name,
+            phone,
+          },
           { onConflict: "id" }
         );
       if (up.error) throw up.error;
 
-      // create order
       const cartNow = typeof getCart === "function" ? getCart() : [];
       const subtotalCents = calcSubtotalCents(cartNow);
       const ship = getSelectedShipping();
@@ -359,7 +365,7 @@ async function initCheckout() {
         .insert([
           {
             user_id: userNow.id,
-            status: "new",
+            status: "pending_payment",
             currency: "EUR",
             subtotal_cents: subtotalCents,
             shipping_cents: ship.cents,
@@ -374,7 +380,6 @@ async function initCheckout() {
       if (orderInsert.error) throw orderInsert.error;
       const orderId = orderInsert.data.id;
 
-      // items
       const itemsPayload = cartNow.map((line) => {
         const p = typeof findProduct === "function" ? findProduct(line.id) : null;
         const opt =
@@ -406,7 +411,6 @@ async function initCheckout() {
       const itemsInsert = await sb.from("order_items").insert(itemsPayload);
       if (itemsInsert.error) throw itemsInsert.error;
 
-      // addresses
       const addrBase = {
         first_name,
         last_name,
@@ -432,12 +436,14 @@ async function initCheckout() {
         `Commande créée ✅ (ID: <strong>${orderId}</strong>)<br>Redirection vers Mollie…`
       );
 
-      // ✅ Mollie redirect
       await startMollieCheckout(sb, orderId);
     } catch (err) {
       showMsg("err", err?.message || "Erreur lors de la commande.");
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = "Commander"; }
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Payer";
+      }
     }
   });
 }
