@@ -9,13 +9,8 @@ const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...."; // ⚠️ TA VRAIE ANON KEY
 
-// Load Supabase CDN
-(function () {
-  const s = document.createElement("script");
-  s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-  s.onload = initCheckout;
-  document.head.appendChild(s);
-})();
+window.addEventListener("DOMContentLoaded", initCheckout);
+
 
 const $ = (id) => document.getElementById(id);
 
