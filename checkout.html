@@ -1,4 +1,4 @@
-<!doctype html>
+<<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
@@ -175,7 +175,8 @@
           <!-- Bloc création de compte (visible seulement si NON connecté) -->
           <div id="signup-cred-box" style="margin-bottom:12px;">
             <div class="notice muted-sm" style="margin-top:0;">
-              <strong>Pas de compte ?</strong> Crée-le ici (1ère commande). Si la confirmation email est activée, tu devras confirmer l’email puis revenir te connecter.
+              <strong>Pas de compte ?</strong> Crée-le ici (1ère commande).
+              Si la confirmation email est activée, tu devras confirmer l’email puis revenir te connecter.
             </div>
 
             <div class="grid-2">
@@ -290,7 +291,7 @@
           </div>
 
           <div class="muted-sm" style="margin-top:10px;">
-            Paiement : tu peux garder ce système “commande enregistrée” puis paiement plus tard, ou on branche Stripe ensuite.
+            Paiement sécurisé via Mollie (redirection).
           </div>
         </div>
       </section>
@@ -331,6 +332,8 @@
     })();
   </script>
 
+  <!-- ✅ scripts dans le BON ordre -->
+  <script src="assets/js/store.js?v=20260106"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="assets/js/checkout.js?v=20260106"></script>
 </body>
