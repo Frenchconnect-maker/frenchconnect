@@ -4,18 +4,16 @@
    - Carte 2: Livraison + Commande
      - si pas connecté: création compte (email+mdp)
      - si connecté: commande directe
-   - Stripe Checkout (redirect) après création de commande
+   - Mollie Checkout (redirect) après création de commande
    - Compatible panier localStorage (store.js)
    ========================================= */
 
 /* ================================
    ✅ IMPORTANT
    Mets ici la VRAIE ANON KEY Supabase (elle commence par "eyJ...")
-   PAS une clé "sb_publishable_..."
 ================================ */
 const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
+const SUPABASE_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
 // Load supabase-js (CDN)
 (function loadSupabaseCDN() {
@@ -183,14 +181,16 @@ function setAuthUI(user) {
 }
 
 /* ================================
-   ✅ STRIPE CHECKOUT (Edge Function)
-   On utilise sb.functions.invoke() :
-   - gère apikey automatiquement
-   - on force Authorization au cas où (GitHub Pages)
+   ✅ MOLLIE CHECKOUT (Edge Function)
+   On utilise sb.functions.invoke()
+   - la function crée un paiement Mollie
+   - elle renvoie { url: "https://checkout.mollie.com/..." }
 ================================ */
-async function startStripeCheckout(sb, orderId) {
+async function startMollieCheckout(sb, orderId) {
   // 1) Récupérer session
-  let { data: { session } } = await sb.auth.getSession();
+  let {
+    data: { session },
+  } = await sb.auth.getSession();
 
   // 2) Si pas de session -> tenter refresh
   if (!session?.access_token) {
@@ -207,8 +207,8 @@ async function startStripeCheckout(sb, orderId) {
     throw new Error("Tu dois être connecté pour payer. Connecte-toi puis réessaie.");
   }
 
-  // 4) Appel Edge Function avec Authorization ✅
-  const { data, error } = await sb.functions.invoke("stripe-create-checkout", {
+  // 4) Appel Edge Function Mollie
+  const { data, error } = await sb.functions.invoke("mollie-create-payment", {
     body: { order_id: orderId },
     headers: {
       Authorization: `Bearer ${session.access_token}`,
@@ -216,11 +216,11 @@ async function startStripeCheckout(sb, orderId) {
   });
 
   if (error) {
-    throw new Error(error.message || "Erreur Edge Function");
+    throw new Error(error.message || "Erreur Edge Function Mollie.");
   }
 
   if (!data?.url) {
-    throw new Error("Stripe n’a pas renvoyé d’URL de paiement.");
+    throw new Error("Mollie n’a pas renvoyé d’URL de paiement.");
   }
 
   window.location.href = data.url;
@@ -231,7 +231,11 @@ async function initCheckout() {
     showMsg("err", "Supabase n’a pas chargé (CDN). Vérifie ta connexion.");
     return;
   }
-  if (!SUPABASE_URL.startsWith("http") || !SUPABASE_KEY || SUPABASE_KEY.length < 20) {
+  if (
+    !SUPABASE_URL.startsWith("http") ||
+    !SUPABASE_KEY ||
+    SUPABASE_KEY.length < 20
+  ) {
     showMsg("err", "Supabase URL / ANON KEY manquants dans assets/js/checkout.js.");
     return;
   }
@@ -399,13 +403,14 @@ async function initCheckout() {
         .insert([
           {
             user_id: userNow.id,
-            status: "new",
+            status: "pending_payment", // ✅ important
             currency: "EUR",
             subtotal_cents: subtotalCents,
             shipping_cents: ship.cents,
             total_cents: totalCents,
             shipping_method: ship.method,
             note: note || null,
+            payment_provider: "mollie",
           },
         ])
         .select("id")
@@ -469,11 +474,11 @@ async function initCheckout() {
       setAuthUI(userNow);
       showMsg(
         "ok",
-        `Commande créée ✅ (ID: <strong>${orderId}</strong>)<br>Redirection vers le paiement…`
+        `Commande créée ✅ (ID: <strong>${orderId}</strong>)<br>Redirection vers le paiement Mollie…`
       );
 
-      // ✅ Lance Stripe Checkout
-      await startStripeCheckout(sb, orderId);
+      // ✅ Lance Mollie Checkout
+      await startMollieCheckout(sb, orderId);
     } catch (err) {
       showMsg("err", err?.message || "Erreur lors de la commande.");
     } finally {
