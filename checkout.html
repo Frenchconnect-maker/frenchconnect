@@ -172,32 +172,42 @@
     <div class="checkout-grid" style="margin-top:14px;">
       <!-- GAUCHE : Compte + Adresse -->
       <section class="panel-card">
-        <div class="hd">
-          <strong style="letter-spacing:.6px;text-transform:uppercase;">Compte</strong>
-          <span class="muted-sm">Connexion</span>
-        </div>
-        <div class="bd">
-          <form id="login-form">
-            <div class="field">
-              <label>Email *</label>
-              <input id="login-email" type="email" required placeholder="ex: client@email.com" autocomplete="email">
-            </div>
-            <div class="field">
-              <label>Mot de passe *</label>
-              <input id="login-password" type="password" required placeholder="••••••••" autocomplete="current-password">
-            </div>
+  <div class="hd">
+    <strong style="letter-spacing:.6px;text-transform:uppercase;">Compte</strong>
+    <span id="auth-status" class="muted-sm">Vérification…</span>
+  </div>
 
-            <div class="btn-row" style="margin-top:12px;">
-              <button class="btn" id="login-btn" type="submit">Se connecter</button>
-              <a class="btn ghost" href="account.html">Mot de passe oublié ?</a>
-            </div>
+  <div class="bd">
 
-            <div class="muted-sm" style="margin-top:10px;">
-              Si tu viens de créer ton compte, pense à confirmer ton email si c’est activé.
-            </div>
-          </form>
-        </div>
-      </section>
+    <div id="auth-msg" class="notice" style="display:none;"></div>
+
+    <form id="login-form">
+      <div class="field">
+        <label>Email *</label>
+        <input id="login-email" type="email" required />
+      </div>
+
+      <div class="field">
+        <label>Mot de passe *</label>
+        <input id="login-password" type="password" required />
+      </div>
+
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn" id="login-btn" type="submit">Se connecter</button>
+        <button class="btn ghost" id="forgot-btn" type="button">
+          Mot de passe oublié ?
+        </button>
+      </div>
+    </form>
+
+    <div style="margin-top:12px;">
+      <button class="btn" id="logoutBtn" type="button" style="display:none;">
+        Déconnexion
+      </button>
+    </div>
+
+  </div>
+</section>
 
       <!-- DROITE : Récap + livraison -->
       <section class="panel-card">
