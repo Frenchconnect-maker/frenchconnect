@@ -260,24 +260,34 @@
   // 4) AUTH
   // ============================================================
   async function hydrateAuthUI(sb) {
-    const authMini = $("auth-mini");
-    const loginCard = $("login-card");
-    const logoutBtn = $("logoutBtn");
+  const authMini = $("auth-mini");
+  const loginCard = $("login-card");
+  const logoutBtn = $("logoutBtn");
 
-    const { data } = await sb.auth.getSession();
-    const user = data?.session?.user || null;
+  // Sécurité visuelle immédiate
+  if (authMini) authMini.textContent = "Non connecté";
 
-    if (user) {
-      if (authMini) authMini.textContent = `Connecté : ${user.email || "OK"}`;
-      if (loginCard) loginCard.style.display = "none";
-      if (logoutBtn) logoutBtn.style.display = "";
-    } else {
-      if (authMini) authMini.textContent = "Non connecté";
-      if (loginCard) loginCard.style.display = "";
-      if (logoutBtn) logoutBtn.style.display = "none";
-    }
-    return user;
+  const { data, error } = await sb.auth.getSession();
+  if (error) {
+    console.error("Auth error:", error);
+    return null;
   }
+
+  const user = data?.session?.user || null;
+
+  if (user) {
+    if (authMini) authMini.textContent = `Connecté : ${user.email}`;
+    if (loginCard) loginCard.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+  } else {
+    if (authMini) authMini.textContent = "Non connecté";
+    if (loginCard) loginCard.style.display = "block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+  }
+
+  return user;
+}
+
 
   async function doPasswordReset(sb, email) {
     // Tu peux créer une page reset si tu veux (facultatif)
