@@ -10,7 +10,6 @@
 
 <body>
 
-  <!-- Ton header habituel si tu en as un -->
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="/index.html">
@@ -30,6 +29,7 @@
     <div id="msg" style="display:none;margin:12px 0;"></div>
 
     <div class="grid" style="display:grid;grid-template-columns:1fr;gap:16px;">
+
       <!-- Résumé -->
       <section class="card" style="padding:16px;border-radius:14px;">
         <h2 style="margin:0 0 10px;">Résumé</h2>
@@ -66,48 +66,46 @@
           </label>
         </div>
       </section>
-      <!-- ✅ AUTH CARD -->
-<section class="card" id="auth-card" style="margin:16px 0;">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-    <div>
-      <div style="font-weight:900;font-size:18px;">Compte</div>
-      <div id="auth-status" class="muted-sm" style="opacity:.85;">Vérification…</div>
-    </div>
 
-    <button id="logoutBtn" type="button" class="btn" style="display:none;">
-      Se déconnecter
-    </button>
-  </div>
+      <!-- ✅ AUTH -->
+      <section class="card" id="auth-card" style="padding:16px;border-radius:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <div style="font-weight:900;font-size:18px;">Compte</div>
+            <div id="auth-status" class="muted-sm" style="opacity:.85;">Vérification…</div>
+          </div>
 
-  <!-- Message -->
-  <div id="auth-msg" style="display:none;margin-top:12px;padding:10px 12px;border-radius:12px;font-weight:700;"></div>
+          <button id="logoutBtn" type="button" class="btn" style="display:none;">
+            Se déconnecter
+          </button>
+        </div>
 
-  <!-- LOGIN FORM -->
-  <form id="login-form" style="margin-top:14px;display:none;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div style="grid-column:1 / -1;">
-        <label class="muted-sm" for="login-email">Email</label>
-        <input id="login-email" type="email" autocomplete="email" required />
-      </div>
+        <div id="auth-msg" style="display:none;margin-top:12px;padding:10px 12px;border-radius:12px;font-weight:700;"></div>
 
-      <div style="grid-column:1 / -1;">
-        <label class="muted-sm" for="login-password">Mot de passe</label>
-        <input id="login-password" type="password" autocomplete="current-password" required />
-      </div>
-    </div>
+        <form id="login-form" style="margin-top:14px;display:none;">
+          <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+            <div>
+              <label class="muted-sm" for="login-email">Email</label>
+              <input id="login-email" type="email" autocomplete="email" required />
+            </div>
 
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;">
-      <button id="login-btn" type="submit" class="btn">
-        Se connecter
-      </button>
+            <div>
+              <label class="muted-sm" for="login-password">Mot de passe</label>
+              <input id="login-password" type="password" autocomplete="current-password" required />
+            </div>
+          </div>
 
-      <button id="forgot-btn" type="button" class="btn btn-ghost">
-        Mot de passe oublié ?
-      </button>
-    </div>
-  </form>
-</section>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;">
+            <button id="login-btn" type="submit" class="btn">
+              Se connecter
+            </button>
 
+            <button id="forgot-btn" type="button" class="btn btn-ghost">
+              Mot de passe oublié ?
+            </button>
+          </div>
+        </form>
+      </section>
 
       <!-- Adresse + paiement -->
       <section class="card" style="padding:16px;border-radius:14px;">
@@ -137,6 +135,7 @@
           Paiement sécurisé via Mollie.
         </div>
       </section>
+
     </div>
   </main>
 
