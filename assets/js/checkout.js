@@ -9,11 +9,6 @@
 /* ================================
    1) CONFIG — A REMPLIR
 ================================ */
-const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ"; // commence par "eyJ..."
-const FUNCTION_MOLLIE_CREATE_CHECKOUT =
-  "https://mnsqfagfdahvhlfopfah.supabase.co/functions/v1/mollie-create-checkout";
-
 const SITE_URL = "https://www.frenchconnect31.com"; // important pour redirect_url
 
 /* ================================
