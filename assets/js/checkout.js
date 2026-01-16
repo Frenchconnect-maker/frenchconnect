@@ -9,7 +9,7 @@
 /* ================================
    1) CONFIG — A REMPLIR
 ================================ */
-const SITE_URL = "https://www.frenchconnect31.com"; // important pour redirect_url
+
 
 /* ================================
    2) SUPABASE CLIENT
