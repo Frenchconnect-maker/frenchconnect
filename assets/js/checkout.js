@@ -1,145 +1,357 @@
-/* =========================================================
-   checkout.js — FrenchConnect (Supabase + Mollie)
-   - Utilise window.SUPABASE_URL + window.SUPABASE_KEY venant de store.js
+/* ============================================================
+   checkout.js — FrenchConnect (Supabase + Mollie) ✅ SANS STRIPE
+   - Lit le panier depuis store.js (localStorage)
+   - Crée commande: orders + order_items + addresses
    - Appelle Edge Function: mollie-create-checkout
-   ========================================================= */
+   - Redirige vers Mollie
+   ============================================================ */
 
-(() => {
-  // ---- 1) CONFIG depuis store.js ----
-  const SUPABASE_URL = window.SUPABASE_URL;
-  const SUPABASE_KEY = window.SUPABASE_KEY; // ⚠️ doit être l'ANON KEY (eyJ...), pas sb_publishable
+(function () {
+  // ✅ NE PAS redeclare SUPABASE_URL en global si store.js le fait déjà
+  // store.js met généralement: window.SUPABASE_URL / window.SUPABASE_KEY
+  const SUPABASE_URL = window.SUPABASE_URL || "https://mnsqfagfdahvhlfopfah.supabase.co";
+  const SUPABASE_ANON_KEY = window.SUPABASE_KEY || window.SUPABASE_ANON_KEY || ""; // doit être eyJ... (anon)
 
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.error("❌ SUPABASE_URL / SUPABASE_KEY manquants. Vérifie store.js.");
-    return;
+  const SITE_ORIGIN = "https://frenchconnect31.com"; // ton domaine (utile pour debug/redirect)
+
+  const $ = (id) => document.getElementById(id);
+
+  function euro(n) {
+    return Number(n).toFixed(2).replace(".", ",") + " €";
+  }
+  function toCents(eur) {
+    return Math.round(Number(eur) * 100);
   }
 
-  // Supabase CDN (umd) expose window.supabase
-  if (!window.supabase?.createClient) {
-    console.error("❌ Supabase JS non chargé. Vérifie l'ordre des <script> dans checkout.html.");
-    return;
+  function showMsg(type, text) {
+    const box = $("msg");
+    if (!box) return;
+    box.style.display = "block";
+    box.style.padding = "12px";
+    box.style.borderRadius = "12px";
+    box.style.fontWeight = "700";
+    box.style.border = "1px solid rgba(255,255,255,.12)";
+    box.style.background = type === "ok" ? "rgba(0,180,80,.12)" : "rgba(220,50,50,.12)";
+    box.innerHTML = text;
+  }
+  function hideMsg() {
+    const box = $("msg");
+    if (!box) return;
+    box.style.display = "none";
+    box.innerHTML = "";
   }
 
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  function getSelectedShipping() {
+    const el = document.querySelector('input[name="shipping"]:checked');
+    return {
+      method: el?.value || "relay",
+      cents: Number(el?.dataset?.cents || 0),
+    };
+  }
 
-  // ---- 2) Helpers ----
-  const $ = (sel) => document.querySelector(sel);
-
-  function readCart() {
+  function readCartSafe() {
+    // store.js peut exposer getCart(), sinon localStorage direct
+    if (typeof window.getCart === "function") return window.getCart() || [];
     try {
-      const raw = localStorage.getItem("cart") || "[]";
-      const cart = JSON.parse(raw);
-      return Array.isArray(cart) ? cart : [];
+      return JSON.parse(localStorage.getItem("cart") || "[]");
     } catch {
       return [];
     }
   }
 
-  function cartTotal(cart) {
-    // attend des items { price, qty } ou { price, quantity }
-    return cart.reduce((sum, it) => {
-      const price = Number(it.price || 0);
-      const qty = Number(it.qty ?? it.quantity ?? 1);
-      return sum + price * qty;
-    }, 0);
-  }
+  function calcSubtotalCents(cart) {
+    // si store.js a findProduct/priceFor => on calcule propre
+    let cents = 0;
 
-  function euros(n) {
-    return (Math.round(n * 100) / 100).toFixed(2);
-  }
+    cart.forEach((line) => {
+      const qty = Number(line.qty || 1);
 
-  // ---- 3) Bouton "Payer" ----
-  // ⚠️ Adapte l'ID au bouton de ton checkout.html
-  const payBtn = $("#payBtn") || $("#pay-button") || $("button[type='submit']");
-
-  if (!payBtn) {
-    console.warn("⚠️ Bouton payer introuvable. Mets un id='payBtn' sur ton bouton de paiement.");
-    return;
-  }
-
-  payBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    try {
-      payBtn.disabled = true;
-
-      // A) Récup panier
-      const cart = readCart();
-      if (!cart.length) {
-        alert("Ton panier est vide.");
+      // 1) si le panier stocke déjà price
+      if (line.price != null) {
+        cents += toCents(line.price) * qty;
         return;
       }
 
-      const total = cartTotal(cart);
-      if (total <= 0) {
-        alert("Total invalide.");
-        return;
-      }
+      // 2) sinon via store.js catalogue
+      const p = typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+      const unit = p
+        ? (typeof window.priceFor === "function" ? window.priceFor(p, line.optionId) : (p.price || 0))
+        : 0;
 
-      // B) Session user
-      const { data: sessionData, error: sessionErr } = await sb.auth.getSession();
-      if (sessionErr) throw sessionErr;
+      cents += toCents(unit) * qty;
+    });
 
-      const session = sessionData?.session;
-      if (!session?.user) {
-        alert("Tu dois être connecté pour payer (compte).");
-        return;
-      }
+    return cents;
+  }
 
-      // C) Créer la commande en DB (adapte si tes tables ont d'autres colonnes)
-      // orders: id (uuid), user_id, total, status, created_at...
-      const { data: order, error: orderErr } = await sb
-        .from("orders")
-        .insert({
-          user_id: session.user.id,
-          total: total,
-          status: "pending",
-        })
-        .select()
-        .single();
+  function renderSummary(cart) {
+    const tbody = $("order-lines");
+    const mini = $("cart-mini");
 
-      if (orderErr) throw orderErr;
+    const subtotalCents = calcSubtotalCents(cart);
+    const ship = getSelectedShipping();
+    const totalCents = subtotalCents + ship.cents;
 
-      // order_items: order_id, name, price, qty...
-      const itemsPayload = cart.map((it) => ({
-        order_id: order.id,
-        name: it.name || it.title || "Produit",
-        price: Number(it.price || 0),
-        qty: Number(it.qty ?? it.quantity ?? 1),
-      }));
-
-      const { error: itemsErr } = await sb.from("order_items").insert(itemsPayload);
-      if (itemsErr) throw itemsErr;
-
-      // D) Appel Edge Function Mollie
-      const { data, error } = await sb.functions.invoke("mollie-create-checkout", {
-        body: {
-          amount: euros(total),
-          description: `Commande ${order.id}`,
-          orderId: order.id,
-        },
-      });
-
-      if (error) throw error;
-
-      // E) Redirection Mollie
-      // Selon ton edge function, ça peut être: data.checkoutUrl ou data._links.checkout.href
-      const checkoutUrl =
-        data?.checkoutUrl ||
-        data?._links?.checkout?.href ||
-        data?.paymentUrl;
-
-      if (!checkoutUrl) {
-        console.error("Réponse edge function:", data);
-        throw new Error("checkoutUrl manquant dans la réponse Mollie.");
-      }
-
-      window.location.href = checkoutUrl;
-    } catch (err) {
-      console.error(err);
-      alert("Erreur paiement. Regarde la console (F12) + logs Supabase Function.");
-    } finally {
-      payBtn.disabled = false;
+    if (mini) {
+      const count = cart.reduce((s, l) => s + Number(l.qty || 1), 0);
+      mini.textContent = `${count} article(s)`;
     }
-  });
+
+    if (tbody) {
+      tbody.innerHTML = cart
+        .map((line) => {
+          const qty = Number(line.qty || 1);
+
+          let name = line.name || line.id || "Produit";
+          let unit = Number(line.price || 0);
+
+          const p = typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+          if (p?.name) name = p.name;
+          if (!unit && p) {
+            unit = typeof window.priceFor === "function" ? window.priceFor(p, line.optionId) : (p.price || 0);
+          }
+
+          const lineTotal = unit * qty;
+
+          return `
+            <tr>
+              <td style="padding:8px 0;">
+                <div style="font-weight:900;">${name}</div>
+                <div class="muted-sm">x ${qty}</div>
+              </td>
+              <td style="padding:8px 0;text-align:right;font-weight:900;">${euro(lineTotal)}</td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    $("subtotal").textContent = euro(subtotalCents / 100);
+    $("shipping").textContent = euro(ship.cents / 100);
+    $("total").textContent = euro(totalCents / 100);
+  }
+
+  async function hydrateAuthUI(sb) {
+    const authMini = $("auth-mini");
+    const loginCard = $("login-card");
+    const logoutBtn = $("logoutBtn");
+
+    const { data } = await sb.auth.getSession();
+    const user = data?.session?.user || null;
+
+    if (user) {
+      if (authMini) authMini.textContent = `Connecté: ${user.email || "OK"}`;
+      if (loginCard) loginCard.style.display = "none";
+      if (logoutBtn) logoutBtn.style.display = "";
+    } else {
+      if (authMini) authMini.textContent = "Non connecté";
+      if (loginCard) loginCard.style.display = "";
+      if (logoutBtn) logoutBtn.style.display = "none";
+    }
+
+    return user;
+  }
+
+  async function startMollieCheckout(sb, orderId) {
+    // ⚠️ Ton Edge Function doit renvoyer: { url: "https://..." }
+    const { data, error } = await sb.functions.invoke("mollie-create-checkout", {
+      body: { order_id: orderId },
+    });
+
+    if (error) throw new Error(error.message || "Erreur Mollie (Edge Function)");
+    if (!data?.url) throw new Error("URL Mollie manquante (Edge Function)");
+
+    window.location.href = data.url;
+  }
+
+  async function init() {
+    if (!window.supabase?.createClient) {
+      showMsg("err", "Supabase JS n’est pas chargé. Vérifie le script CDN dans checkout.html.");
+      return;
+    }
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 20) {
+      showMsg(
+        "err",
+        "SUPABASE_URL / SUPABASE_KEY manquants. Dans store.js, mets la vraie ANON KEY (eyJ...) pas une sb_publishable..."
+      );
+      return;
+    }
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Panier
+    const cart = readCartSafe();
+    if (!cart.length) {
+      showMsg("err", "Panier vide. Retourne à la boutique.");
+      $("place-order")?.setAttribute("disabled", "disabled");
+      return;
+    }
+
+    // Summary
+    renderSummary(cart);
+    document.querySelectorAll('input[name="shipping"]').forEach((r) => {
+      r.addEventListener("change", () => renderSummary(readCartSafe()));
+    });
+
+    // Auth UI
+    await hydrateAuthUI(sb);
+
+    // Logout
+    $("logoutBtn")?.addEventListener("click", async () => {
+      await sb.auth.signOut();
+      location.reload();
+    });
+
+    // Login
+    $("login-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideMsg();
+
+      const btn = $("login-btn");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Connexion…";
+      }
+
+      try {
+        const email = ($("login-email").value || "").trim().toLowerCase();
+        const password = $("login-password").value || "";
+        if (!email || !password) throw new Error("Email et mot de passe requis.");
+
+        const res = await sb.auth.signInWithPassword({ email, password });
+        if (res.error) throw res.error;
+
+        await hydrateAuthUI(sb);
+        showMsg("ok", "Connecté ✅ Tu peux payer.");
+      } catch (err) {
+        showMsg("err", err?.message || "Erreur de connexion");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "Se connecter";
+        }
+      }
+    });
+
+    // Place order (Mollie)
+    $("order-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideMsg();
+
+      const btn = $("place-order");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Traitement…";
+      }
+
+      try {
+        // 1) user connecté obligatoire pour payer
+        const { data } = await sb.auth.getSession();
+        const user = data?.session?.user;
+        if (!user) throw new Error("Tu dois être connecté pour payer (utilise la connexion).");
+
+        // 2) lire cart + totals
+        const cartNow = readCartSafe();
+        const subtotalCents = calcSubtotalCents(cartNow);
+        const ship = getSelectedShipping();
+        const totalCents = subtotalCents + ship.cents;
+
+        // 3) validations adresse
+        const first_name = ($("first_name").value || "").trim();
+        const last_name = ($("last_name").value || "").trim();
+        const phone = ($("phone").value || "").trim();
+
+        const company = ($("company").value || "").trim();
+        const country = ($("country").value || "").trim();
+        const address1 = ($("address1").value || "").trim();
+        const address2 = ($("address2").value || "").trim();
+        const city = ($("city").value || "").trim();
+        const postal_code = ($("postal_code").value || "").trim();
+        const note = ($("note").value || "").trim();
+
+        if (!first_name || !last_name || !phone) throw new Error("Prénom / Nom / Téléphone obligatoires.");
+        if (!country || !address1 || !city || !postal_code) throw new Error("Adresse incomplète.");
+
+        // 4) créer commande
+        const { data: order, error: orderErr } = await sb
+          .from("orders")
+          .insert({
+            user_id: user.id,
+            status: "pending_payment",
+            currency: "EUR",
+            subtotal_cents: subtotalCents,
+            shipping_cents: ship.cents,
+            total_cents: totalCents,
+            shipping_method: ship.method,
+            note: note || null,
+          })
+          .select()
+          .single();
+
+        if (orderErr) throw orderErr;
+
+        // 5) items
+        const items = cartNow.map((l) => {
+          const qty = Number(l.qty || 1);
+
+          let product_name = l.name || l.id || "Produit";
+          let unit = Number(l.price || 0);
+
+          const p = typeof window.findProduct === "function" ? window.findProduct(l.id) : null;
+          if (p?.name) product_name = p.name;
+          if (!unit && p) unit = typeof window.priceFor === "function" ? window.priceFor(p, l.optionId) : (p.price || 0);
+
+          const unitCents = toCents(unit);
+
+          return {
+            order_id: order.id,
+            product_id: l.id || null,
+            product_name,
+            qty,
+            unit_price_cents: unitCents,
+            line_total_cents: unitCents * qty,
+          };
+        });
+
+        const itemsRes = await sb.from("order_items").insert(items);
+        if (itemsRes.error) throw itemsRes.error;
+
+        // 6) adresses
+        const addrBase = {
+          first_name,
+          last_name,
+          company: company || null,
+          country,
+          address1,
+          address2: address2 || null,
+          city,
+          postal_code,
+          email: user.email,
+          phone,
+        };
+
+        const addrRes = await sb.from("addresses").insert([
+          { order_id: order.id, type: "billing", ...addrBase },
+          { order_id: order.id, type: "shipping", ...addrBase },
+        ]);
+        if (addrRes.error) throw addrRes.error;
+
+        showMsg("ok", `Commande créée ✅ Redirection Mollie… (ID: <b>${order.id}</b>)`);
+
+        // 7) payer Mollie
+        await startMollieCheckout(sb, order.id);
+      } catch (err) {
+        showMsg("err", err?.message || "Erreur paiement");
+        console.error(err);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "Payer avec Mollie";
+        }
+      }
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", init);
 })();
+
