@@ -1,349 +1,123 @@
-<<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FrenchConnect — Checkout</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="assets/css/style.css?v=20260106" />
-
-  <style>
-    .wrap-max{max-width:1200px;margin:0 auto;padding:18px}
-    .checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-    @media (max-width: 980px){ .checkout-grid{grid-template-columns:1fr} }
-
-    .panel-card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      overflow:hidden;
-      backdrop-filter: blur(6px);
-    }
-    .panel-card .hd{
-      padding:14px 14px 10px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-    }
-    .panel-card .bd{padding:14px}
-
-    .muted-sm{color: rgba(255,255,255,.70); font-size:.92rem}
-    .notice{
-      margin-top:10px;padding:10px 12px;border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-    }
-    .danger{color:#ff7b7b}
-    .ok{color:#7bffb2}
-
-    .field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
-    .field label{font-weight:900;letter-spacing:.3px}
-    .field input, .field textarea, .field select{
-      padding:10px 12px;border-radius:12px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.03);
-      color:#fff;
-    }
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
-
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.10);vertical-align:top}
-    th{font-size:.9rem;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.75);text-align:left}
-    .totals{display:grid;gap:8px;margin-top:12px}
-    .totals .row{display:flex;justify-content:space-between;gap:10px}
-    .totals .row strong{font-weight:1000}
-
-    .chip{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.7px;
-      font-size:.78rem;
-      white-space:nowrap;
-    }
-
-    .radio-line{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      margin-top:8px;
-    }
-    .radio-line label{display:flex;gap:10px;align-items:center;font-weight:800}
-    .radio-line input{transform:scale(1.1)}
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paiement — FrenchConnect</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=20260116" />
+  <link rel="icon" type="image/png" href="assets/images/logo.png" />
 </head>
 
 <body>
-  <div class="age-banner">
-    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
-  </div>
 
+  <!-- Ton header habituel si tu en as un -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
-        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
+      <a class="brand" href="/index.html">
+        <img src="assets/images/logo.png" alt="FrenchConnect" class="logo" />
       </a>
-
-      <nav class="nav" aria-label="Navigation principale">
-        <a href="index.html">Accueil</a>
-        <a href="shop.html">Boutique</a>
-        <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
-        <a href="account.html">Mon compte</a>
+      <nav class="nav">
+        <a href="/shop.html">Boutique</a>
+        <a href="/about.html">Nos valeurs</a>
+        <a href="/contact.html">Contact</a>
       </nav>
-
-      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
     </div>
   </header>
 
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <div class="backdrop" id="menuBackdrop"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
-      <div class="head">
-        <strong>FRENCHCONNECT</strong>
-        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
-      </div>
-      <div class="links">
-        <a href="index.html">Accueil</a>
-        <a href="shop.html">Boutique</a>
-        <a href="cart.html">Panier</a>
-        <a href="account.html">Mon compte</a>
-      </div>
-    </div>
-  </div>
+  <main class="wrap" style="padding: 20px 0;">
+    <h1 style="margin: 0 0 10px;">Checkout</h1>
 
-  <main class="wrap-max">
-    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end;">
-      <div>
-        <h1 style="margin:6px 0;">Finaliser la commande</h1>
-        <div class="muted-sm">
-          <span class="chip" id="cart-mini">—</span>
-          <span class="chip" id="auth-mini">Non connecté</span>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a class="btn ghost" href="cart.html">Retour panier</a>
-        <button class="btn" id="logoutBtn" type="button" style="display:none;">Déconnexion</button>
-      </div>
-    </div>
+    <div id="msg" style="display:none;margin:12px 0;"></div>
 
-    <div id="msg" class="notice" style="display:none;"></div>
+    <div class="grid" style="display:grid;grid-template-columns:1fr;gap:16px;">
+      <!-- Résumé -->
+      <section class="card" style="padding:16px;border-radius:14px;">
+        <h2 style="margin:0 0 10px;">Résumé</h2>
+        <div class="muted-sm" id="cart-mini" style="margin-bottom:10px;"></div>
 
-    <div class="checkout-grid" style="margin-top:14px;">
-      <!-- ✅ COLONNE GAUCHE : Connexion -->
-      <section class="panel-card" id="login-card">
-        <div class="hd">
-          <strong style="letter-spacing:.6px;text-transform:uppercase;">J’ai déjà un compte</strong>
-          <span class="muted-sm">Connexion rapide</span>
-        </div>
-        <div class="bd">
-          <form id="login-form">
-            <div class="field">
-              <label>Email *</label>
-              <input id="login-email" type="email" required placeholder="ex: client@email.com">
-            </div>
-            <div class="field">
-              <label>Mot de passe *</label>
-              <input id="login-password" type="password" required placeholder="••••••••">
-            </div>
-            <div class="btn-row" style="margin-top:12px;">
-              <button class="btn" id="login-btn" type="submit">Se connecter</button>
-              <a class="btn ghost" href="account.html">Mot de passe oublié ?</a>
-            </div>
-            <div class="muted-sm" style="margin-top:10px;">
-              Si la confirmation email est activée, pense à confirmer ton email avant de te connecter.
-            </div>
-          </form>
+        <table style="width:100%;border-collapse:collapse;">
+          <tbody id="order-lines"></tbody>
+          <tfoot>
+            <tr>
+              <td style="padding-top:10px;">Sous-total</td>
+              <td style="padding-top:10px;text-align:right;font-weight:800;" id="subtotal">—</td>
+            </tr>
+            <tr>
+              <td style="padding-top:6px;">Livraison</td>
+              <td style="padding-top:6px;text-align:right;font-weight:800;" id="shipping">—</td>
+            </tr>
+            <tr>
+              <td style="padding-top:10px;font-size:18px;">Total</td>
+              <td style="padding-top:10px;text-align:right;font-size:18px;font-weight:900;" id="total">—</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <hr style="margin:14px 0;opacity:.2"/>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <label style="display:flex;gap:8px;align-items:center;">
+            <input type="radio" name="shipping" value="relay" data-cents="0" checked />
+            Point relais (0€)
+          </label>
+          <label style="display:flex;gap:8px;align-items:center;">
+            <input type="radio" name="shipping" value="home" data-cents="690" />
+            Domicile (6,90€)
+          </label>
         </div>
       </section>
 
-      <!-- ✅ COLONNE DROITE : Compte + Livraison + Commande -->
-      <section class="panel-card" id="order-card">
-        <div class="hd">
-          <strong style="letter-spacing:.6px;text-transform:uppercase;">Livraison & commande</strong>
-          <span class="muted-sm">Compte + adresse</span>
-        </div>
-        <div class="bd">
-          <!-- Bloc création de compte (visible seulement si NON connecté) -->
-          <div id="signup-cred-box" style="margin-bottom:12px;">
-            <div class="notice muted-sm" style="margin-top:0;">
-              <strong>Pas de compte ?</strong> Crée-le ici (1ère commande).
-              Si la confirmation email est activée, tu devras confirmer l’email puis revenir te connecter.
-            </div>
+      <!-- Connexion -->
+      <section class="card" style="padding:16px;border-radius:14px;" id="login-card">
+        <h2 style="margin:0 0 10px;">Connexion</h2>
+        <div class="muted-sm" id="auth-mini" style="margin-bottom:10px;">Non connecté</div>
 
-            <div class="grid-2">
-              <div class="field">
-                <label>Email *</label>
-                <input id="signup-email" type="email" placeholder="ex: client@email.com">
-              </div>
-              <div class="field">
-                <label>Mot de passe *</label>
-                <input id="signup-password" type="password" placeholder="••••••••">
-              </div>
-            </div>
-          </div>
+        <form id="login-form" style="display:grid;gap:10px;">
+          <input id="login-email" type="email" placeholder="Email" required />
+          <input id="login-password" type="password" placeholder="Mot de passe" required />
+          <button id="login-btn" type="submit">Se connecter</button>
+        </form>
 
-          <form id="order-form">
-            <div class="grid-2">
-              <div class="field">
-                <label>Prénom *</label>
-                <input id="first_name" type="text" required placeholder="Prénom">
-              </div>
-              <div class="field">
-                <label>Nom *</label>
-                <input id="last_name" type="text" required placeholder="Nom">
-              </div>
-              <div class="field">
-                <label>Téléphone *</label>
-                <input id="phone" type="text" required placeholder="06…">
-              </div>
-              <div class="field">
-                <label>Société</label>
-                <input id="company" type="text" placeholder="(optionnel)">
-              </div>
-            </div>
-
-            <div class="grid-2">
-              <div class="field">
-                <label>Pays *</label>
-                <input id="country" type="text" required value="France">
-              </div>
-              <div class="field">
-                <label>Adresse *</label>
-                <input id="address1" type="text" required placeholder="N°, rue…">
-              </div>
-              <div class="field">
-                <label>Complément</label>
-                <input id="address2" type="text" placeholder="Bâtiment, étage…">
-              </div>
-              <div class="field">
-                <label>Ville *</label>
-                <input id="city" type="text" required placeholder="Ville">
-              </div>
-              <div class="field">
-                <label>Code postal *</label>
-                <input id="postal_code" type="text" required placeholder="75000">
-              </div>
-              <div class="field">
-                <label>Note (optionnel)</label>
-                <input id="note" type="text" placeholder="Infos livraison…">
-              </div>
-            </div>
-
-            <div style="margin-top:12px;">
-              <div style="font-weight:1000;text-transform:uppercase;letter-spacing:.6px;">Livraison</div>
-
-              <div class="radio-line">
-                <label>
-                  <input type="radio" name="shipping" value="relay" data-cents="0" checked>
-                  Point relais
-                </label>
-                <div style="font-weight:1000;">0,00 €</div>
-              </div>
-
-              <div class="radio-line">
-                <label>
-                  <input type="radio" name="shipping" value="home" data-cents="500">
-                  Domicile
-                </label>
-                <div style="font-weight:1000;">5,00 €</div>
-              </div>
-            </div>
-
-            <div class="btn-row" style="margin-top:14px;">
-              <button class="btn" id="place-order" type="submit">Commander</button>
-              <a class="btn ghost" href="shop.html">Ajouter des produits</a>
-            </div>
-          </form>
-        </div>
+        <button id="logoutBtn" type="button" style="display:none;margin-top:10px;">
+          Se déconnecter
+        </button>
       </section>
 
-      <!-- ✅ Récap commande (pleine largeur) -->
-      <section class="panel-card" style="grid-column:1 / -1;">
-        <div class="hd">
-          <strong style="letter-spacing:.6px;text-transform:uppercase;">Récapitulatif</strong>
-          <span class="muted-sm">Détail panier</span>
-        </div>
-        <div class="bd">
-          <div style="overflow:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>Produit</th>
-                  <th style="text-align:right;">Total</th>
-                </tr>
-              </thead>
-              <tbody id="order-lines"></tbody>
-            </table>
+      <!-- Adresse + paiement -->
+      <section class="card" style="padding:16px;border-radius:14px;">
+        <h2 style="margin:0 0 10px;">Adresse</h2>
+
+        <form id="order-form" style="display:grid;gap:10px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <input id="first_name" placeholder="Prénom" required />
+            <input id="last_name" placeholder="Nom" required />
           </div>
 
-          <div class="totals">
-            <div class="row"><span>Sous-total</span><strong id="subtotal">—</strong></div>
-            <div class="row"><span>Total</span><strong id="total">—</strong></div>
+          <input id="phone" placeholder="Téléphone" required />
+          <input id="company" placeholder="Société (optionnel)" />
+          <input id="country" placeholder="Pays (ex: France)" required />
+          <input id="address1" placeholder="Adresse" required />
+          <input id="address2" placeholder="Complément (optionnel)" />
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <input id="postal_code" placeholder="Code postal" required />
+            <input id="city" placeholder="Ville" required />
           </div>
+          <textarea id="note" placeholder="Note (optionnel)"></textarea>
 
-          <div class="muted-sm" style="margin-top:10px;">
-            Paiement sécurisé via Mollie (redirection).
-          </div>
+          <button id="place-order" type="submit">Payer avec Mollie</button>
+        </form>
+
+        <div class="muted-sm" style="margin-top:10px;">
+          Paiement sécurisé via Mollie.
         </div>
       </section>
     </div>
   </main>
 
-  <footer class="site-footer" style="margin-top: 34px;">
-    <div class="copy wrap">© <span id="year"></span> FrenchConnect</div>
-  </footer>
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // burger
-    (function(){
-      const toggle = document.getElementById("navToggle");
-      const menu   = document.getElementById("mobileMenu");
-      const close  = document.getElementById("menuClose");
-      const back   = document.getElementById("menuBackdrop");
-      if(!toggle || !menu) return;
-
-      function openMenu(){
-        document.body.classList.add("menu-open");
-        menu.classList.add("open");
-        toggle.setAttribute("aria-expanded","true");
-      }
-      function closeMenu(){
-        document.body.classList.remove("menu-open");
-        menu.classList.remove("open");
-        toggle.setAttribute("aria-expanded","false");
-      }
-
-      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
-      if(close) close.addEventListener("click", closeMenu);
-      if(back)  back.addEventListener("click", closeMenu);
-      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
-      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
-    })();
-  </script>
-
-  <!-- ✅ scripts dans le BON ordre -->
-  <script src="assets/js/store.js?v=20260106"></script>
+  <!-- ✅ Scripts dans le bon ordre -->
+  <script src="assets/js/store.js?v=20260116"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="assets/js/checkout.js?v=20260106"></script>
-  <!-- Supabase JS (OBLIGATOIRE avant checkout.js) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/checkout.js?v=20260116"></script>
 
-<!-- Ton checkout -->
-<script src="assets/js/checkout.js"></script>
-  
 </body>
 </html>
-
-
-
