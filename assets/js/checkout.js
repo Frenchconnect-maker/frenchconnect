@@ -1,19 +1,24 @@
 /* ============================================================
    checkout.js — FrenchConnect (Supabase + Mollie) ✅ SANS STRIPE
    - Lit le panier depuis store.js (localStorage)
+   - Login / logout Supabase
    - Crée commande: orders + order_items + addresses
    - Appelle Edge Function: mollie-create-checkout
    - Redirige vers Mollie
    ============================================================ */
 
 (function () {
-  // ✅ NE PAS redeclare SUPABASE_URL en global si store.js le fait déjà
-  // store.js met généralement: window.SUPABASE_URL / window.SUPABASE_KEY
+  // ✅ Mets tes vraies valeurs (ANON KEY = eyJ...).
+  // IMPORTANT: si tu définis déjà ça dans store.js, tu peux supprimer ces 2 lignes.
   window.SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ"; // ta vraie ANON KEY
+  window.SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
+  // (optionnel)
+  const SITE_ORIGIN = "https://frenchconnect31.com";
 
-  const SITE_ORIGIN = "https://frenchconnect31.com"; // ton domaine (utile pour debug/redirect)
+  const SUPABASE_URL = window.SUPABASE_URL;
+  const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY;
 
   const $ = (id) => document.getElementById(id);
 
@@ -32,7 +37,8 @@
     box.style.borderRadius = "12px";
     box.style.fontWeight = "700";
     box.style.border = "1px solid rgba(255,255,255,.12)";
-    box.style.background = type === "ok" ? "rgba(0,180,80,.12)" : "rgba(220,50,50,.12)";
+    box.style.background =
+      type === "ok" ? "rgba(0,180,80,.12)" : "rgba(220,50,50,.12)";
     box.innerHTML = text;
   }
   function hideMsg() {
@@ -61,7 +67,6 @@
   }
 
   function calcSubtotalCents(cart) {
-    // si store.js a findProduct/priceFor => on calcule propre
     let cents = 0;
 
     cart.forEach((line) => {
@@ -74,9 +79,12 @@
       }
 
       // 2) sinon via store.js catalogue
-      const p = typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+      const p =
+        typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
       const unit = p
-        ? (typeof window.priceFor === "function" ? window.priceFor(p, line.optionId) : (p.price || 0))
+        ? typeof window.priceFor === "function"
+          ? window.priceFor(p, line.optionId)
+          : p.price || 0
         : 0;
 
       cents += toCents(unit) * qty;
@@ -106,10 +114,14 @@
           let name = line.name || line.id || "Produit";
           let unit = Number(line.price || 0);
 
-          const p = typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+          const p =
+            typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
           if (p?.name) name = p.name;
           if (!unit && p) {
-            unit = typeof window.priceFor === "function" ? window.priceFor(p, line.optionId) : (p.price || 0);
+            unit =
+              typeof window.priceFor === "function"
+                ? window.priceFor(p, line.optionId)
+                : p.price || 0;
           }
 
           const lineTotal = unit * qty;
@@ -120,16 +132,20 @@
                 <div style="font-weight:900;">${name}</div>
                 <div class="muted-sm">x ${qty}</div>
               </td>
-              <td style="padding:8px 0;text-align:right;font-weight:900;">${euro(lineTotal)}</td>
+              <td style="padding:8px 0;text-align:right;font-weight:900;">${euro(
+                lineTotal
+              )}</td>
             </tr>
           `;
         })
         .join("");
     }
 
-    $("subtotal").textContent = euro(subtotalCents / 100);
-    $("shipping").textContent = euro(ship.cents / 100);
-    $("total").textContent = euro(totalCents / 100);
+    if ($("subtotal")) $("subtotal").textContent = euro(subtotalCents / 100);
+    if ($("shipping")) $("shipping").textContent = euro(ship.cents / 100);
+    if ($("total")) $("total").textContent = euro(totalCents / 100);
+
+    return { subtotalCents, shippingCents: ship.cents, totalCents, shippingMethod: ship.method };
   }
 
   async function hydrateAuthUI(sb) {
@@ -153,32 +169,55 @@
     return user;
   }
 
-  async function startMollieCheckout(sb, orderId) {
-    // ⚠️ Ton Edge Function doit renvoyer: { url: "https://..." }
+  // ✅ IMPORTANT: on utilise sb.functions.invoke (plus fiable, gère mieux l’auth)
+  async function startMollieCheckout(sb, orderId, totalCents) {
+    const { data: sessionData } = await sb.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) throw new Error("Utilisateur non authentifié (token manquant)");
+
+    const payload = {
+      amount: (totalCents / 100).toFixed(2), // "24.90"
+      description: `Commande ${orderId}`,
+      order_id: orderId,
+      origin: SITE_ORIGIN, // optionnel
+    };
+
     const { data, error } = await sb.functions.invoke("mollie-create-checkout", {
-      body: { order_id: orderId },
+      body: payload,
+      // on force le Bearer (au cas où)
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    if (error) throw new Error(error.message || "Erreur Mollie (Edge Function)");
-    if (!data?.url) throw new Error("URL Mollie manquante (Edge Function)");
+    if (error) throw new Error(error.message || "Erreur Edge Function Mollie");
 
-    window.location.href = data.url;
+    const url = data?.url || data?._links?.checkout?.href || data?._links?.checkout?.url;
+    if (!url) throw new Error("URL Mollie introuvable (réponse Edge Function)");
+
+    window.location.href = url;
   }
 
   async function init() {
+    // marqueur debug
+    window.__CHECKOUT_LOADED__ = true;
+
     if (!window.supabase?.createClient) {
-      showMsg("err", "Supabase JS n’est pas chargé. Vérifie le script CDN dans checkout.html.");
+      showMsg(
+        "err",
+        "Supabase JS n’est pas chargé. Vérifie le script CDN supabase.js dans checkout.html."
+      );
       return;
     }
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 20) {
       showMsg(
         "err",
-        "SUPABASE_URL / SUPABASE_KEY manquants. Dans store.js, mets la vraie ANON KEY (eyJ...) pas une sb_publishable..."
+        "SUPABASE_URL / SUPABASE_ANON_KEY manquants. Mets la vraie ANON KEY (eyJ...)."
       );
       return;
     }
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // (optionnel) debug dans console:
+    window.supabaseClient = sb;
 
     // Panier
     const cart = readCartSafe();
@@ -188,7 +227,7 @@
       return;
     }
 
-    // Summary
+    // Summary + shipping change
     renderSummary(cart);
     document.querySelectorAll('input[name="shipping"]').forEach((r) => {
       r.addEventListener("change", () => renderSummary(readCartSafe()));
@@ -215,8 +254,8 @@
       }
 
       try {
-        const email = ($("login-email").value || "").trim().toLowerCase();
-        const password = $("login-password").value || "";
+        const email = ($("login-email")?.value || "").trim().toLowerCase();
+        const password = $("login-password")?.value || "";
         if (!email || !password) throw new Error("Email et mot de passe requis.");
 
         const res = await sb.auth.signInWithPassword({ email, password });
@@ -246,32 +285,38 @@
       }
 
       try {
-        // 1) user connecté obligatoire pour payer
+        // 1) user connecté obligatoire
         const { data } = await sb.auth.getSession();
         const user = data?.session?.user;
-        if (!user) throw new Error("Tu dois être connecté pour payer (utilise la connexion).");
+        if (!user) throw new Error("Tu dois être connecté pour payer.");
 
-        // 2) lire cart + totals
+        // 2) cart + totals
         const cartNow = readCartSafe();
-        const subtotalCents = calcSubtotalCents(cartNow);
-        const ship = getSelectedShipping();
-        const totalCents = subtotalCents + ship.cents;
+        if (!cartNow.length) throw new Error("Panier vide.");
+
+        const totals = renderSummary(cartNow);
+        const subtotalCents = totals.subtotalCents;
+        const shippingCents = totals.shippingCents;
+        const totalCents = totals.totalCents;
+        const shippingMethod = totals.shippingMethod;
 
         // 3) validations adresse
-        const first_name = ($("first_name").value || "").trim();
-        const last_name = ($("last_name").value || "").trim();
-        const phone = ($("phone").value || "").trim();
+        const first_name = ($("first_name")?.value || "").trim();
+        const last_name = ($("last_name")?.value || "").trim();
+        const phone = ($("phone")?.value || "").trim();
 
-        const company = ($("company").value || "").trim();
-        const country = ($("country").value || "").trim();
-        const address1 = ($("address1").value || "").trim();
-        const address2 = ($("address2").value || "").trim();
-        const city = ($("city").value || "").trim();
-        const postal_code = ($("postal_code").value || "").trim();
-        const note = ($("note").value || "").trim();
+        const company = ($("company")?.value || "").trim();
+        const country = ($("country")?.value || "").trim();
+        const address1 = ($("address1")?.value || "").trim();
+        const address2 = ($("address2")?.value || "").trim();
+        const city = ($("city")?.value || "").trim();
+        const postal_code = ($("postal_code")?.value || "").trim();
+        const note = ($("note")?.value || "").trim();
 
-        if (!first_name || !last_name || !phone) throw new Error("Prénom / Nom / Téléphone obligatoires.");
-        if (!country || !address1 || !city || !postal_code) throw new Error("Adresse incomplète.");
+        if (!first_name || !last_name || !phone)
+          throw new Error("Prénom / Nom / Téléphone obligatoires.");
+        if (!country || !address1 || !city || !postal_code)
+          throw new Error("Adresse incomplète.");
 
         // 4) créer commande
         const { data: order, error: orderErr } = await sb
@@ -281,9 +326,9 @@
             status: "pending_payment",
             currency: "EUR",
             subtotal_cents: subtotalCents,
-            shipping_cents: ship.cents,
+            shipping_cents: shippingCents,
             total_cents: totalCents,
-            shipping_method: ship.method,
+            shipping_method: shippingMethod,
             note: note || null,
           })
           .select()
@@ -298,9 +343,15 @@
           let product_name = l.name || l.id || "Produit";
           let unit = Number(l.price || 0);
 
-          const p = typeof window.findProduct === "function" ? window.findProduct(l.id) : null;
+          const p =
+            typeof window.findProduct === "function" ? window.findProduct(l.id) : null;
           if (p?.name) product_name = p.name;
-          if (!unit && p) unit = typeof window.priceFor === "function" ? window.priceFor(p, l.optionId) : (p.price || 0);
+          if (!unit && p) {
+            unit =
+              typeof window.priceFor === "function"
+                ? window.priceFor(p, l.optionId)
+                : p.price || 0;
+          }
 
           const unitCents = toCents(unit);
 
@@ -317,7 +368,7 @@
         const itemsRes = await sb.from("order_items").insert(items);
         if (itemsRes.error) throw itemsRes.error;
 
-        // 6) adresses
+        // 6) adresses (billing + shipping identiques)
         const addrBase = {
           first_name,
           last_name,
@@ -340,10 +391,10 @@
         showMsg("ok", `Commande créée ✅ Redirection Mollie… (ID: <b>${order.id}</b>)`);
 
         // 7) payer Mollie
-        await startMollieCheckout(sb, order.id);
+        await startMollieCheckout(sb, order.id, totalCents);
       } catch (err) {
-        showMsg("err", err?.message || "Erreur paiement");
         console.error(err);
+        showMsg("err", err?.message || "Erreur paiement");
       } finally {
         if (btn) {
           btn.disabled = false;
