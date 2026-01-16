@@ -1,17 +1,19 @@
 /* ============================================================
    checkout.js — FrenchConnect (Supabase + Mollie) ✅ SANS STRIPE
    - Lit le panier depuis store.js (localStorage)
-   - Login / logout Supabase + "mot de passe oublié"
+   - Login / logout Supabase + reset password
    - Crée commande: orders + order_items + addresses
-   - Appelle Edge Function: mollie-create-checkout
+   - Appelle Edge Function: mollie-create-checkout (JWT ON)
    - Redirige vers Mollie
    ============================================================ */
 
 (function () {
-  // ✅ Si store.js définit déjà ces 2 valeurs, tu peux supprimer ces 2 lignes.
+  // ✅ Mets tes vraies valeurs (ANON KEY = eyJ...).
   window.SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
   window.SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
+
+  const SITE_ORIGIN = "https://frenchconnect31.com";
 
   const SUPABASE_URL = window.SUPABASE_URL;
   const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY;
@@ -33,7 +35,8 @@
     box.style.borderRadius = "12px";
     box.style.fontWeight = "700";
     box.style.border = "1px solid rgba(255,255,255,.12)";
-    box.style.background = type === "ok" ? "rgba(0,180,80,.12)" : "rgba(220,50,50,.12)";
+    box.style.background =
+      type === "ok" ? "rgba(0,180,80,.12)" : "rgba(220,50,50,.12)";
     box.innerHTML = text;
   }
   function hideMsg() {
@@ -47,8 +50,12 @@
     const box = $("auth-msg");
     if (!box) return;
     box.style.display = "block";
+    box.style.padding = "10px 12px";
+    box.style.borderRadius = "12px";
+    box.style.fontWeight = "700";
     box.style.border = "1px solid rgba(255,255,255,.12)";
-    box.style.background = type === "ok" ? "rgba(0,180,80,.12)" : "rgba(220,50,50,.12)";
+    box.style.background =
+      type === "ok" ? "rgba(0,180,80,.12)" : "rgba(220,50,50,.12)";
     box.innerHTML = text;
   }
   function hideAuthMsg() {
@@ -58,15 +65,12 @@
     box.innerHTML = "";
   }
 
-  function setAuthLoading(on) {
-    const status = $("auth-status");
-    if (!status) return;
-    status.textContent = on ? "Vérification…" : status.textContent;
-  }
-
   function getSelectedShipping() {
     const el = document.querySelector('input[name="shipping"]:checked');
-    return { method: el?.value || "relay", cents: Number(el?.dataset?.cents || 0) };
+    return {
+      method: el?.value || "relay",
+      cents: Number(el?.dataset?.cents || 0),
+    };
   }
 
   function readCartSafe() {
@@ -80,6 +84,7 @@
 
   function calcSubtotalCents(cart) {
     let cents = 0;
+
     cart.forEach((line) => {
       const qty = Number(line.qty || 1);
 
@@ -88,13 +93,18 @@
         return;
       }
 
-      const p = typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+      const p =
+        typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+
       const unit = p
-        ? (typeof window.priceFor === "function" ? window.priceFor(p, line.optionId) : (p.price || 0))
+        ? typeof window.priceFor === "function"
+          ? window.priceFor(p, line.optionId)
+          : p.price || 0
         : 0;
 
       cents += toCents(unit) * qty;
     });
+
     return cents;
   }
 
@@ -119,9 +129,16 @@
           let name = line.name || line.id || "Produit";
           let unit = Number(line.price || 0);
 
-          const p = typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+          const p =
+            typeof window.findProduct === "function" ? window.findProduct(line.id) : null;
+
           if (p?.name) name = p.name;
-          if (!unit && p) unit = typeof window.priceFor === "function" ? window.priceFor(p, line.optionId) : (p.price || 0);
+          if (!unit && p) {
+            unit =
+              typeof window.priceFor === "function"
+                ? window.priceFor(p, line.optionId)
+                : p.price || 0;
+          }
 
           const lineTotal = unit * qty;
 
@@ -142,44 +159,42 @@
     if ($("shipping")) $("shipping").textContent = euro(ship.cents / 100);
     if ($("total")) $("total").textContent = euro(totalCents / 100);
 
-    return { subtotalCents, shippingCents: ship.cents, totalCents, shippingMethod: ship.method };
+    return {
+      subtotalCents,
+      shippingCents: ship.cents,
+      totalCents,
+      shippingMethod: ship.method,
+    };
   }
 
-  function setAuthUI(user) {
+  async function hydrateAuthUI(sb) {
     const status = $("auth-status");
     const loginForm = $("login-form");
     const logoutBtn = $("logoutBtn");
 
+    if (status) status.textContent = "Chargement…";
+
+    const { data } = await sb.auth.getSession();
+    const user = data?.session?.user || null;
+
     if (user) {
-      if (status) status.textContent = `Connecté : ${user.email || "OK"}`;
+      if (status) status.textContent = `Connecté : ${user.email}`;
       if (loginForm) loginForm.style.display = "none";
-      if (logoutBtn) logoutBtn.style.display = "";
+      if (logoutBtn) logoutBtn.style.display = "inline-flex";
     } else {
       if (status) status.textContent = "Non connecté";
-      if (loginForm) loginForm.style.display = "";
+      if (loginForm) loginForm.style.display = "block";
       if (logoutBtn) logoutBtn.style.display = "none";
     }
-  }
 
-  async function hydrateAuthUI(sb) {
-    setAuthLoading(true);
-    hideAuthMsg();
-    try {
-      const { data, error } = await sb.auth.getSession();
-      if (error) throw error;
-      const user = data?.session?.user || null;
-      setAuthUI(user);
-      return user;
-    } finally {
-      setAuthLoading(false);
-    }
+    return user;
   }
 
   async function startMollieCheckout(sb, orderId, totalCents) {
     const { data: sessionData } = await sb.auth.getSession();
     const accessToken = sessionData?.session?.access_token;
 
-    if (!accessToken) throw new Error("Tu dois être connecté pour payer.");
+    if (!accessToken) throw new Error("Utilisateur non authentifié (token manquant)");
 
     const payload = {
       amount: (totalCents / 100).toFixed(2),
@@ -191,7 +206,6 @@
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // ✅ si Verify JWT = ON
         Authorization: `Bearer ${accessToken}`,
         apikey: SUPABASE_ANON_KEY,
       },
@@ -200,30 +214,35 @@
 
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`Edge Function ${res.status}: ${text}`);
+      throw new Error(`Edge Function error ${res.status}: ${text}`);
     }
 
     const data = await res.json();
     const url = data?.url || data?._links?.checkout?.href || data?._links?.checkout?.url;
+    if (!url) throw new Error("URL Mollie introuvable");
 
-    if (!url) throw new Error("URL Mollie introuvable.");
     window.location.href = url;
   }
 
   async function init() {
+    window.__CHECKOUT_LOADED__ = true;
+
     if (!window.supabase?.createClient) {
-      showMsg("err", "Supabase JS n’est pas chargé. Vérifie le script CDN dans checkout.html.");
+      showMsg("err", "Supabase JS n’est pas chargé. Vérifie le script CDN supabase.js.");
       return;
     }
+
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 20) {
-      showMsg("err", "SUPABASE_URL / SUPABASE_ANON_KEY manquants (ANON KEY = eyJ...).");
+      showMsg("err", "SUPABASE_URL / SUPABASE_ANON_KEY manquants. Mets la vraie ANON KEY (eyJ...).");
       return;
     }
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    window.supabaseClient = sb; // debug
 
-    // Panier
+    sb.auth.onAuthStateChange(() => {
+      hydrateAuthUI(sb);
+    });
+
     const cart = readCartSafe();
     if (!cart.length) {
       showMsg("err", "Panier vide. Retourne à la boutique.");
@@ -231,32 +250,23 @@
       return;
     }
 
-    // Summary
     renderSummary(cart);
     document.querySelectorAll('input[name="shipping"]').forEach((r) => {
       r.addEventListener("change", () => renderSummary(readCartSafe()));
     });
 
-    // Auth UI
     await hydrateAuthUI(sb);
 
-    // Logout
     $("logoutBtn")?.addEventListener("click", async () => {
       hideAuthMsg();
-      try {
-        await sb.auth.signOut();
-        setAuthUI(null);
-        showAuthMsg("ok", "Déconnecté ✅");
-      } catch (e) {
-        showAuthMsg("err", e?.message || "Erreur déconnexion");
-      }
+      await sb.auth.signOut();
+      await hydrateAuthUI(sb);
     });
 
-    // Login
     $("login-form")?.addEventListener("submit", async (e) => {
       e.preventDefault();
-      hideMsg();
       hideAuthMsg();
+      hideMsg();
 
       const btn = $("login-btn");
       if (btn) {
@@ -284,30 +294,25 @@
       }
     });
 
-    // Mot de passe oublié
     $("forgot-btn")?.addEventListener("click", async () => {
       hideAuthMsg();
       const email = ($("login-email")?.value || "").trim().toLowerCase();
       if (!email) {
-        showAuthMsg("err", "Mets ton email dans le champ Email puis clique sur “Mot de passe oublié ?”.");
+        showAuthMsg("err", "Entre ton email puis clique sur “Mot de passe oublié ?”");
         return;
       }
 
       try {
-        // ⚠️ Mets l’URL de ta page reset si tu en as une (sinon tu peux laisser /login.html ou /index.html)
-        const redirectTo = const redirectTo = "https://frenchconnect31.com/reset-password.html";
-
-
-        const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
+          redirectTo: `${SITE_ORIGIN}/reset-password.html`,
+        });
         if (error) throw error;
-
-        showAuthMsg("ok", "Email de réinitialisation envoyé ✅ (vérifie tes spams).");
-      } catch (e) {
-        showAuthMsg("err", e?.message || "Erreur mot de passe oublié");
+        showAuthMsg("ok", "Email envoyé ✅ (vérifie tes spams).");
+      } catch (err) {
+        showAuthMsg("err", err?.message || "Impossible d’envoyer l’email.");
       }
     });
 
-    // Place order
     $("order-form")?.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMsg();
@@ -327,7 +332,10 @@
         if (!cartNow.length) throw new Error("Panier vide.");
 
         const totals = renderSummary(cartNow);
-        const { subtotalCents, shippingCents, totalCents, shippingMethod } = totals;
+        const subtotalCents = totals.subtotalCents;
+        const shippingCents = totals.shippingCents;
+        const totalCents = totals.totalCents;
+        const shippingMethod = totals.shippingMethod;
 
         const first_name = ($("first_name")?.value || "").trim();
         const last_name = ($("last_name")?.value || "").trim();
@@ -344,7 +352,6 @@
         if (!first_name || !last_name || !phone) throw new Error("Prénom / Nom / Téléphone obligatoires.");
         if (!country || !address1 || !city || !postal_code) throw new Error("Adresse incomplète.");
 
-        // 1) order
         const { data: order, error: orderErr } = await sb
           .from("orders")
           .insert({
@@ -362,16 +369,22 @@
 
         if (orderErr) throw orderErr;
 
-        // 2) items
         const items = cartNow.map((l) => {
           const qty = Number(l.qty || 1);
 
           let product_name = l.name || l.id || "Produit";
           let unit = Number(l.price || 0);
 
-          const p = typeof window.findProduct === "function" ? window.findProduct(l.id) : null;
+          const p =
+            typeof window.findProduct === "function" ? window.findProduct(l.id) : null;
+
           if (p?.name) product_name = p.name;
-          if (!unit && p) unit = typeof window.priceFor === "function" ? window.priceFor(p, l.optionId) : (p.price || 0);
+          if (!unit && p) {
+            unit =
+              typeof window.priceFor === "function"
+                ? window.priceFor(p, l.optionId)
+                : p.price || 0;
+          }
 
           const unitCents = toCents(unit);
 
@@ -388,7 +401,6 @@
         const itemsRes = await sb.from("order_items").insert(items);
         if (itemsRes.error) throw itemsRes.error;
 
-        // 3) addresses
         const addrBase = {
           first_name,
           last_name,
@@ -409,8 +421,6 @@
         if (addrRes.error) throw addrRes.error;
 
         showMsg("ok", `Commande créée ✅ Redirection Mollie… (ID: <b>${order.id}</b>)`);
-
-        // 4) Mollie
         await startMollieCheckout(sb, order.id, totalCents);
       } catch (err) {
         console.error(err);
