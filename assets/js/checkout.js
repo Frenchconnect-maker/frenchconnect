@@ -171,30 +171,55 @@
 
   // ✅ IMPORTANT: on utilise sb.functions.invoke (plus fiable, gère mieux l’auth)
   async function startMollieCheckout(sb, orderId, totalCents) {
-    const { data: sessionData } = await sb.auth.getSession();
-    const accessToken = sessionData?.session?.access_token;
-    if (!accessToken) throw new Error("Utilisateur non authentifié (token manquant)");
+  const { data: sessionData } = await sb.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
 
-    const payload = {
-      amount: (totalCents / 100).toFixed(2), // "24.90"
-      description: `Commande ${orderId}`,
-      order_id: orderId,
-      origin: SITE_ORIGIN, // optionnel
-    };
-
-    const { data, error } = await sb.functions.invoke("mollie-create-checkout", {
-      body: payload,
-      // on force le Bearer (au cas où)
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    if (error) throw new Error(error.message || "Erreur Edge Function Mollie");
-
-    const url = data?.url || data?._links?.checkout?.href || data?._links?.checkout?.url;
-    if (!url) throw new Error("URL Mollie introuvable (réponse Edge Function)");
-
-    window.location.href = url;
+  if (!accessToken) {
+    throw new Error("Utilisateur non authentifié");
   }
+
+  const payload = {
+    amount: (totalCents / 100).toFixed(2),
+    description: `Commande ${orderId}`,
+    order_id: orderId,
+  };
+
+  const res = await fetch(
+    `${SUPABASE_URL}/functions/v1/mollie-create-checkout`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+
+        // 🔥 OBLIGATOIRE
+        apikey: SUPABASE_ANON_KEY,
+
+        // 🔐 pour identifier l'utilisateur
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Edge Function ${res.status}: ${text}`);
+  }
+
+  const data = await res.json();
+
+  const url =
+    data?.url ||
+    data?._links?.checkout?.href ||
+    data?._links?.checkout?.url;
+
+  if (!url) {
+    throw new Error("URL Mollie introuvable");
+  }
+
+  window.location.href = url;
+}
+
 
   async function init() {
     // marqueur debug
