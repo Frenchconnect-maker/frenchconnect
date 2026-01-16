@@ -170,12 +170,12 @@
   }
 
   // ✅ IMPORTANT: on utilise sb.functions.invoke (plus fiable, gère mieux l’auth)
-  async function startMollieCheckout(sb, orderId, totalCents) {
+ async function startMollieCheckout(sb, orderId, totalCents) {
   const { data: sessionData } = await sb.auth.getSession();
   const accessToken = sessionData?.session?.access_token;
 
   if (!accessToken) {
-    throw new Error("Utilisateur non authentifié");
+    throw new Error("Utilisateur non authentifié (token manquant)");
   }
 
   const payload = {
@@ -191,11 +191,9 @@
       headers: {
         "Content-Type": "application/json",
 
-        // 🔥 OBLIGATOIRE
-        apikey: SUPABASE_ANON_KEY,
-
-        // 🔐 pour identifier l'utilisateur
+        // 🔴 OBLIGATOIRE QUAND Verify JWT = ON
         Authorization: `Bearer ${accessToken}`,
+        apikey: SUPABASE_ANON_KEY,
       },
       body: JSON.stringify(payload),
     }
@@ -203,7 +201,7 @@
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Edge Function ${res.status}: ${text}`);
+    throw new Error(`Edge Function error ${res.status}: ${text}`);
   }
 
   const data = await res.json();
@@ -219,7 +217,6 @@
 
   window.location.href = url;
 }
-
 
   async function init() {
     // marqueur debug
