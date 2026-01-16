@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Paiement — FrenchConnect</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260116" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260116-3" />
   <link rel="icon" type="image/png" href="assets/images/logo.png" />
 </head>
 
@@ -67,12 +67,12 @@
         </div>
       </section>
 
-      <!-- ✅ AUTH -->
+      <!-- Compte -->
       <section class="card" id="auth-card" style="padding:16px;border-radius:14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
           <div>
             <div style="font-weight:900;font-size:18px;">Compte</div>
-            <div id="auth-status" class="muted-sm" style="opacity:.85;">Vérification…</div>
+            <div id="auth-status" class="muted-sm" style="opacity:.85;">Chargement…</div>
           </div>
 
           <button id="logoutBtn" type="button" class="btn" style="display:none;">
@@ -96,13 +96,8 @@
           </div>
 
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;">
-            <button id="login-btn" type="submit" class="btn">
-              Se connecter
-            </button>
-
-            <button id="forgot-btn" type="button" class="btn btn-ghost">
-              Mot de passe oublié ?
-            </button>
+            <button id="login-btn" type="submit" class="btn">Se connecter</button>
+            <button id="forgot-btn" type="button" class="btn btn-ghost">Mot de passe oublié ?</button>
           </div>
         </form>
       </section>
@@ -122,10 +117,12 @@
           <input id="country" placeholder="Pays (ex: France)" required />
           <input id="address1" placeholder="Adresse" required />
           <input id="address2" placeholder="Complément (optionnel)" />
+
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             <input id="postal_code" placeholder="Code postal" required />
             <input id="city" placeholder="Ville" required />
           </div>
+
           <textarea id="note" placeholder="Note (optionnel)"></textarea>
 
           <button id="place-order" type="submit">Payer avec Mollie</button>
@@ -139,10 +136,10 @@
     </div>
   </main>
 
-  <!-- ✅ Scripts dans le bon ordre -->
-  <script src="assets/js/store.js?v=20260116"></script>
+  <!-- Scripts (ordre obligatoire) -->
+  <script src="assets/js/store.js?v=20260116-3"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="assets/js/checkout.js?v=20260116"></script>
+  <script src="assets/js/checkout.js?v=20260116-3"></script>
 
 </body>
 </html>
