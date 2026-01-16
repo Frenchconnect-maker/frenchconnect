@@ -66,22 +66,48 @@
           </label>
         </div>
       </section>
+      <!-- ✅ AUTH CARD -->
+<section class="card" id="auth-card" style="margin:16px 0;">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <div>
+      <div style="font-weight:900;font-size:18px;">Compte</div>
+      <div id="auth-status" class="muted-sm" style="opacity:.85;">Vérification…</div>
+    </div>
 
-      <!-- Connexion -->
-      <section class="card" style="padding:16px;border-radius:14px;" id="login-card">
-        <h2 style="margin:0 0 10px;">Connexion</h2>
-        <div class="muted-sm" id="auth-mini" style="margin-bottom:10px;">Non connecté</div>
+    <button id="logoutBtn" type="button" class="btn" style="display:none;">
+      Se déconnecter
+    </button>
+  </div>
 
-        <form id="login-form" style="display:grid;gap:10px;">
-          <input id="login-email" type="email" placeholder="Email" required />
-          <input id="login-password" type="password" placeholder="Mot de passe" required />
-          <button id="login-btn" type="submit">Se connecter</button>
-        </form>
+  <!-- Message -->
+  <div id="auth-msg" style="display:none;margin-top:12px;padding:10px 12px;border-radius:12px;font-weight:700;"></div>
 
-        <button id="logoutBtn" type="button" style="display:none;margin-top:10px;">
-          Se déconnecter
-        </button>
-      </section>
+  <!-- LOGIN FORM -->
+  <form id="login-form" style="margin-top:14px;display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="grid-column:1 / -1;">
+        <label class="muted-sm" for="login-email">Email</label>
+        <input id="login-email" type="email" autocomplete="email" required />
+      </div>
+
+      <div style="grid-column:1 / -1;">
+        <label class="muted-sm" for="login-password">Mot de passe</label>
+        <input id="login-password" type="password" autocomplete="current-password" required />
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;">
+      <button id="login-btn" type="submit" class="btn">
+        Se connecter
+      </button>
+
+      <button id="forgot-btn" type="button" class="btn btn-ghost">
+        Mot de passe oublié ?
+      </button>
+    </div>
+  </form>
+</section>
+
 
       <!-- Adresse + paiement -->
       <section class="card" style="padding:16px;border-radius:14px;">
