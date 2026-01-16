@@ -355,4 +355,3 @@
 
   window.addEventListener("DOMContentLoaded", init);
 })();
-
