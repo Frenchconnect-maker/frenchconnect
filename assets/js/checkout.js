@@ -9,8 +9,9 @@
 (function () {
   // ✅ NE PAS redeclare SUPABASE_URL en global si store.js le fait déjà
   // store.js met généralement: window.SUPABASE_URL / window.SUPABASE_KEY
-  const SUPABASE_URL = window.SUPABASE_URL || "https://mnsqfagfdahvhlfopfah.supabase.co";
-  const SUPABASE_ANON_KEY = window.SUPABASE_KEY || window.SUPABASE_ANON_KEY || ""; // doit être eyJ... (anon)
+  window.SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
+  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ"; // ta vraie ANON KEY
+
 
   const SITE_ORIGIN = "https://frenchconnect31.com"; // ton domaine (utile pour debug/redirect)
 
