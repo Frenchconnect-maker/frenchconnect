@@ -1,6 +1,7 @@
 /* ============================================================
    checkout.js — FrenchConnect (Supabase + Mollie) ✅
    - Login / logout / reset password
+   - (NOUVEAU) si pas connecté au paiement => signup/signin auto
    - Crée orders + order_items + addresses
    - Appelle Edge Function: mollie-create-checkout (JWT ON)
    ============================================================ */
@@ -157,7 +158,42 @@
     if ($("logoutBtn")) $("logoutBtn").style.display = showLogout;
     if ($("logoutBtnTop")) $("logoutBtnTop").style.display = showLogout;
 
+    // (optionnel) cache les champs email/mdp checkout si déjà connecté
+    if ($("checkout-auth-fields")) $("checkout-auth-fields").style.display = user ? "none" : "block";
+
     return user;
+  }
+
+  // ✅ NOUVEAU : s’assure qu’un user existe (signup sinon signin)
+  async function ensureUserForCheckout(sb) {
+    const { data: sess } = await sb.auth.getSession();
+    if (sess?.session?.user) return sess.session.user;
+
+    const email = ($("checkout-email")?.value || $("login-email")?.value || "").trim().toLowerCase();
+    const password = ($("checkout-password")?.value || $("login-password")?.value || "");
+
+    if (!email || !password) {
+      throw new Error("Entre un email + un mot de passe pour créer ton compte.");
+    }
+
+    // 1) tenter signup
+    const { error: signUpErr } = await sb.auth.signUp({ email, password });
+
+    if (signUpErr) {
+      // si déjà inscrit => on tente signIn
+      const { error: signInErr } = await sb.auth.signInWithPassword({ email, password });
+      if (signInErr) throw new Error("Compte déjà existant : mot de passe incorrect.");
+    } else {
+      // signup ok => tenter signIn direct (si email confirmation OFF)
+      const { error: signInErr } = await sb.auth.signInWithPassword({ email, password });
+      if (signInErr) {
+        throw new Error("Compte créé, mais confirmation email activée. Désactive 'Confirm email' dans Supabase Auth, ou mets un système de confirmation.");
+      }
+    }
+
+    const { data: sess2 } = await sb.auth.getSession();
+    if (!sess2?.session?.user) throw new Error("Connexion impossible (session manquante).");
+    return sess2.session.user;
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
@@ -167,7 +203,7 @@
     }
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    window.supabaseClient = sb; // debug
+    window.supabaseClient = sb;
 
     // summary
     const cart = cartRead();
@@ -232,14 +268,13 @@
       e.preventDefault();
       msgHide();
 
-      const { data: sess } = await sb.auth.getSession();
-      const user = sess?.session?.user;
-      if (!user) return msg("Tu dois être connecté pour payer.");
-
       const btn = $("place-order");
       if (btn) { btn.disabled = true; btn.textContent = "Traitement…"; }
 
       try {
+        // ✅ NOUVEAU : crée/connexion auto si besoin
+        const user = await ensureUserForCheckout(sb);
+
         const totals = renderSummary();
         const first_name = ($("first_name")?.value || "").trim();
         const last_name = ($("last_name")?.value || "").trim();
@@ -321,3 +356,4 @@
     });
   });
 })();
+
