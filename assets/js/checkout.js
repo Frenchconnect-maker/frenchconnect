@@ -261,12 +261,17 @@
     await hydrateAuthUI(sb);
 
     // Logout
-    $("logoutBtn")?.addEventListener("click", async () => {
-      hideAuthMsg();
-      await sb.auth.signOut();
-      await hydrateAuthUI(sb);
-      showAuthMsg("ok", "Déconnecté ✅");
-    });
+    ["logoutBtn", "logoutBtnTop"].forEach((id) => {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    hideAuthMsg?.();
+    await sb.auth.signOut();
+    location.reload(); // plus propre, reset total
+  });
+});
+
 
     // Login
     $("login-form")?.addEventListener("submit", async (e) => {
