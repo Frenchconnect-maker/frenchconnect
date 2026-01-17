@@ -1,3 +1,47 @@
+// ================= AUTH SIMPLE CHECKOUT =================
+const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $ = (id) => document.getElementById(id);
+
+async function refreshAuth() {
+  const { data } = await sb.auth.getSession();
+  const user = data?.session?.user;
+
+  if ($("auth-status")) {
+    $("auth-status").textContent = user
+      ? "Connecté : " + user.email
+      : "Non connecté";
+  }
+
+  if ($("login-form")) $("login-form").style.display = user ? "none" : "block";
+  if ($("logoutBtn")) $("logoutBtn").style.display = user ? "inline-block" : "none";
+
+  return user;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await refreshAuth();
+
+  $("login-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = $("login-email").value;
+    const password = $("login-password").value;
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) return alert(error.message);
+
+    await refreshAuth();
+  });
+
+  $("logoutBtn")?.addEventListener("click", async () => {
+    await sb.auth.signOut();
+    await refreshAuth();
+  });
+});
 /* ============================================================
    checkout.js — FrenchConnect (Supabase + Mollie) ✅ SANS STRIPE
    - Lit le panier depuis store.js (localStorage)
