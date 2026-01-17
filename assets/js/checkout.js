@@ -54,10 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 (function () {
   // ✅ Si tu as déjà SUPABASE_URL/KEY dans store.js, tu peux SUPPRIMER ces 2 lignes.
   // (Mais en attendant, on les laisse pour éviter "undefined".)
-  window.SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-  window.SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
-
+  
   // ton domaine (sans www OK). Si tu utilises www partout, mets https://www.frenchconnect31.com
   const SITE_ORIGIN = "https://frenchconnect31.com";
 
@@ -317,37 +314,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-    // Login
-    $("login-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideAuthMsg();
-      hideMsg();
-
-      const btn = $("login-btn");
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = "Connexion…";
-      }
-
-      try {
-        const email = ($("login-email")?.value || "").trim().toLowerCase();
-        const password = $("login-password")?.value || "";
-        if (!email || !password) throw new Error("Email et mot de passe requis.");
-
-        const res = await sb.auth.signInWithPassword({ email, password });
-        if (res.error) throw res.error;
-
-        await hydrateAuthUI(sb);
-        showAuthMsg("ok", "Connecté ✅ Tu peux payer.");
-      } catch (err) {
-        showAuthMsg("err", err?.message || "Erreur de connexion.");
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = "Se connecter";
-        }
-      }
-    });
+    
 
     // Reset password
     $("forgot-btn")?.addEventListener("click", async () => {
