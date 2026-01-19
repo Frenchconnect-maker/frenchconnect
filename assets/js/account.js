@@ -1,490 +1,313 @@
-/* ======================================================
-   ACCOUNT — Espace client (Supabase)
-   - Login depuis account.html
-   - Mot de passe oublié (envoi email)
-   - Nouveau mot de passe (recovery)
-   - Affiche profil + commandes du user
-   - ✅ Affiche suivi colis (carrier / tracking / url / shipped_at)
-   ====================================================== */
+/* ============================================================
+   account.js — FrenchConnect (Supabase)
+   - Login / logout / reset password
+   - Profile: load + edit + upsert (évite les NULL)
+   - Orders: list + items + status + tracking link
+   ============================================================ */
 
-const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
+(() => {
+  const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
-// Charge supabase-js v2 depuis CDN puis initialise
-(function loadSupabaseCDN() {
-  const s = document.createElement("script");
-  s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-  s.defer = true;
-  s.onload = initAccount;
-  document.head.appendChild(s);
-})();
+  const SITE_ORIGIN = "https://frenchconnect31.com";
 
-const $ = (id) => document.getElementById(id);
+  const $ = (id) => document.getElementById(id);
 
-function euroFromCents(cents) {
-  const n = Number(cents || 0) / 100;
-  return n.toFixed(2).replace(".", ",") + " €";
-}
+  const euro = (cents) => `${(Number(cents || 0) / 100).toFixed(2).replace(".", ",")} €`;
 
-function fmtDate(iso) {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleString("fr-FR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch (e) {
-    return iso || "";
-  }
-}
-
-function escapeHtml(s) {
-  return ("" + (s ?? "")).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;",
-  }[c]));
-}
-
-function showMsg(type, html) {
-  const box = $("msg");
-  if (!box) return;
-  box.style.display = "block";
-  box.innerHTML = `<div class="${
-    type === "ok" ? "ok" : "danger"
-  }" style="font-weight:900;margin-bottom:6px;">${
-    type === "ok" ? "OK" : "Erreur"
-  }</div><div>${html}</div>`;
-}
-
-function hideMsg() {
-  const box = $("msg");
-  if (!box) return;
-  box.style.display = "none";
-  box.textContent = "";
-}
-
-function statusTag(status) {
-  const s = (status || "new").toLowerCase();
-  if (s.includes("new")) return `<span class="tag new">NEW</span>`;
-  if (s.includes("paid")) return `<span class="tag paid">PAID</span>`;
-  if (s.includes("ship")) return `<span class="tag shipped">SHIPPED</span>`;
-  if (s.includes("cancel")) return `<span class="tag cancelled">CANCELLED</span>`;
-  return `<span class="tag">${escapeHtml(status || "—")}</span>`;
-}
-
-function showOnly(boxId) {
-  const ids = ["resetBox", "loginBox", "forgotBox", "accountBox"];
-  ids.forEach((id) => {
+  function showBox(id, type, html) {
     const el = $(id);
-    if (el) el.style.display = id === boxId ? "" : "none";
-  });
-}
-
-function hasRecoveryInHash() {
-  // Supabase reset email renvoie souvent un hash du type:
-  // #access_token=...&refresh_token=...&type=recovery
-  const h = (window.location.hash || "").toLowerCase();
-  return h.includes("type=recovery") || h.includes("recovery");
-}
-
-async function initAccount() {
-  if (!window.supabase) {
-    showMsg("err", "Supabase n’a pas chargé (CDN).");
-    return;
+    if (!el) return;
+    el.style.display = "block";
+    el.classList.remove("ok", "err");
+    el.classList.add(type === "ok" ? "ok" : "err");
+    el.innerHTML = html;
+  }
+  function hideBox(id) {
+    const el = $(id);
+    if (!el) return;
+    el.style.display = "none";
+    el.innerHTML = "";
   }
 
-  // ✅ On accepte la vraie ANON KEY (eyJ...)
-  if (
-    !SUPABASE_URL.startsWith("http") ||
-    !SUPABASE_KEY ||
-    SUPABASE_KEY.length < 40
-  ) {
-    showMsg(
-      "err",
-      "Renseigne SUPABASE_URL et SUPABASE_KEY (ANON key eyJ...) dans assets/js/account.js."
+  function statusLabel(order) {
+    const s = (order?.status || "").toLowerCase();
+    if (!s) return "inconnu";
+    if (s === "paid") return "payée";
+    if (s === "pending_payment") return "en attente paiement";
+    if (s === "canceled") return "annulée";
+    if (s === "failed") return "échec paiement";
+    if (s === "shipped") return "expédiée";
+    if (s === "delivered") return "livrée";
+    return s;
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "";
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString("fr-FR", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return iso;
+    }
+  }
+
+  async function refreshAuth(sb) {
+    const { data } = await sb.auth.getSession();
+    const user = data?.session?.user || null;
+
+    $("auth-status") && ($("auth-status").textContent = user ? `Connecté : ${user.email}` : "Non connecté");
+    $("login-form") && ($("login-form").style.display = user ? "none" : "block");
+    $("logoutBtn") && ($("logoutBtn").style.display = user ? "" : "none");
+    $("profile-card") && ($("profile-card").style.display = user ? "" : "none");
+    $("orders-card") && ($("orders-card").style.display = user ? "" : "none");
+
+    return user;
+  }
+
+  async function loadProfile(sb, user) {
+    // Charge profile
+    const res = await sb.from("profiles").select("*").eq("id", user.id).maybeSingle();
+    if (res.error) throw res.error;
+
+    const p = res.data || {};
+
+    // Si vide -> upsert minimal (évite "tout null" dans profiles)
+    if (!res.data) {
+      const up = await sb.from("profiles").upsert(
+        { id: user.id, email: user.email },
+        { onConflict: "id" }
+      );
+      if (up.error) throw up.error;
+    }
+
+    $("p_email") && ($("p_email").value = user.email || p.email || "");
+    $("p_first_name") && ($("p_first_name").value = p.first_name || "");
+    $("p_last_name") && ($("p_last_name").value = p.last_name || "");
+    $("p_phone") && ($("p_phone").value = p.phone || "");
+  }
+
+  async function saveProfile(sb, user) {
+    const first_name = ($("p_first_name")?.value || "").trim();
+    const last_name = ($("p_last_name")?.value || "").trim();
+    const phone = ($("p_phone")?.value || "").trim();
+
+    const up = await sb.from("profiles").upsert(
+      {
+        id: user.id,
+        email: user.email,
+        first_name: first_name || null,
+        last_name: last_name || null,
+        phone: phone || null,
+      },
+      { onConflict: "id" }
     );
-    return;
+    if (up.error) throw up.error;
   }
 
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  async function loadOrders(sb, user) {
+    // On fait select("*") pour éviter de casser si une colonne n’existe pas
+    const oRes = await sb
+      .from("orders")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
 
-  // Store cart count if available
-  try {
-    if (typeof updateCartCount === "function") updateCartCount();
-  } catch (e) {}
+    if (oRes.error) throw oRes.error;
 
-  // DOM
-  const whoami = $("whoami");
-  const logoutBtn = $("logoutBtn");
+    const orders = oRes.data || [];
+    const wrap = $("orders");
+    const empty = $("orders-empty");
 
-  const loginForm = $("loginForm");
-  const loginBtn = $("loginBtn");
-  const emailInp = $("email");
-  const passInp = $("password");
+    if (!wrap) return;
 
-  const forgotForm = $("forgotForm");
-  const forgotBtn = $("forgotBtn");
-  const forgotEmail = $("forgot_email");
-
-  const resetForm = $("resetForm");
-  const resetBtn = $("resetBtn");
-  const resetCancel = $("resetCancel");
-  const newPass1 = $("new_password");
-  const newPass2 = $("new_password2");
-
-  function setLoggedOut() {
-    if (whoami) whoami.textContent = "Non connecté.";
-    if (logoutBtn) logoutBtn.style.display = "none";
-    showOnly("loginBox");
-  }
-
-  function setLoggedIn(email) {
-    if (whoami)
-      whoami.innerHTML = `Connecté : <strong>${escapeHtml(email || "")}</strong>`;
-    if (logoutBtn) logoutBtn.style.display = "";
-    showOnly("accountBox");
-  }
-
-  // logout
-  if (logoutBtn) {
-    logoutBtn.onclick = async () => {
-      await sb.auth.signOut();
-      if (location.hash)
-        history.replaceState({}, "", location.pathname + location.search);
-      location.reload();
-    };
-  }
-
-  // UI: open forgot
-  $("forgotOpen")?.addEventListener("click", () => {
-    hideMsg();
-    if (forgotEmail && emailInp?.value)
-      forgotEmail.value = emailInp.value.trim();
-    showOnly("forgotBox");
-  });
-
-  $("forgotBack")?.addEventListener("click", () => {
-    hideMsg();
-    showOnly("loginBox");
-  });
-
-  // Forgot password: send email
-  forgotForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    hideMsg();
-    forgotBtn.disabled = true;
-    forgotBtn.textContent = "Envoi…";
-
-    try {
-      const email = (forgotEmail.value || "").trim().toLowerCase();
-      if (!email) throw new Error("Email requis.");
-
-      // important: redirect back to account.html
-      const redirectTo =
-        location.origin + location.pathname.replace(/\/[^/]*$/, "/account.html");
-
-      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
-      if (error) throw error;
-
-      showMsg("ok", "Email envoyé ✅ Vérifie ta boîte mail (et les spams).");
-    } catch (err) {
-      showMsg("err", escapeHtml(err?.message || "Erreur envoi email"));
-    } finally {
-      forgotBtn.disabled = false;
-      forgotBtn.textContent = "Envoyer le lien";
-    }
-  });
-
-  // Reset password form (recovery)
-  resetCancel?.addEventListener("click", async () => {
-    hideMsg();
-    if (location.hash)
-      history.replaceState({}, "", location.pathname + location.search);
-    showOnly("loginBox");
-  });
-
-  resetForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    hideMsg();
-
-    const p1 = newPass1.value || "";
-    const p2 = newPass2.value || "";
-    if (!p1 || p1.length < 6) {
-      showMsg("err", "Mot de passe trop court (min 6).");
+    if (orders.length === 0) {
+      wrap.innerHTML = "";
+      if (empty) empty.style.display = "block";
       return;
     }
-    if (p1 !== p2) {
-      showMsg("err", "Les mots de passe ne correspondent pas.");
+    if (empty) empty.style.display = "none";
+
+    // Items (1 requête)
+    const orderIds = orders.map((o) => o.id);
+    const iRes = await sb
+      .from("order_items")
+      .select("*")
+      .in("order_id", orderIds);
+
+    const itemsByOrder = {};
+    (iRes.data || []).forEach((it) => {
+      const k = it.order_id;
+      if (!itemsByOrder[k]) itemsByOrder[k] = [];
+      itemsByOrder[k].push(it);
+    });
+
+    wrap.innerHTML = orders
+      .map((o) => {
+        const items = itemsByOrder[o.id] || [];
+        const trackingUrl = o.tracking_url || o.shipping_tracking_url || null;
+        const trackingCode = o.tracking_code || o.tracking_number || o.shipping_tracking_code || null;
+
+        const trackingHtml = trackingUrl
+          ? `<div class="line"><span class="muted-sm">Suivi</span><a class="btn ghost" href="${trackingUrl}" target="_blank" rel="noopener">Voir le suivi</a></div>`
+          : trackingCode
+            ? `<div class="line"><span class="muted-sm">Suivi</span><span style="font-weight:900;">${trackingCode}</span></div>`
+            : `<div class="muted-sm" style="margin-top:8px;">Suivi : pas encore disponible</div>`;
+
+        const itemsHtml = items.length
+          ? items
+              .map(
+                (it) => `
+                <div class="item">
+                  <span>${it.product_name || it.product_id || "Produit"} <span class="muted-sm">× ${it.qty || 1}</span></span>
+                  <span style="font-weight:900;">${euro(it.line_total_cents || 0)}</span>
+                </div>`
+              )
+              .join("")
+          : `<div class="muted-sm">Détail articles indisponible</div>`;
+
+        return `
+          <div class="order">
+            <div class="order-top">
+              <div>
+                <div style="font-weight:1000;">Commande #${o.id}</div>
+                <div class="muted-sm">${fmtDate(o.created_at)}</div>
+              </div>
+              <div class="badge">${statusLabel(o)}</div>
+            </div>
+
+            <div class="line">
+              <span class="muted-sm">Total</span>
+              <span style="font-weight:1000;">${euro(o.total_cents || 0)}</span>
+            </div>
+
+            ${trackingHtml}
+
+            <div class="items">
+              <div style="font-weight:1000;margin-bottom:6px;">Articles</div>
+              ${itemsHtml}
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    if (!window.supabase?.createClient) {
+      showBox("msg", "err", "Supabase JS pas chargé → vérifie le script supabase.js dans account.html");
       return;
     }
 
-    resetBtn.disabled = true;
-    resetBtn.textContent = "Mise à jour…";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.supabaseClient = sb; // debug
 
-    try {
-      const { data: sess } = await sb.auth.getSession();
-      if (!sess?.session?.user) {
-        throw new Error(
-          "Session de récupération introuvable. Re-clique le lien reçu par email."
-        );
+    // Auth state
+    let user = await refreshAuth(sb);
+
+    sb.auth.onAuthStateChange(async () => {
+      hideBox("msg");
+      hideBox("auth-msg");
+      user = await refreshAuth(sb);
+      if (user) {
+        try {
+          await loadProfile(sb, user);
+          await loadOrders(sb, user);
+        } catch (e) {
+          showBox("msg", "err", e?.message || "Erreur chargement compte");
+        }
+      }
+    });
+
+    // If already logged in -> load
+    if (user) {
+      try {
+        await loadProfile(sb, user);
+        await loadOrders(sb, user);
+      } catch (e) {
+        showBox("msg", "err", e?.message || "Erreur chargement compte");
+      }
+    }
+
+    // Login
+    $("login-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideBox("auth-msg");
+
+      const email = ($("login-email")?.value || "").trim().toLowerCase();
+      const password = $("login-password")?.value || "";
+      if (!email || !password) {
+        showBox("auth-msg", "err", "Email + mot de passe requis.");
+        return;
       }
 
-      const { error } = await sb.auth.updateUser({ password: p1 });
-      if (error) throw error;
+      const btn = $("login-btn");
+      if (btn) { btn.disabled = true; btn.textContent = "Connexion…"; }
 
-      showMsg("ok", "Mot de passe mis à jour ✅ Tu peux te connecter.");
-      if (location.hash)
-        history.replaceState({}, "", location.pathname + location.search);
-      showOnly("loginBox");
-    } catch (err) {
-      showMsg("err", escapeHtml(err?.message || "Erreur mise à jour"));
-    } finally {
-      resetBtn.disabled = false;
-      resetBtn.textContent = "Mettre à jour";
-    }
-  });
+      const { error } = await sb.auth.signInWithPassword({ email, password });
 
-  // Login form
-  loginForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    hideMsg();
+      if (btn) { btn.disabled = false; btn.textContent = "Se connecter"; }
 
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Connexion…";
+      if (error) {
+        showBox("auth-msg", "err", error.message);
+        return;
+      }
 
-    try {
-      const email = (emailInp.value || "").trim().toLowerCase();
-      const password = passInp.value || "";
-      if (!email || !password) throw new Error("Email et mot de passe requis.");
+      showBox("auth-msg", "ok", "Connecté ✅");
+    });
 
-      const res = await sb.auth.signInWithPassword({ email, password });
-      if (res.error) throw res.error;
+    // Reset password
+    $("forgot-btn")?.addEventListener("click", async () => {
+      hideBox("auth-msg");
+
+      const email = ($("login-email")?.value || "").trim().toLowerCase();
+      if (!email) {
+        showBox("auth-msg", "err", "Entre ton email puis clique à nouveau.");
+        return;
+      }
+
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: `${SITE_ORIGIN}/reset-password.html`,
+      });
+
+      if (error) {
+        showBox("auth-msg", "err", error.message);
+        return;
+      }
+      showBox("auth-msg", "ok", "Email envoyé ✅ (vérifie tes spams).");
+    });
+
+    // Logout
+    $("logoutBtn")?.addEventListener("click", async () => {
+      await sb.auth.signOut();
+    });
+
+    // Save profile
+    $("profile-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideBox("msg");
 
       const { data } = await sb.auth.getSession();
-      const user = data?.session?.user;
-      if (!user) throw new Error("Session introuvable après connexion.");
+      const u = data?.session?.user;
+      if (!u) {
+        showBox("msg", "err", "Tu dois être connecté.");
+        return;
+      }
 
-      setLoggedIn(user.email);
-      await hydrateProfile(sb, user.id, user.email);
-      await hydrateOrders(sb, user.id);
+      const btn = $("save-profile");
+      if (btn) { btn.disabled = true; btn.textContent = "Enregistrement…"; }
 
-      showMsg("ok", "Connexion OK ✔");
-    } catch (err) {
-      showMsg("err", escapeHtml(err?.message || "Erreur connexion"));
-      setLoggedOut();
-    } finally {
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Se connecter";
-    }
+      try {
+        await saveProfile(sb, u);
+        showBox("msg", "ok", "Infos enregistrées ✅");
+      } catch (err) {
+        showBox("msg", "err", err?.message || "Erreur enregistrement profil");
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = "Enregistrer"; }
+      }
+    });
   });
+})();
 
-  // ---- BOOT ----
-  if (hasRecoveryInHash()) {
-    if (whoami) whoami.textContent = "Récupération en cours…";
-    if (logoutBtn) logoutBtn.style.display = "none";
-    showOnly("resetBox");
-    showMsg("ok", "Définis ton nouveau mot de passe.");
-    return;
-  }
-
-  const { data: sess } = await sb.auth.getSession();
-  const user = sess?.session?.user;
-
-  if (!user) {
-    setLoggedOut();
-    return;
-  }
-
-  setLoggedIn(user.email);
-  await hydrateProfile(sb, user.id, user.email);
-  await hydrateOrders(sb, user.id);
-
-  // Sync auth
-  sb.auth.onAuthStateChange((_evt, session) => {
-    if (!session?.user) {
-      setLoggedOut();
-    }
-  });
-}
-
-async function hydrateProfile(sb, userId, email) {
-  const profRes = await sb
-    .from("profiles")
-    .select("first_name,last_name,phone,email")
-    .eq("id", userId)
-    .maybeSingle();
-
-  const p = profRes.data || {};
-  const setVal = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.value = val || "";
-  };
-
-  setVal("p_first", p.first_name || "");
-  setVal("p_last", p.last_name || "");
-  setVal("p_phone", p.phone || "");
-  setVal("p_email", p.email || email || "");
-}
-
-async function hydrateOrders(sb, userId) {
-  const ordersBox = document.getElementById("orders");
-  if (!ordersBox) return;
-
-  ordersBox.innerHTML = `<p class="muted-sm">Chargement…</p>`;
-
-  const ordersRes = await sb
-    .from("orders")
-    // ✅ inclut le suivi colis
-    .select(
-      "id, status, currency, subtotal_cents, shipping_cents, total_cents, shipping_method, note, created_at, shipped_at, carrier, tracking_number, tracking_url"
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-
-  if (ordersRes.error) {
-    ordersBox.innerHTML = "";
-    showMsg(
-      "err",
-      "Impossible de lire tes commandes (RLS/policies).<br>" +
-        escapeHtml(ordersRes.error.message)
-    );
-    return;
-  }
-
-  const orders = ordersRes.data || [];
-  if (orders.length === 0) {
-    ordersBox.innerHTML = `<div class="notice ok">Aucune commande pour le moment 🔥</div>`;
-    return;
-  }
-
-  const orderIds = orders.map((o) => o.id);
-  const itemsRes = await sb
-    .from("order_items")
-    .select(
-      "order_id, product_name, option_label, qty, unit_price_cents, line_total_cents"
-    )
-    .in("order_id", orderIds);
-
-  const items = itemsRes.data || [];
-  const byOrder = new Map();
-  items.forEach((it) => {
-    if (!byOrder.has(it.order_id)) byOrder.set(it.order_id, []);
-    byOrder.get(it.order_id).push(it);
-  });
-
-  ordersBox.innerHTML = orders
-    .map((o) => {
-      const its = byOrder.get(o.id) || [];
-
-      const itemsHtml = its.length
-        ? `<div class="items">` +
-          its
-            .map((it) => {
-              const opt = it.option_label ? ` • ${escapeHtml(it.option_label)}` : "";
-              return `
-            <div class="item">
-              <div>
-                <strong>${escapeHtml(it.product_name || "Produit")}</strong>
-                <div class="muted-sm">${opt} • x ${Number(it.qty || 1)}</div>
-              </div>
-              <div class="right">
-                <div style="font-weight:900">${euroFromCents(it.line_total_cents)}</div>
-                <div class="muted-sm">${euroFromCents(it.unit_price_cents)} / u</div>
-              </div>
-            </div>
-          `;
-            })
-            .join("") +
-          `</div>`
-        : `<div class="muted-sm" style="margin-top:10px;">Aucun item trouvé.</div>`;
-
-      const meta = `
-      <div class="order-meta">
-        ${statusTag(o.status)}
-        <span>Commande: <strong>#${escapeHtml(o.id)}</strong></span>
-        <span>•</span>
-        <span>${escapeHtml(fmtDate(o.created_at))}</span>
-      </div>
-    `;
-
-      const totals = `
-      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:10px;">
-        <div class="muted-sm">
-          Sous-total: <strong>${euroFromCents(o.subtotal_cents)}</strong> •
-          Livraison: <strong>${euroFromCents(o.shipping_cents)}</strong> •
-          Méthode: <strong>${escapeHtml(o.shipping_method || "—")}</strong>
-        </div>
-        <div style="font-weight:900;font-size:1.05rem;">
-          Total: ${euroFromCents(o.total_cents)}
-        </div>
-      </div>
-    `;
-
-      // ✅ Suivi colis (affiché si shipped / tracking / url / shipped_at)
-      const trackingUrl = (o.tracking_url || "").trim();
-      const showTracking =
-        String(o.status || "").toLowerCase().includes("ship") ||
-        !!o.tracking_number ||
-        !!trackingUrl ||
-        !!o.shipped_at;
-
-      const trackingBlock = showTracking
-        ? `
-      <div class="notice muted-sm" style="margin-top:12px;">
-        <div style="font-weight:900;margin-bottom:6px;">Suivi colis</div>
-        <div><strong>Transporteur :</strong> ${escapeHtml(o.carrier || "Mondial Relay")}</div>
-        <div><strong>N° :</strong> <span class="mono">${escapeHtml(o.tracking_number || "—")}</span></div>
-        ${
-          trackingUrl
-            ? `
-          <div style="margin-top:8px;">
-            <a class="btn ghost" href="${escapeHtml(
-              trackingUrl
-            )}" target="_blank" rel="noopener">Suivre mon colis</a>
-          </div>`
-            : ``
-        }
-        ${
-          o.shipped_at
-            ? `
-          <div class="muted-sm" style="margin-top:6px;">Expédiée le ${escapeHtml(
-            fmtDate(o.shipped_at)
-          )}</div>
-        `
-            : ``
-        }
-      </div>
-    `
-        : "";
-
-      const note = o.note
-        ? `<div class="notice muted-sm" style="margin-top:10px;">Note: ${escapeHtml(
-            o.note
-          )}</div>`
-        : "";
-
-      return `
-      <section class="panel-card">
-        <div class="hd">
-          <strong style="letter-spacing:.6px;text-transform:uppercase;">Commande</strong>
-          <span class="muted-sm">${escapeHtml(o.currency || "EUR")}</span>
-        </div>
-        <div class="bd">
-          ${meta}
-          ${totals}
-          ${trackingBlock}
-          ${itemsHtml}
-          ${note}
-        </div>
-      </section>
-    `;
-    })
-    .join("");
-}
