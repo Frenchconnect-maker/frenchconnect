@@ -3,43 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FrenchConnect — Mon compte</title>
+  <title>Mon compte — FrenchConnect</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <!-- ✅ ton style street global -->
-  <link rel="stylesheet" href="assets/css/style.css?v=20260106" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20260120" />
+  <link rel="icon" type="image/png" href="assets/images/logo.png" />
 
   <style>
-    .wrap-max{max-width:1200px;margin:0 auto;padding:18px}
-    .panel-card{
+    .wrap-max{max-width:1100px;margin:0 auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 1.2fr;gap:16px;align-items:start}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border: 1px solid rgba(255,255,255,.10);
       border-radius: 16px;
       overflow:hidden;
       backdrop-filter: blur(6px);
-      margin: 14px 0;
     }
-    .panel-card .hd{
-      padding:14px 14px 10px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-    }
-    .panel-card .bd{padding:14px}
+    .card .hd{padding:14px 14px 10px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .card .bd{padding:14px}
 
     .muted-sm{color: rgba(255,255,255,.70); font-size:.92rem}
     .notice{
       margin-top:10px;padding:10px 12px;border-radius:12px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.18);
+      font-weight:700;
     }
-    .danger{color:#ff7b7b}
-    .ok{color:#7bffb2}
-
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
+    .ok{background: rgba(0,180,80,.12)}
+    .err{background: rgba(220,50,50,.12)}
 
     .field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
     .field label{font-weight:900;letter-spacing:.3px}
@@ -50,31 +42,18 @@
       color:#fff;
     }
 
-    .tabs{display:flex;gap:10px;flex-wrap:wrap}
-    .tab-btn{
-      cursor:pointer;
-      padding:10px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color:#fff;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.7px;
-    }
-    .tab-btn.active{
-      border-color: rgba(0,229,255,.35);
-      box-shadow: 0 0 18px rgba(0,229,255,.12);
-    }
-    .tab{display:none}
-    .tab.active{display:block}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:900px){ .grid-2{grid-template-columns:1fr} }
 
-    .order-meta{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      color: rgba(255,255,255,.8);
-      font-size: .95rem;
+    .orders{display:grid;gap:12px}
+    .order{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius:14px;
+      padding:12px;
     }
-    .tag{
+    .order-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start}
+    .badge{
       display:inline-flex;align-items:center;gap:8px;
       padding:6px 10px;border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
@@ -85,268 +64,140 @@
       font-size:.78rem;
       white-space:nowrap;
     }
-    .tag.new{ border-color: rgba(57,255,20,.35); }
-    .tag.shipped{ border-color: rgba(0,229,255,.35); }
-    .tag.cancelled{ border-color: rgba(255,43,214,.35); }
-    .tag.paid{ border-color: rgba(255,255,255,.25); }
-
-    .items{
-      margin-top:10px;
-      border-top:1px solid rgba(255,255,255,.10);
-      padding-top:10px;
-      display:grid; gap:10px;
-    }
-    .item{
-      display:flex; justify-content:space-between; gap:12px;
-      padding:10px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:12px;
-      background: rgba(0,0,0,.18);
-    }
-    .item strong{font-weight:900}
-    .right{text-align:right}
-
-    .link-btn{
-      background: none;
-      border: none;
-      padding: 0;
-      color: #fff;
-      text-decoration: underline;
-      cursor: pointer;
-      font-weight: 900;
-    }
+    .line{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+    .items{margin-top:10px;border-top:1px solid rgba(255,255,255,.10);padding-top:10px}
+    .item{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
   </style>
 </head>
 
 <body>
-  <div class="age-banner">
-    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
-  </div>
+  <div class="age-banner">Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%</div>
 
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
         <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
       </a>
-
       <nav class="nav" aria-label="Navigation principale">
         <a href="index.html">Accueil</a>
         <a href="shop.html">Boutique</a>
-        <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+        <a href="cart.html">Panier <span id="cart-count">0</span></a>
         <a class="active" href="account.html">Mon compte</a>
       </nav>
-
-      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
     </div>
   </header>
-
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <div class="backdrop" id="menuBackdrop"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
-      <div class="head">
-        <strong>FRENCHCONNECT</strong>
-        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
-      </div>
-      <div class="links">
-        <a href="index.html">Accueil</a>
-        <a href="shop.html">Boutique</a>
-        <a href="cart.html">Panier</a>
-        <a href="account.html">Mon compte</a>
-      </div>
-    </div>
-  </div>
 
   <main class="wrap-max">
     <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end;">
       <div>
         <h1 style="margin:6px 0;">Mon compte</h1>
-        <div class="muted-sm" id="whoami">Chargement…</div>
+        <div class="muted-sm" id="auth-status">Vérification…</div>
       </div>
-
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a class="btn ghost" href="shop.html">Continuer shopping</a>
         <button class="btn" id="logoutBtn" type="button" style="display:none;">Déconnexion</button>
       </div>
     </div>
 
     <div id="msg" class="notice" style="display:none;"></div>
 
-    <!-- ✅ Reset password: visible uniquement quand on arrive depuis un lien de reset -->
-    <section class="panel-card" id="resetBox" style="display:none;">
-      <div class="hd">
-        <strong style="letter-spacing:.6px;text-transform:uppercase;">Nouveau mot de passe</strong>
-        <span class="muted-sm">Finaliser la récupération</span>
-      </div>
-      <div class="bd">
-        <form id="resetForm">
-          <div class="grid-2">
-            <div class="field">
-              <label>Nouveau mot de passe *</label>
-              <input id="new_password" type="password" required placeholder="••••••••">
-            </div>
-            <div class="field">
-              <label>Confirmer *</label>
-              <input id="new_password2" type="password" required placeholder="••••••••">
-            </div>
-          </div>
-          <div class="btn-row" style="margin-top:12px;">
-            <button class="btn" id="resetBtn" type="submit">Mettre à jour</button>
-            <button class="btn ghost" id="resetCancel" type="button">Annuler</button>
-          </div>
-          <div class="muted-sm" style="margin-top:10px;">
-            Tu peux ensuite te connecter normalement avec ton nouveau mot de passe.
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- LOGIN -->
-    <section class="panel-card" id="loginBox" style="display:none;">
-      <div class="hd">
-        <strong style="letter-spacing:.6px;text-transform:uppercase;">Connexion</strong>
-        <span class="muted-sm">Accède à tes commandes</span>
-      </div>
-      <div class="bd">
-        <form id="loginForm">
-          <div class="grid-2">
-            <div class="field">
-              <label>Email *</label>
-              <input id="email" type="email" required placeholder="ex: client@email.com">
-            </div>
-            <div class="field">
-              <label>Mot de passe *</label>
-              <input id="password" type="password" required placeholder="••••••••">
-            </div>
-          </div>
-
-          <div class="btn-row" style="margin-top:12px;">
-            <button class="btn" id="loginBtn" type="submit">Se connecter</button>
-            <a class="btn ghost" href="checkout.html">Créer un compte (1ère commande)</a>
-          </div>
-
-          <div class="muted-sm" style="margin-top:10px;">
-            <button class="link-btn" id="forgotOpen" type="button">Mot de passe oublié ?</button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- FORGOT PASSWORD -->
-    <section class="panel-card" id="forgotBox" style="display:none;">
-      <div class="hd">
-        <strong style="letter-spacing:.6px;text-transform:uppercase;">Récupération</strong>
-        <span class="muted-sm">Envoi d’un lien par email</span>
-      </div>
-      <div class="bd">
-        <form id="forgotForm">
-          <div class="field" style="max-width:560px;">
-            <label>Email du compte *</label>
-            <input id="forgot_email" type="email" required placeholder="ex: client@email.com">
-          </div>
-          <div class="btn-row" style="margin-top:12px;">
-            <button class="btn" id="forgotBtn" type="submit">Envoyer le lien</button>
-            <button class="btn ghost" id="forgotBack" type="button">Retour</button>
-          </div>
-          <div class="muted-sm" style="margin-top:10px;">
-            Tu recevras un email avec un lien qui te renvoie ici pour définir un nouveau mot de passe.
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- ACCOUNT -->
-    <section class="panel-card" id="accountBox" style="display:none;">
-      <div class="hd">
-        <strong style="letter-spacing:.6px;text-transform:uppercase;">Espace client</strong>
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="tab-orders" type="button">Commandes</button>
-          <button class="tab-btn" data-tab="tab-profile" type="button">Profil</button>
+    <div class="grid" style="margin-top:14px;">
+      <!-- AUTH -->
+      <section class="card" id="auth-card">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Connexion</strong>
+          <span class="muted-sm">Accès au compte</span>
         </div>
-      </div>
+        <div class="bd">
+          <div id="auth-msg" class="notice" style="display:none;"></div>
 
-      <div class="bd">
-        <div class="tab active" id="tab-orders">
-          <div id="orders"></div>
+          <form id="login-form" style="display:none;">
+            <div class="field">
+              <label for="login-email">Email</label>
+              <input id="login-email" type="email" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="login-password">Mot de passe</label>
+              <input id="login-password" type="password" autocomplete="current-password" required />
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+              <button id="login-btn" class="btn" type="submit">Se connecter</button>
+              <button id="forgot-btn" class="btn ghost" type="button">Mot de passe oublié ?</button>
+            </div>
+
+            <div class="muted-sm" style="margin-top:10px;">
+              1ère commande : ton compte se crée automatiquement au checkout.
+            </div>
+          </form>
         </div>
+      </section>
 
-        <div class="tab" id="tab-profile">
-          <div class="grid-2">
-            <div class="field">
-              <label>Prénom</label>
-              <input id="p_first" type="text" disabled>
+      <!-- PROFIL -->
+      <section class="card" id="profile-card" style="display:none;">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Mes informations</strong>
+          <span class="muted-sm">Modifie et enregistre</span>
+        </div>
+        <div class="bd">
+          <form id="profile-form">
+            <div class="grid-2">
+              <div class="field">
+                <label>Prénom</label>
+                <input id="p_first_name" type="text" placeholder="Prénom" />
+              </div>
+              <div class="field">
+                <label>Nom</label>
+                <input id="p_last_name" type="text" placeholder="Nom" />
+              </div>
             </div>
-            <div class="field">
-              <label>Nom</label>
-              <input id="p_last" type="text" disabled>
-            </div>
-            <div class="field">
-              <label>Téléphone</label>
-              <input id="p_phone" type="text" disabled>
-            </div>
-            <div class="field">
-              <label>Email</label>
-              <input id="p_email" type="text" disabled>
-            </div>
-          </div>
 
-          <div class="notice muted-sm" style="margin-top:12px;">
-            Ton profil est rempli automatiquement lors de la première commande.
+            <div class="grid-2">
+              <div class="field">
+                <label>Email</label>
+                <input id="p_email" type="email" placeholder="Email" disabled />
+              </div>
+              <div class="field">
+                <label>Téléphone</label>
+                <input id="p_phone" type="text" placeholder="06…" />
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+              <button id="save-profile" class="btn" type="submit">Enregistrer</button>
+            </div>
+
+            <div class="muted-sm" style="margin-top:10px;">
+              Tes infos servent pour la livraison et le suivi des commandes.
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- COMMANDES -->
+      <section class="card" style="grid-column:1 / -1; display:none;" id="orders-card">
+        <div class="hd">
+          <strong style="letter-spacing:.6px;text-transform:uppercase;">Mes commandes</strong>
+          <span class="muted-sm">Statut + suivi</span>
+        </div>
+        <div class="bd">
+          <div id="orders" class="orders"></div>
+          <div class="muted-sm" id="orders-empty" style="display:none;">
+            Aucune commande pour le moment.
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 
   <footer class="site-footer" style="margin-top: 34px;">
     <div class="copy wrap">© <span id="year"></span> FrenchConnect</div>
   </footer>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 
-    // burger
-    (function(){
-      const toggle = document.getElementById("navToggle");
-      const menu   = document.getElementById("mobileMenu");
-      const close  = document.getElementById("menuClose");
-      const back   = document.getElementById("menuBackdrop");
-      if(!toggle || !menu) return;
-
-      function openMenu(){
-        document.body.classList.add("menu-open");
-        menu.classList.add("open");
-        toggle.setAttribute("aria-expanded","true");
-      }
-      function closeMenu(){
-        document.body.classList.remove("menu-open");
-        menu.classList.remove("open");
-        toggle.setAttribute("aria-expanded","false");
-      }
-
-      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
-      if(close) close.addEventListener("click", closeMenu);
-      if(back)  back.addEventListener("click", closeMenu);
-      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
-      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
-    })();
-
-    // tabs
-    (function(){
-      const btns = document.querySelectorAll(".tab-btn");
-      btns.forEach(b => b.addEventListener("click", () => {
-        btns.forEach(x => x.classList.remove("active"));
-        b.classList.add("active");
-        const id = b.getAttribute("data-tab");
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        const tab = document.getElementById(id);
-        if(tab) tab.classList.add("active");
-      }));
-    })();
-  </script>
-
-  <script src="assets/js/store.js?v=20260106"></script>
-  <script src="assets/js/account.js?v=20260106"></script>
+  <!-- Scripts : store.js -> supabase -> account.js -->
+  <script src="assets/js/store.js?v=20260120"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="assets/js/account.js?v=20260120"></script>
 </body>
 </html>
