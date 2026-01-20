@@ -3,6 +3,7 @@
    - Login / logout / reset password
    - Profile: load + edit + upsert (évite les NULL)
    - Orders: list + items + status + tracking link
+   - ✅ Bouton "Payer maintenant" si pending_payment (payment_url)
    ============================================================ */
 
 (() => {
@@ -14,7 +15,8 @@
 
   const $ = (id) => document.getElementById(id);
 
-  const euro = (cents) => `${(Number(cents || 0) / 100).toFixed(2).replace(".", ",")} €`;
+  const euro = (cents) =>
+    `${(Number(cents || 0) / 100).toFixed(2).replace(".", ",")} €`;
 
   function showBox(id, type, html) {
     const el = $(id);
@@ -47,7 +49,13 @@
     if (!iso) return "";
     try {
       const d = new Date(iso);
-      return d.toLocaleString("fr-FR", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+      return d.toLocaleString("fr-FR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     } catch {
       return iso;
     }
@@ -57,7 +65,11 @@
     const { data } = await sb.auth.getSession();
     const user = data?.session?.user || null;
 
-    $("auth-status") && ($("auth-status").textContent = user ? `Connecté : ${user.email}` : "Non connecté");
+    $("auth-status") &&
+      ($("auth-status").textContent = user
+        ? `Connecté : ${user.email}`
+        : "Non connecté");
+
     $("login-form") && ($("login-form").style.display = user ? "none" : "block");
     $("logoutBtn") && ($("logoutBtn").style.display = user ? "" : "none");
     $("profile-card") && ($("profile-card").style.display = user ? "" : "none");
@@ -67,13 +79,17 @@
   }
 
   async function loadProfile(sb, user) {
-    // Charge profile
-    const res = await sb.from("profiles").select("*").eq("id", user.id).maybeSingle();
+    const res = await sb
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
+
     if (res.error) throw res.error;
 
     const p = res.data || {};
 
-    // Si vide -> upsert minimal (évite "tout null" dans profiles)
+    // Si pas de ligne profile -> on crée la ligne minimal
     if (!res.data) {
       const up = await sb.from("profiles").upsert(
         { id: user.id, email: user.email },
@@ -107,7 +123,6 @@
   }
 
   async function loadOrders(sb, user) {
-    // On fait select("*") pour éviter de casser si une colonne n’existe pas
     const oRes = await sb
       .from("orders")
       .select("*")
@@ -120,7 +135,6 @@
     const orders = oRes.data || [];
     const wrap = $("orders");
     const empty = $("orders-empty");
-
     if (!wrap) return;
 
     if (orders.length === 0) {
@@ -147,8 +161,34 @@
     wrap.innerHTML = orders
       .map((o) => {
         const items = itemsByOrder[o.id] || [];
-        const trackingUrl = o.tracking_url || o.shipping_tracking_url || null;
-        const trackingCode = o.tracking_code || o.tracking_number || o.shipping_tracking_code || null;
+
+        const trackingUrl =
+          o.tracking_url || o.shipping_tracking_url || null;
+
+        const trackingCode =
+          o.tracking_code ||
+          o.tracking_number ||
+          o.shipping_tracking_code ||
+          null;
+
+        // ✅ Bouton "Payer maintenant" si paiement pas fini
+        const st = (o.status || "").toLowerCase();
+        const paymentUrl =
+          o.payment_url ||
+          o.mollie_checkout_url ||
+          o.mollie_payment_url ||
+          null;
+
+        const payNowHtml =
+          st === "pending_payment" && paymentUrl
+            ? `
+              <div class="line">
+                <span class="muted-sm">Paiement</span>
+                <a class="btn" href="${paymentUrl}" target="_blank" rel="noopener">Payer maintenant</a>
+              </div>`
+            : st === "pending_payment"
+              ? `<div class="muted-sm" style="margin-top:8px;">Paiement : lien indisponible (contact support)</div>`
+              : "";
 
         const trackingHtml = trackingUrl
           ? `<div class="line"><span class="muted-sm">Suivi</span><a class="btn ghost" href="${trackingUrl}" target="_blank" rel="noopener">Voir le suivi</a></div>`
@@ -183,6 +223,7 @@
               <span style="font-weight:1000;">${euro(o.total_cents || 0)}</span>
             </div>
 
+            ${payNowHtml}
             ${trackingHtml}
 
             <div class="items">
@@ -197,12 +238,16 @@
 
   document.addEventListener("DOMContentLoaded", async () => {
     if (!window.supabase?.createClient) {
-      showBox("msg", "err", "Supabase JS pas chargé → vérifie le script supabase.js dans account.html");
+      showBox(
+        "msg",
+        "err",
+        "Supabase JS pas chargé → vérifie le script supabase.js dans account.html"
+      );
       return;
     }
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    window.supabaseClient = sb; // debug
+    window.supabaseClient = sb;
 
     // Auth state
     let user = await refreshAuth(sb);
@@ -238,17 +283,24 @@
 
       const email = ($("login-email")?.value || "").trim().toLowerCase();
       const password = $("login-password")?.value || "";
+
       if (!email || !password) {
         showBox("auth-msg", "err", "Email + mot de passe requis.");
         return;
       }
 
       const btn = $("login-btn");
-      if (btn) { btn.disabled = true; btn.textContent = "Connexion…"; }
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Connexion…";
+      }
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
 
-      if (btn) { btn.disabled = false; btn.textContent = "Se connecter"; }
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Se connecter";
+      }
 
       if (error) {
         showBox("auth-msg", "err", error.message);
@@ -291,13 +343,17 @@
 
       const { data } = await sb.auth.getSession();
       const u = data?.session?.user;
+
       if (!u) {
         showBox("msg", "err", "Tu dois être connecté.");
         return;
       }
 
       const btn = $("save-profile");
-      if (btn) { btn.disabled = true; btn.textContent = "Enregistrement…"; }
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Enregistrement…";
+      }
 
       try {
         await saveProfile(sb, u);
@@ -305,9 +361,11 @@
       } catch (err) {
         showBox("msg", "err", err?.message || "Erreur enregistrement profil");
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = "Enregistrer"; }
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "Enregistrer";
+        }
       }
     });
   });
 })();
-
