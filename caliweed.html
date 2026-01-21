@@ -16,434 +16,196 @@
   <!-- CSS -->
   <link rel="stylesheet" href="assets/css/style.css?v=20260112" />
 
-  <!-- Ultra Luxury (micro animations, mobile-first, safe) -->
+  <!-- Premium styles -->
   <style>
-    .premium-wrap{ max-width:1100px; margin:0 auto; }
+    .premium-wrap{max-width:1100px;margin:0 auto;}
     .hero-premium{
-      margin-top:18px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.12);
-      background:
-        radial-gradient(900px 420px at 15% 15%, rgba(140,255,210,.12), transparent 60%),
-        radial-gradient(800px 420px at 85% 30%, rgba(160,140,255,.10), transparent 55%),
-        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-      padding:26px 18px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
+      margin-top:18px;border-radius:18px;border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+      padding:26px 18px;backdrop-filter:blur(10px);
+      box-shadow:0 18px 70px rgba(0,0,0,.35);
     }
-    .hero-premium::after{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(600px 220px at 50% 0%, rgba(255,255,255,.08), transparent 55%);
-      pointer-events:none;
-      opacity:.8;
-    }
-
-    .kicker{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
-      font-size:.88rem;
-      letter-spacing:.3px;
-      text-transform:uppercase;
-      font-weight:900;
-      opacity:.92;
-    }
-
-    .badge{
-      display:inline-flex; align-items:center; gap:.45rem;
-      padding:.35rem .65rem;
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:999px;
-      background:rgba(255,255,255,.06);
-      font-size:.9rem;
-      white-space:nowrap;
-      transform: translateZ(0);
-    }
-    .dot{
-      width:.55rem;height:.55rem;border-radius:999px;
-      background:rgba(140,255,210,.92);
-      box-shadow:0 0 0 6px rgba(140,255,210,.10);
-      display:inline-block;
-    }
-
+    .badge{padding:.35rem .7rem;border-radius:999px;border:1px solid rgba(255,255,255,.14);font-size:.9rem;}
+    .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
     .pill{
-      display:inline-flex; align-items:center; gap:.4rem;
-      padding:6px 10px;
-      border-radius:999px;
+      padding:6px 10px;border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
-      font-size:.9rem;
-      white-space:nowrap;
-      margin:4px 6px 0 0;
+      background:rgba(0,0,0,.22);font-size:.9rem;
+      white-space:normal;max-width:100%;
     }
-
-    .divider{
-      border:none;
-      border-top:1px solid rgba(255,255,255,.10);
-      margin:18px 0;
-    }
-
-    /* Luxury animations (respecte prefers-reduced-motion) */
-    @media (prefers-reduced-motion: no-preference){
-      .floaty{
-        animation: floaty 6s ease-in-out infinite;
-      }
-      @keyframes floaty{
-        0%,100%{ transform: translateY(0); }
-        50%{ transform: translateY(-6px); }
-      }
-
-      .shine:hover{
-        box-shadow: 0 14px 55px rgba(0,0,0,.35);
-        transform: translateY(-2px);
-        transition: transform .22s ease, box-shadow .22s ease;
-      }
-
-      .reveal{
-        opacity:0;
-        transform: translateY(10px);
-        transition: opacity .55s ease, transform .55s ease;
-      }
-      .reveal.in{
-        opacity:1;
-        transform: translateY(0);
-      }
-    }
-
-    .mini{ font-size:.92rem; opacity:.92; line-height:1.7; }
-
-    .faq details{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      border-radius:14px;
-      padding:12px 14px;
-    }
-    .faq details + details{ margin-top:10px; }
-    .faq summary{
-      cursor:pointer;
-      font-weight:900;
-      letter-spacing:.2px;
-      list-style:none;
-      outline:none;
-    }
-    .faq summary::-webkit-details-marker{ display:none; }
-    .faq .muted{ margin-top:8px; }
+    .mini{font-size:.92rem;line-height:1.7;}
   </style>
 </head>
 
 <body>
 
-  <div class="age-banner">
-    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
+<div class="age-banner">
+  Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
+</div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img class="logo" src="assets/images/logo.png" alt="FrenchConnect">
+    </a>
+
+    <nav class="nav">
+      <a href="index.html">Accueil</a>
+      <a href="shop.html">Boutique</a>
+      <a href="us.html">Produits US</a>
+      <a class="active" href="caliweed.html">Cali Weed</a>
+      <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <button class="nav-toggle" id="navToggle">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+</header>
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="wrap">
-      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
-        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
-      </a>
+<main class="container">
 
-      <nav class="nav" aria-label="Navigation principale">
-        <a href="index.html">Accueil</a>
-        <a href="shop.html">Boutique</a>
-        <a href="us.html">Produits US</a>
-        <a class="active" href="caliweed.html">Cali Weed</a>
-        <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
-        <a href="account.html">Mon compte</a>
-        <a href="contact.html">Contact</a>
-      </nav>
+<!-- HERO -->
+<section class="premium-wrap">
+  <div class="hero-premium" style="text-align:center">
+    <h1>Cali Weed — Fleur CBD Ultra Premium 💎</h1>
+    <p class="muted">
+      Buds denses • Manucure clean • Terpènes expressifs 🌿  
+      <br><strong>THC &lt; 0,3 % — Conforme UE</strong>
+    </p>
 
-      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px;">
+      <span class="badge">🧪 Indoor optimisé</span>
+      <span class="badge">✂️ Finition premium</span>
+      <span class="badge">🌿 Terpènes riches</span>
     </div>
-  </header>
 
-  <!-- MENU MOBILE -->
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <div class="backdrop" id="menuBackdrop"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
-      <div class="head">
-        <strong>FRENCHCONNECT</strong>
-        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
-      </div>
-      <div class="links">
-        <a href="index.html">Accueil</a>
-        <a href="shop.html">Boutique</a>
-        <a href="us.html">Produits US</a>
-        <a href="caliweed.html">Cali Weed</a>
-        <a href="shop.html?cat=fleurs">Fleurs</a>
-        <a href="shop.html?cat=resines">Résines</a>
-        <a href="shop.html?cat=extraits">Extraits</a>
-        <a href="shop.html?cat=prerolls">Pre Rolls</a>
-        <a href="cart.html">Panier</a>
-        <a href="account.html">Mon compte</a>
-        <a href="contact.html">Contact</a>
-      </div>
+    <div class="btn-row" style="margin-top:16px;flex-direction:column;align-items:center;">
+      <a class="btn" href="shop.html?cat=fleurs" style="min-width:min(520px,100%)">🛒 Voir les fleurs Cali</a>
+      <a class="btn ghost" href="us.html" style="min-width:min(520px,100%)">🇺🇸 Retour Produits US</a>
     </div>
   </div>
+</section>
 
-  <main class="container">
+<!-- RECONNAÎTRE UNE CALI -->
+<section class="premium-wrap" style="margin-top:28px;">
+  <div class="card">
+    <div class="pad">
+      <h2>🔎 Reconnaître une vraie Cali</h2>
 
-    <!-- HERO -->
-    <section class="premium-wrap reveal">
-      <div class="hero-premium floaty">
-        <div style="text-align:center; position:relative;">
-          <span class="kicker">🇺🇸 Cali Edition • FrenchConnect</span>
-          <h1 style="margin:14px 0 8px; line-height:1.05;">
-            Cali Weed — Fleur CBD <br>Ultra Premium 💎
-          </h1>
-          <p class="muted" style="max-width:920px;margin:0 auto;">
-            Standards “Cali” : <strong>buds denses</strong>, <strong>manucure clean</strong>, <strong>terpènes expressifs</strong> 🌿.
-            Zéro blabla : <strong>odeur • visuel • cohérence</strong> ✅
-          </p>
-
-          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:center;">
-            <span class="badge"><span class="dot"></span> 🧪 Indoor optimisé</span>
-            <span class="badge"><span class="dot"></span> ✂️ Finition premium</span>
-            <span class="badge"><span class="dot"></span> 🌿 Terpènes riches</span>
-            <span class="badge"><span class="dot"></span> ⚖️ THC &lt; 0,3%</span>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">
+        <div class="card"><div class="pad">
+          <h3>✅ Ce qu’on veut</h3>
+          <div class="pill-row">
+            <span class="pill">👀 Visuel propre</span>
+            <span class="pill">💎 Buds fermes</span>
+            <span class="pill">👃 Odeur marquée</span>
           </div>
-
-          <div class="btn-row" style="margin-top:18px;justify-content:center;flex-wrap:wrap;gap:10px;flex-direction:column;align-items:center;">
-            <a class="btn" href="shop.html?cat=fleurs" style="min-width:min(520px, 100%);text-align:center;">🛒 Shop fleurs Cali</a>
-            <a class="btn ghost" href="us.html" style="min-width:min(520px, 100%);text-align:center;">🇺🇸 Retour Produits US</a>
-            <a class="btn ghost" href="mailto:connectfrench31@gmail.com" style="min-width:min(520px, 100%);text-align:center;">📧 Conseil rapide (email)</a>
-          </div>
-
-          <p style="margin-top:14px;font-size:13px;opacity:.78;">
-            🚚 Expédition rapide • 🔒 Paiement sécurisé • 🔞 Réservé aux majeurs
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4 SIGNATURE CARDS -->
-    <section class="premium-wrap" style="margin-top:26px;">
-      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;">
-        <div class="card shine reveal"><div class="pad">
-          <h3>💎 Densité “Cali”</h3>
-          <p class="muted mini">Buds compacts et réguliers. Au grinder : volume propre + arômes qui ressortent.</p>
+          <p class="muted mini">Têtes denses, parfum net et agréable.</p>
         </div></div>
-        <div class="card shine reveal"><div class="pad">
-          <h3>✂️ Manucure clean</h3>
-          <p class="muted mini">Moins de feuilles superflues → visuel premium + expérience plus “haut de gamme”.</p>
+
+        <div class="card"><div class="pad">
+          <h3>❌ À éviter</h3>
+          <div class="pill-row">
+            <span class="pill">🦠 Moisi</span>
+            <span class="pill">🧪 Chimique</span>
+            <span class="pill">💧 Trop humide</span>
+          </div>
+          <p class="muted mini">Odeurs douteuses ou texture étrange.</p>
         </div></div>
-        <div class="card shine reveal"><div class="pad">
-          <h3>🌿 Terpènes expressifs</h3>
-          <p class="muted mini">Profils riches (fruité, sucré, agrumes…). La signature, c’est l’aromatique.</p>
+
+        <div class="card"><div class="pad">
+          <h3>🌀 Test grinder</h3>
+          <div class="pill-row">
+            <span class="pill">🔥 Arômes</span>
+            <span class="pill">📈 Volume</span>
+            <span class="pill">✅ Texture</span>
+          </div>
+          <p class="muted mini">Une vraie Cali libère ses terpènes.</p>
         </div></div>
-        <div class="card shine reveal"><div class="pad">
-          <h3>✅ Filtre FrenchConnect</h3>
-          <p class="muted mini">Odeur 👃 • Aspect 👀 • Cohérence ✅. Si ça ne tient pas la route : dehors.</p>
-        </div></div>
-      </div>
-    </section>
-
-    <!-- GUIDE -->
-    <section class="premium-wrap" style="margin-top:28px;">
-      <div class="card shine reveal" style="padding:22px 20px;">
-        <h2 style="margin-top:0;">🔎 Reconnaître une vraie vibe “Cali”</h2>
-        <p class="muted" style="line-height:1.75;">
-          Une Cali de qualité se voit et se sent : <strong>buds denses</strong>, <strong>manucure propre</strong>,
-          parfum <strong>intense</strong> et <strong>clean</strong>. Pas de moisi, pas de chimique.
-        </p>
-
-        <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:14px;">
-          <div class="card"><div class="pad">
-            <h3>✅ Ce qu’on veut</h3>
-            <div class="pill">👀 Visuel propre</div>
-            <div class="pill">💎 Buds fermes</div>
-            <div class="pill">👃 Odeur marquée</div>
-            <p class="muted mini" style="margin-top:10px;">Têtes bien formées, parfum net et agréable.</p>
-          </div></div>
-
-          <div class="card"><div class="pad">
-            <h3>❌ À éviter</h3>
-            <div class="pill">🦠 Moisi</div>
-            <div class="pill">🧪 Chimique</div>
-            <div class="pill">💧 Trop humide</div>
-            <p class="muted mini" style="margin-top:10px;">Odeurs “bizarres”, texture douteuse : passe ton tour.</p>
-          </div></div>
-
-          <div class="card"><div class="pad">
-            <h3>🌀 Test grinder</h3>
-            <div class="pill">🔥 Arômes</div>
-            <div class="pill">📈 Volume</div>
-            <div class="pill">✅ Texture</div>
-            <p class="muted mini" style="margin-top:10px;">Une bonne Cali libère une vraie présence aromatique.</p>
-          </div></div>
-        </div>
-
-        <hr class="divider">
-        <p class="muted mini" style="margin:0;">
-          🔞 Produit réservé aux adultes (+18). THC &lt; 0,3 %. Consommer de manière responsable.
-        </p>
-      </div>
-    </section>
-
-    <!-- 3 PROFILES -->
-    <section class="premium-wrap" style="margin-top:28px;">
-      <h2 class="reveal" style="text-align:center;margin-bottom:8px;">🔥 3 profils “signature”</h2>
-      <p class="muted reveal" style="text-align:center;max-width:900px;margin:0 auto 16px;">
-        Clique → filtre boutique automatiquement (si dispo).
-      </p>
-
-      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;">
-        <article class="card shine reveal"><div class="pad">
-          <h3>🍧 Sunset Sherbet</h3>
-          <p class="muted mini">Gourmand & fruité, vibe “soyeuse”.</p>
-          <div style="margin-top:10px;">
-            <span class="pill">🌙 Soir</span><span class="pill">🍓 Fruité</span><span class="pill">💎 Dense</span>
-          </div>
-          <div class="btn-row" style="margin-top:14px;gap:10px;flex-direction:column;align-items:stretch;">
-            <a class="btn" href="shop.html?search=sunset%20sherbet" style="text-align:center;">🛒 Voir en boutique</a>
-            <a class="btn ghost" href="shop.html?cat=fleurs" style="text-align:center;">Voir toutes les fleurs</a>
-          </div>
-        </div></article>
-
-        <article class="card shine reveal"><div class="pad">
-          <h3>🍬 Royal Runtz</h3>
-          <p class="muted mini">Hybride “bonbon” : sucré, fruité, très easy.</p>
-          <div style="margin-top:10px;">
-            <span class="pill">⚖️ Équilibré</span><span class="pill">🍭 Sucré</span><span class="pill">👃 Aromatique</span>
-          </div>
-          <div class="btn-row" style="margin-top:14px;gap:10px;flex-direction:column;align-items:stretch;">
-            <a class="btn" href="shop.html?search=royal%20runtz" style="text-align:center;">🛒 Voir en boutique</a>
-            <a class="btn ghost" href="mailto:connectfrench31@gmail.com" style="text-align:center;">📧 Demander conseil</a>
-          </div>
-        </div></article>
-
-        <article class="card shine reveal"><div class="pad">
-          <h3>🍋 Ghost Train Haze</h3>
-          <p class="muted mini">Agrumes, plus “vif”, signature fraîche.</p>
-          <div style="margin-top:10px;">
-            <span class="pill">☀️ Jour</span><span class="pill">🍋 Agrumes</span><span class="pill">⚡ Vif</span>
-          </div>
-          <div class="btn-row" style="margin-top:14px;gap:10px;flex-direction:column;align-items:stretch;">
-            <a class="btn" href="shop.html?search=ghost%20train%20haze" style="text-align:center;">🛒 Voir en boutique</a>
-            <a class="btn ghost" href="shop.html?cat=fleurs" style="text-align:center;">Voir toutes les fleurs</a>
-          </div>
-        </div></article>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="premium-wrap" style="margin-top:28px;">
-      <div class="card shine reveal" style="padding:22px 20px;">
-        <h2 style="margin-top:0;">❓ FAQ Cali Weed</h2>
-        <div class="faq" style="margin-top:12px;">
-          <details>
-            <summary>Pourquoi les fleurs “Cali” sont si demandées ?</summary>
-            <p class="muted mini">Finition, densité, propreté et aromatique plus marquée. On vise l’expérience premium.</p>
-          </details>
-          <details>
-            <summary>Est-ce légal en France ?</summary>
-            <p class="muted mini">Oui si conformité respectée : <strong>THC &lt; 0,3%</strong> (UE). Analyses selon lots.</p>
-          </details>
-          <details>
-            <summary>Comment choisir ?</summary>
-            <p class="muted mini">Guide simple : arômes + moment (jour/soir). Si tu veux, on t’oriente par email.</p>
-          </details>
-        </div>
-        <hr class="divider">
-        <p class="muted mini" style="margin:0;">🔞 Réservé aux adultes (+18). THC &lt; 0,3 %. Consommer de manière responsable.</p>
-      </div>
-    </section>
-
-    <!-- CTA FINAL -->
-    <section class="premium-wrap" style="margin-top:26px; text-align:center;">
-      <div class="card shine reveal" style="padding:22px 20px;">
-        <h2 style="margin:0 0 8px;">Prêt pour la sélection ? 🖤</h2>
-        <p class="muted" style="max-width:860px;margin:0 auto 14px;">
-          Drops limités, vibe street, qualité clean.
-        </p>
-        <div class="btn-row" style="justify-content:center;flex-wrap:wrap;gap:10px;flex-direction:column;align-items:center;">
-          <a class="btn" href="shop.html?cat=fleurs" style="min-width:min(520px, 100%);text-align:center;">🛒 Shop fleurs Cali</a>
-          <a class="btn ghost" href="us.html" style="min-width:min(520px, 100%);text-align:center;">🇺🇸 Voir sélection US</a>
-          <a class="btn ghost" href="mailto:connectfrench31@gmail.com" style="min-width:min(520px, 100%);text-align:center;">📧 connectfrench31@gmail.com</a>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <div class="cols">
-      <div>
-        <h3>FrenchConnect</h3>
-        <p class="muted">CBD Premium • Street Selection</p>
-      </div>
-      <div>
-        <h3>Shop</h3>
-        <p class="muted"><a href="shop.html">Boutique</a></p>
-        <p class="muted"><a href="cart.html">Panier</a></p>
-        <p class="muted"><a href="account.html">Mon compte</a></p>
-      </div>
-      <div>
-        <h3>Contact</h3>
-        <p class="muted"><a href="contact.html">Nous écrire</a></p>
-        <p class="muted"><a href="mailto:connectfrench31@gmail.com">connectfrench31@gmail.com</a></p>
       </div>
     </div>
-    <div class="copy">© <span id="year"></span> FrenchConnect</div>
-  </footer>
+  </div>
+</section>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+<!-- 3 CALI -->
+<section class="premium-wrap" style="margin-top:28px;">
+  <h2 style="text-align:center">🔥 Nos 3 Cali Weed</h2>
 
-    // Burger
-    (function(){
-      const toggle = document.getElementById("navToggle");
-      const menu   = document.getElementById("mobileMenu");
-      const close  = document.getElementById("menuClose");
-      const back   = document.getElementById("menuBackdrop");
-      if(!toggle || !menu) return;
+  <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;">
 
-      function openMenu(){
-        document.body.classList.add("menu-open");
-        menu.classList.add("open");
-        toggle.setAttribute("aria-expanded","true");
-      }
-      function closeMenu(){
-        document.body.classList.remove("menu-open");
-        menu.classList.remove("open");
-        toggle.setAttribute("aria-expanded","false");
-      }
+    <!-- Sunset -->
+    <article class="card">
+      <div class="pad">
+        <a href="shop.html?search=sunset%20sherbet">
+          <img src="assets/images/cali/sunset-sherbet-cali.webp" alt="Sunset Sherbet Cali Weed" style="width:100%;border-radius:14px;">
+        </a>
+        <h3>🍧 Sunset Sherbet</h3>
+        <p class="muted mini">Gourmand & fruité. Parfaite en soirée.</p>
+        <div class="pill-row">
+          <span class="pill">🌙 Soir</span>
+          <span class="pill">🍓 Fruité</span>
+          <span class="pill">💎 Dense</span>
+        </div>
+        <a class="btn" href="shop.html?search=sunset%20sherbet" style="margin-top:12px;">🛒 Voir en boutique</a>
+      </div>
+    </article>
 
-      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
-      if(close) close.addEventListener("click", closeMenu);
-      if(back)  back.addEventListener("click", closeMenu);
-      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
-      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
-    })();
+    <!-- Runtz -->
+    <article class="card">
+      <div class="pad">
+        <a href="shop.html?search=royal%20runtz">
+          <img src="assets/images/cali/royal-runtz-cali.webp" alt="Royal Runtz Cali Weed" style="width:100%;border-radius:14px;">
+        </a>
+        <h3>🍬 Royal Runtz</h3>
+        <p class="muted mini">Hybride sucré & équilibré.</p>
+        <div class="pill-row">
+          <span class="pill">⚖️ Équilibré</span>
+          <span class="pill">🍭 Sucré</span>
+          <span class="pill">👃 Aromatique</span>
+        </div>
+        <a class="btn" href="shop.html?search=royal%20runtz" style="margin-top:12px;">🛒 Voir en boutique</a>
+      </div>
+    </article>
 
-    // Scroll reveal (léger)
-    (function(){
-      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      const els = Array.from(document.querySelectorAll(".reveal"));
-      if(!els.length) return;
+    <!-- Ghost -->
+    <article class="card">
+      <div class="pad">
+        <a href="shop.html?search=ghost%20train%20haze">
+          <img src="assets/images/cali/ghost-train-haze-cali.webp" alt="Ghost Train Haze Cali Weed" style="width:100%;border-radius:14px;">
+        </a>
+        <h3>🍋 Ghost Train Haze</h3>
+        <p class="muted mini">Agrumes & fraîcheur. Vibe jour.</p>
+        <div class="pill-row">
+          <span class="pill">☀️ Jour</span>
+          <span class="pill">🍋 Agrumes</span>
+          <span class="pill">⚡ Vif</span>
+        </div>
+        <a class="btn" href="shop.html?search=ghost%20train%20haze" style="margin-top:12px;">🛒 Voir en boutique</a>
+      </div>
+    </article>
 
-      const io = new IntersectionObserver((entries)=>{
-        entries.forEach(e=>{
-          if(e.isIntersecting){
-            e.target.classList.add("in");
-            io.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.12 });
+  </div>
+</section>
 
-      els.forEach(el=>io.observe(el));
-    })();
-  </script>
+</main>
 
-  <script src="assets/js/store.js?v=20260106"></script>
+<footer class="site-footer">
+  <div class="cols">
+    <div>
+      <h3>FrenchConnect</h3>
+      <p class="muted">CBD Premium • Street Selection</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <p class="muted"><a href="mailto:connectfrench31@gmail.com">connectfrench31@gmail.com</a></p>
+    </div>
+  </div>
+  <div class="copy">© 2026 FrenchConnect</div>
+</footer>
+
+<script src="assets/js/store.js?v=20260106"></script>
 </body>
 </html>
+
