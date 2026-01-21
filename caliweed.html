@@ -1,22 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cali Weed – Fleur CBD Cali | FrenchConnect</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20"/>
-  <link rel="icon" type="image/png" href="assets/images/logo.png"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- Petites touches couleur / badges (sans toucher au design global) -->
+  <title>Cali Weed — Fleur CBD Cali | FrenchConnect</title>
+  <meta name="description" content="Cali Weed : fleurs CBD style californien, indoor optimisé, buds denses, terpènes riches. Conforme UE. THC < 0,3%." />
+  <meta name="theme-color" content="#07070b" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/css/style.css?v=20260112" />
+
+  <!-- Mini touches couleur / badges (cohérent, sans casser ton thème) -->
   <style>
     .badge {
       display:inline-flex;
       align-items:center;
       gap:.45rem;
       padding:.35rem .65rem;
-      border:1px solid var(--line);
+      border:1px solid rgba(255,255,255,.14);
       border-radius:999px;
       background:rgba(255,255,255,.06);
       font-size:.9rem;
@@ -24,13 +31,13 @@
     }
     .badge .dot{
       width:.55rem;height:.55rem;border-radius:999px;
-      background:rgba(255,255,255,.65);
-      box-shadow:0 0 0 6px rgba(255,255,255,.06);
+      background:rgba(140,255,210,.9);
+      box-shadow:0 0 0 6px rgba(140,255,210,.10);
     }
     .hero-box{
       margin-top:18px;
       background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
-      border:1px solid var(--line);
+      border:1px solid rgba(255,255,255,.12);
       border-radius:16px;
       padding:22px;
       backdrop-filter:blur(6px);
@@ -39,243 +46,287 @@
       margin-top:14px;
       padding:14px 16px;
       border-radius:14px;
-      border:1px solid var(--line);
+      border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.05);
     }
-    .kpi{
-      font-weight:700;
-      letter-spacing:.2px;
-    }
+    .kpi{ font-weight:800; letter-spacing:.2px; }
   </style>
 </head>
+
 <body>
 
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="/index.html">
-      <img src="assets/images/logo.png" alt="FrenchConnect" class="logo"/>
-    </a>
-
-    <!-- Menu (burger géré par ton CSS/JS global si tu en as déjà un) -->
-    <nav class="nav">
-      <a href="/shop.html">Boutique</a>
-      <a href="/about.html">Nos valeurs</a>
-      <a href="/us.html">Produits US</a>
-      <a href="/contact.html">Contact</a>
-      <a class="cart-link" href="/cart.html">Panier <span id="cart-count">0</span></a>
-    </nav>
+  <!-- Bandeau -->
+  <div class="age-banner">
+    Vente réservée aux majeurs • Produits conformes UE • THC &lt; 0,3%
   </div>
-</header>
 
-<div class="age-banner">
-  18+ | Produits CBD – THC &lt; 0,3 % | Consommer de manière responsable
-</div>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="FrenchConnect Accueil">
+        <img class="logo" src="assets/images/logo.png" alt="FrenchConnect" />
+      </a>
 
-<main class="container">
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a href="us.html">Produits US</a>
+        <a class="active" href="caliweed.html">Cali Weed</a>
+        <a class="cart-link" href="cart.html">Panier <span id="cart-count">0</span></a>
+        <a href="account.html">Mon compte</a>
+        <a href="contact.html">Contact</a>
+      </nav>
 
-  <!-- HERO -->
-  <section style="max-width:980px;margin:0 auto;">
-    <h1>🇺🇸 Cali Weed — Fleur CBD Cali</h1>
-    <p class="muted">
-      Les têtes <strong>Cali</strong> sont devenues des must-have dans l’univers du CBD premium.
-      Inspirées des standards californiens, elles se distinguent par une finition soignée,
-      des buds denses et une vraie richesse aromatique.
-    </p>
-
-    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px">
-      <span class="badge"><span class="dot"></span> 🧪 Indoor optimisé</span>
-      <span class="badge"><span class="dot"></span> 💎 Buds denses</span>
-      <span class="badge"><span class="dot"></span> 🌿 Terpènes riches</span>
-      <span class="badge"><span class="dot"></span> ✅ THC &lt; 0,3 %</span>
+      <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </header>
 
-    <div class="hero-box">
-      <div class="btn-row">
-        <a class="btn" href="/shop.html">🛒 Voir en boutique</a>
-        <a class="btn ghost" href="/contact.html">💬 Demander un conseil</a>
-        <a class="btn ghost" href="https://t.me/+r_pdPjh1zGFiNmNk" target="_blank" rel="noopener">📨 Telegram</a>
-        <a class="btn ghost" href="https://discord.gg/jT4BnhCDc" target="_blank" rel="noopener">🎧 Discord</a>
+  <!-- MENU MOBILE -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="backdrop" id="menuBackdrop"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="head">
+        <strong>FRENCHCONNECT</strong>
+        <button class="close" id="menuClose" aria-label="Fermer">✕</button>
+      </div>
+      <div class="links">
+        <a href="index.html">Accueil</a>
+        <a href="shop.html">Boutique</a>
+        <a href="us.html">Produits US</a>
+        <a href="caliweed.html">Cali Weed</a>
+        <a href="shop.html?cat=fleurs">Fleurs</a>
+        <a href="shop.html?cat=resines">Résines</a>
+        <a href="shop.html?cat=extraits">Extraits</a>
+        <a href="shop.html?cat=prerolls">Pre Rolls</a>
+        <a href="cart.html">Panier</a>
+        <a href="account.html">Mon compte</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENU -->
+  <main class="container">
+
+    <!-- HERO -->
+    <section style="max-width:980px;margin:0 auto;">
+      <h1 style="text-align:center;">🇺🇸 Cali Weed — Fleur CBD Cali</h1>
+      <p class="muted" style="text-align:center;max-width:860px;margin:0 auto;">
+        Inspirées des standards californiens, les fleurs <strong>Cali</strong> sont recherchées pour leur
+        <strong>densité</strong>, leur <strong>finitions propres</strong> et leur <strong>profil aromatique</strong> puissant. 😮‍💨✨
+      </p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:center;">
+        <span class="badge"><span class="dot"></span> 🧪 Indoor optimisé</span>
+        <span class="badge"><span class="dot"></span> 💎 Buds denses</span>
+        <span class="badge"><span class="dot"></span> 🌿 Terpènes riches</span>
+        <span class="badge"><span class="dot"></span> ✅ THC &lt; 0,3 %</span>
       </div>
 
-      <div class="note">
-        <p class="muted" style="margin:0">
-          <span class="kpi">✨ Finition “californienne” :</span>
-          manucure propre, densité, et profils aromatiques marqués selon les variétés.
+      <div class="hero-box">
+        <div class="btn-row" style="justify-content:center;flex-wrap:wrap;gap:10px;flex-direction:column;align-items:center;">
+          <a class="btn" href="shop.html" style="min-width:min(420px, 100%);text-align:center;">🛒 Voir en boutique</a>
+          <a class="btn ghost" href="contact.html" style="min-width:min(420px, 100%);text-align:center;">💬 Demander un conseil</a>
+          <a class="btn ghost" href="https://t.me/+r_pdPjh1zGFiNmNk" target="_blank" rel="noopener" style="min-width:min(420px, 100%);text-align:center;">📨 Telegram</a>
+          <a class="btn ghost" href="https://discord.gg/jT4BnhCDc" target="_blank" rel="noopener" style="min-width:min(420px, 100%);text-align:center;">🎧 Discord</a>
+        </div>
+
+        <div class="note">
+          <p class="muted" style="margin:0;text-align:center;">
+            <span class="kpi">✨ Finition “Cali” :</span> manucure propre ✂️ • densité 💎 • arômes expressifs 🌿
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 CARTES -->
+    <section style="max-width:1100px;margin:28px auto 0;">
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;">
+
+        <div class="card">
+          <div class="pad">
+            <h3>🧪 Culture indoor avancée (CO₂)</h3>
+            <p class="muted">
+              Une culture indoor “high level” : contrôle de l’environnement (lumière, température, nutrition)
+              et gestion du CO₂ pour une croissance régulière et une qualité constante.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="pad">
+            <h3>💎 Densité & volume</h3>
+            <p class="muted">
+              Résultat : des buds compacts et denses. Au grinder, tu sens souvent un beau volume + une présence aromatique marquée.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="pad">
+            <h3>✂️ Manucure premium</h3>
+            <p class="muted">
+              Têtes propres, sans feuilles superflues : un visuel clean 👀 et une vraie finition premium.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="pad">
+            <h3>🌿 Terpènes & goût</h3>
+            <p class="muted">
+              Les terpènes (et flavonoïdes) donnent le caractère : fruité 🍓, sucré 🍬, épicé 🌶️, agrumes 🍋… selon la variété.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RECONNAITRE -->
+    <section style="max-width:980px;margin:32px auto 0;">
+      <div class="card" style="padding:22px 20px;">
+        <h2 style="margin-top:0;">🔎 Comment reconnaître une vraie “Cali” ?</h2>
+        <p class="muted" style="line-height:1.7;">
+          Les fleurs “Cali” sont souvent <strong>compactes</strong> et <strong>denses</strong>, bien formées et manucurées.
+          Le parfum doit être <strong>intense</strong> et <strong>agréable</strong> — sans moisi ni notes chimiques.
+        </p>
+
+        <div class="grid" style="grid-template-columns:1fr;gap:14px;margin-top:12px;">
+          <div class="card">
+            <div class="pad">
+              <h3>✅ Ce qu’on veut</h3>
+              <ul class="muted" style="line-height:1.7;margin:0;padding-left:18px">
+                <li>Têtes bien formées, peu de feuilles</li>
+                <li>Buds fermes (sans être trop secs)</li>
+                <li>Odeur prononcée et propre</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="pad">
+              <h3>❌ À éviter</h3>
+              <ul class="muted" style="line-height:1.7;margin:0;padding-left:18px">
+                <li>Moisi / renfermé</li>
+                <li>Notes chimiques</li>
+                <li>Fleurs trop humides ou friables</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <p class="muted" style="font-size:.92rem;margin-top:12px;">
+          ✅ Astuce : au grinder, une bonne Cali se décompose bien et libère un volume + des arômes puissants.
         </p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CONTENU PRINCIPAL -->
-  <section style="max-width:1100px;margin:28px auto 0;">
-    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;">
+    <!-- LEGAL + USAGE -->
+    <section style="max-width:980px;margin:28px auto 0;">
+      <div class="grid" style="grid-template-columns:1fr;gap:14px;">
 
-      <article class="card">
-        <div class="pad">
-          <h3>🧪 Culture indoor avancée (CO₂)</h3>
-          <p class="muted">
-            Les producteurs américains ont perfectionné une culture indoor où l’environnement est maîtrisé
-            (lumière, température, nutrition) avec une gestion du CO₂ pour optimiser la croissance.
-          </p>
+        <div class="card">
+          <div class="pad">
+            <h3>⚖️ Légal en France</h3>
+            <p class="muted">
+              Oui, si la règle principale est respectée : <strong>THC &lt; 0,3 %</strong>.
+              La traçabilité/analyses peuvent être disponibles selon les lots.
+            </p>
+          </div>
         </div>
-      </article>
 
-      <article class="card">
-        <div class="pad">
-          <h3>💎 Buds compacts & denses</h3>
-          <p class="muted">
-            Cette méthode donne des têtes <strong>compactes</strong>, <strong>denses</strong> et régulières.
-            Au grinder, on remarque souvent un volume surprenant et une belle présence aromatique.
-          </p>
+        <div class="card">
+          <div class="pad">
+            <h3>💨 Conseils d’utilisation</h3>
+            <p class="muted">
+              Modes d’usage courants : <strong>vaporisation</strong> (sans combustion), <strong>infusion</strong> (avec un corps gras),
+              ou <strong>cuisine</strong> (dans une base grasse). 🌿
+            </p>
+          </div>
         </div>
-      </article>
 
-      <article class="card">
-        <div class="pad">
-          <h3>✂️ Manucure & finition premium</h3>
-          <p class="muted">
-            Les têtes sont soigneusement manucurées (moins de feuilles superflues) pour une qualité
-            visuelle propre et une expérience plus “premium”.
-          </p>
+        <div class="card">
+          <div class="pad">
+            <h3>🍬 Variétés & profils</h3>
+            <p class="muted">
+              <strong>Sativa</strong> (plus “léger/tonique” selon les préférences) •
+              <strong>Indica</strong> (plus “détente” selon les préférences). Le meilleur guide reste : arômes + goûts. ✅
+            </p>
+          </div>
         </div>
-      </article>
 
-      <article class="card">
-        <div class="pad">
-          <h3>🌿 Terpènes & flavonoïdes</h3>
-          <p class="muted">
-            La signature Cali, c’est la richesse aromatique : terpènes (et flavonoïdes) = profils
-            fruités, sucrés, épicés, agrumes… selon les lots et variétés.
-          </p>
-        </div>
-      </article>
+      </div>
 
-    </div>
-  </section>
-
-  <!-- RECONNAITRE -->
-  <section style="
-    max-width:980px;
-    margin:32px auto 0;
-    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:24px;
-    backdrop-filter:blur(6px)">
-
-    <h2>🔎 Comment reconnaître une vraie fleur CBD “Cali” ?</h2>
-    <p class="muted">
-      Les fleurs californiennes sont souvent <strong>compactes</strong> et <strong>denses</strong>,
-      avec une apparence “musclée” due à l’indoor optimisé.
-    </p>
-
-    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:14px;">
-      <article class="card">
-        <div class="pad">
-          <h3>✅ Ce qu’on veut</h3>
-          <ul class="muted" style="line-height:1.7;margin:0;padding-left:18px">
-            <li>Têtes bien formées, sans feuilles superflues</li>
-            <li>Buds fermes, pas trop secs</li>
-            <li>Parfum intense, agréable, complexe</li>
-          </ul>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="pad">
-          <h3>❌ À éviter</h3>
-          <ul class="muted" style="line-height:1.7;margin:0;padding-left:18px">
-            <li>Odeur de moisi / renfermé</li>
-            <li>Notes chimiques ou “bizarre”</li>
-            <li>Fleurs trop humides ou friables</li>
-          </ul>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="pad">
-          <h3>🌀 Au grinder</h3>
-          <p class="muted" style="margin:0">
-            Une Cali de qualité se décompose bien et libère un volume agréable + une belle “explosion” d’arômes.
-          </p>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- LEGAL + CONSO -->
-  <section style="max-width:980px;margin:32px auto 0;">
-    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;">
-
-      <article class="card">
-        <div class="pad">
-          <h3>⚖️ Légal en France</h3>
-          <p class="muted">
-            Oui, à condition de respecter la règle principale : <strong>THC &lt; 0,3 %</strong>.
-            La traçabilité et des analyses peuvent être fournies selon les lots.
-          </p>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="pad">
-          <h3>💨 Consommation (conseils)</h3>
-          <p class="muted">
-            Méthodes courantes : <strong>vaporisation</strong> (sans combustion), <strong>infusion</strong>
-            (avec un corps gras), ou <strong>cuisine</strong> (préparation dans une base grasse).
-          </p>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="pad">
-          <h3>🍬 Choisir sa variété</h3>
-          <p class="muted">
-            Deux grandes familles : <strong>Sativa</strong> (plus “léger/tonique” selon les préférences) et
-            <strong>Indica</strong> (plus “détente” selon les préférences). Les goûts/arômes restent le meilleur guide.
-          </p>
-        </div>
-      </article>
-
-    </div>
-
-    <p class="muted" style="font-size:.9rem;margin-top:14px">
-      🔞 Produit réservé aux adultes (+18). THC &lt; 0,3 %. Consommer de manière responsable. Ne pas conduire après consommation.
-    </p>
-
-    <div class="btn-row" style="margin-top:14px">
-      <a class="btn" href="/shop.html">🛒 Voir les Cali en boutique</a>
-      <a class="btn ghost" href="/us.html">🇺🇸 Retour Produits US</a>
-      <a class="btn ghost" href="/contact.html">💬 Nous contacter</a>
-    </div>
-  </section>
-
-</main>
-
-<footer class="site-footer">
-  <div class="cols">
-    <div>
-      <h4>FrenchConnect</h4>
-      <p>CBD premium sélectionné auprès des meilleurs producteurs américains.</p>
-    </div>
-    <div>
-      <h4>Légal</h4>
-      <ul>
-        <li><a href="/legal.html">Mentions légales</a></li>
-        <li><a href="/cgv.html">CGV</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4>Contact</h4>
-      <p>
-        <a href="mailto:connectfrench31@gmail.com">connectfrench31@gmail.com</a>
+      <p class="muted" style="margin-top:12px;font-size:.9rem;text-align:center;">
+        🔞 Produit réservé aux adultes (+18). THC &lt; 0,3 %. Consommer de manière responsable. Ne pas conduire après consommation.
       </p>
-    </div>
-  </div>
-  <p class="copy">© 2025 FrenchConnect. Tous droits réservés.</p>
-</footer>
 
-<script src="assets/js/store.js?v=20260104"></script>
+      <div class="btn-row" style="margin-top:16px;justify-content:center;flex-wrap:wrap;gap:10px;flex-direction:column;align-items:center;">
+        <a class="btn" href="shop.html" style="min-width:min(420px, 100%);text-align:center;">🛒 Voir les Cali en boutique</a>
+        <a class="btn ghost" href="us.html" style="min-width:min(420px, 100%);text-align:center;">🇺🇸 Retour Produits US</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER (même que ton index pour rester cohérent) -->
+  <footer class="site-footer">
+    <div class="cols">
+      <div>
+        <h3>FrenchConnect</h3>
+        <p class="muted">CBD Premium • Street Selection</p>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <p class="muted"><a href="shop.html">Boutique</a></p>
+        <p class="muted"><a href="cart.html">Panier</a></p>
+        <p class="muted"><a href="account.html">Mon compte</a></p>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p class="muted"><a href="contact.html">Nous écrire</a></p>
+        <p class="muted"><a href="mailto:connectfrench31@gmail.com">connectfrench31@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="copy">© <span id="year"></span> FrenchConnect</div>
+  </footer>
+
+  <!-- Burger -->
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    (function(){
+      const toggle = document.getElementById("navToggle");
+      const menu   = document.getElementById("mobileMenu");
+      const close  = document.getElementById("menuClose");
+      const back   = document.getElementById("menuBackdrop");
+      if(!toggle || !menu) return;
+
+      function openMenu(){
+        document.body.classList.add("menu-open");
+        menu.classList.add("open");
+        toggle.setAttribute("aria-expanded","true");
+      }
+      function closeMenu(){
+        document.body.classList.remove("menu-open");
+        menu.classList.remove("open");
+        toggle.setAttribute("aria-expanded","false");
+      }
+
+      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
+      if(close) close.addEventListener("click", closeMenu);
+      if(back)  back.addEventListener("click", closeMenu);
+      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
+      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
+    })();
+  </script>
+
+  <!-- store.js (cart count etc.) -->
+  <script src="assets/js/store.js?v=20260106"></script>
 
 </body>
 </html>
+
