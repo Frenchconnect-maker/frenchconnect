@@ -1,3 +1,12 @@
+// =====================================================
+// store.js — FrenchConnect
+// - Catalogue + shop/product/cart
+// - Grammages fleurs/résines/extraits
+// - ✅ Cali Weed US : grammages SANS remise (prix = prix1g * grammes)
+// - ✅ Bloc descriptif premium Cali (affiché sur product.html si tu as les IDs)
+// - ✅ Filtres shop via URL : ?cat= & ?search= (tu as déjà mis le script dans shop.html)
+// =====================================================
+
 // =====================
 // SUPABASE CONFIG (front)
 // - Utilisé par checkout.js
@@ -7,7 +16,7 @@ window.SUPABASE_URL = window.SUPABASE_URL || "https://mnsqfagfdahvhlfopfah.supab
 window.SUPABASE_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
 // =====================
-// REMISES + GRAMMAGES (CATALOGUE NORMAL)
+// REMISES + GRAMMAGES (pour le catalogue normal)
 // =====================
 const DISCOUNT = {
   1:   1.00, // 0%
@@ -31,24 +40,24 @@ function buildGramOptions(price1g){
   }));
 }
 
-// ✅ CALI US = AUCUNE REMISE (prix linéaire)
+// ✅ Cali US : PAS de remises selon les grammes
 function buildGramOptionsNoDiscount(price1g){
   const grams = [1,3,5,10,25,50,100];
   return grams.map(g => ({
     id: `${g}g`,
     label: `${g} g`,
-    price: round2(price1g * g),
+    price: round2(price1g * g), // prix linéaire, aucune remise
     payment_link: ""
   }));
 }
 
 // =====================
 // CATALOGUE + DESCRIPTIFS
-// Grammage sur fleurs/resines/extraits
-// Pre Rolls = produit simple sans options
-// Stickers : { text, tone?, side? }
-// tone: "pink" | "cyan" | "black" | (vide = vert par défaut)
-// side: "right" (optionnel)
+// - Grammage sur fleurs/resines/extraits
+// - Pre Rolls = produit simple sans options
+// - Stickers : { text, tone?, side? }
+//   tone: "pink" | "cyan" | "black" | (vide = vert par défaut)
+//   side: "right" (optionnel)
 // =====================
 const STORE = [
   // ===== EXTRAITS =====
@@ -59,7 +68,7 @@ const STORE = [
     image: "assets/images/cakeberry-rosin.jpg",
     category: "extraits",
     badge: "Rosin",
-    desc: "Rosin CBD premium extrait sans solvants par pression à chaud. Cakeberry Rosin offre une texture fondante et un profil aromatique riche, mêlant notes sucrées et pâtissières. Produit artisanal de haute qualité. THC < 0,3 %.",
+    desc: "Rosin CBD premium extrait sans solvants par pression à chaud. Cakeberry Rosin offre une texture fondante et un profil aromatique riche, mêlant notes sucrées et pâtissières. THC < 0,3 %.",
     sticker: { text: "LIMITED", tone: "pink", side: "right" },
     options: buildGramOptions(29.00),
     payment_link: ""
@@ -71,7 +80,7 @@ const STORE = [
     image: "assets/images/cereal-cakes-live-rosin.webp",
     category: "extraits",
     badge: "Live Rosin",
-    desc: "Live Rosin CBD issu de fleurs fraîches pressées à chaud. Cereal Cakes développe des arômes complexes, céréaliers et légèrement vanillés, avec une forte concentration en terpènes naturels. THC < 0,3 %.",
+    desc: "Live Rosin CBD issu de fleurs fraîches pressées à chaud. Arômes céréaliers et légèrement vanillés, forte concentration en terpènes naturels. THC < 0,3 %.",
     sticker: { text: "-28%", tone: "black", side: "right" },
     options: buildGramOptions(30.00),
     payment_link: ""
@@ -83,7 +92,7 @@ const STORE = [
     image: "assets/images/sherbet-cookie-live-rosin.png",
     category: "extraits",
     badge: "Live Rosin",
-    desc: "Live Rosin CBD au profil gourmand et intense. Sherbet Cookie associe des notes sucrées, crémeuses et légèrement fruitées. Extraction artisanale pour une pureté maximale. THC < 0,3 %.",
+    desc: "Live Rosin CBD au profil gourmand et intense. Notes sucrées, crémeuses et légèrement fruitées. THC < 0,3 %.",
     options: buildGramOptions(40.00),
     payment_link: ""
   },
@@ -96,7 +105,7 @@ const STORE = [
     image: "assets/images/sherbet-cookie-hash.webp",
     category: "resines",
     badge: "Hash",
-    desc: "Résine CBD à la texture souple et homogène. Sherbet Cookie dévoile un profil sucré et crémeux, avec des notes biscuitées et légèrement épicées. Extraction soignée pour un rendu aromatique riche. THC < 0,3 %.",
+    desc: "Résine CBD souple et homogène. Notes sucrées, crémeuses, biscuitées et légèrement épicées. THC < 0,3 %.",
     options: buildGramOptions(6.00),
     payment_link: ""
   },
@@ -107,7 +116,7 @@ const STORE = [
     image: "assets/images/banana-kush-hash.jpg",
     category: "resines",
     badge: "Hash",
-    desc: "Hash CBD aux notes exotiques et gourmandes. Banana Kush développe des arômes doux de banane mûre et de fruits tropicaux, avec une texture malléable et un pressage maîtrisé. THC < 0,3 %.",
+    desc: "Hash CBD aux notes exotiques et gourmandes. Arômes de banane mûre et fruits tropicaux. THC < 0,3 %.",
     options: buildGramOptions(12.00),
     payment_link: ""
   },
@@ -118,7 +127,7 @@ const STORE = [
     image: "assets/images/amnesia-hash.jpg",
     category: "resines",
     badge: "Hash",
-    desc: "Résine CBD inspirée du profil Amnesia : notes citronnées, herbacées et légèrement épicées, associées à une texture fine issue d’un tamisage précis. THC < 0,3 %.",
+    desc: "Résine CBD inspirée du profil Amnesia : citronné, herbacé, légèrement épicé. THC < 0,3 %.",
     options: buildGramOptions(8.00),
     payment_link: ""
   },
@@ -129,7 +138,7 @@ const STORE = [
     image: "assets/images/blueberry-hash.webp",
     category: "resines",
     badge: "Hash",
-    desc: "Hash CBD aux arômes ronds et fruités. Blueberry se distingue par ses notes de myrtille, de fruits rouges et une légère touche sucrée. Texture homogène et finition propre. THC < 0,3 %.",
+    desc: "Hash CBD fruité : myrtille, fruits rouges et légère touche sucrée. Texture homogène. THC < 0,3 %.",
     options: buildGramOptions(9.00),
     payment_link: ""
   },
@@ -142,7 +151,7 @@ const STORE = [
     image: "assets/images/diamond-og.jpg",
     category: "fleurs",
     badge: "Fleur",
-    desc: "Fleur CBD indoor aux têtes compactes et résineuses. Diamond OG développe un profil aromatique puissant mêlant notes terreuses, boisées et légèrement citronnées. Qualité premium, manucure soignée. THC < 0,3 %.",
+    desc: "Fleur CBD indoor : têtes compactes et résineuses. Notes terreuses, boisées, citronnées. THC < 0,3 %.",
     options: buildGramOptions(7.90),
     payment_link: ""
   },
@@ -153,7 +162,7 @@ const STORE = [
     image: "assets/images/runtz.jpg",
     category: "fleurs",
     badge: "Fleur",
-    desc: "Fleur CBD très appréciée pour son profil gourmand et fruité. Runtz offre des arômes sucrés rappelant les bonbons et les fruits tropicaux, avec de belles têtes denses. THC < 0,3 %.",
+    desc: "Fleur CBD gourmande et fruitée : notes sucrées type bonbon et fruits tropicaux. THC < 0,3 %.",
     sticker: { text: "BEST" },
     options: buildGramOptions(6.90),
     payment_link: ""
@@ -165,7 +174,7 @@ const STORE = [
     image: "assets/images/sour-apple.webp",
     category: "fleurs",
     badge: "Fleur",
-    desc: "Fleur CBD au caractère vif et rafraîchissant. Sour Apple se distingue par ses notes acidulées de pomme verte et d’agrumes, avec une structure résineuse et une finition propre. THC < 0,3 %.",
+    desc: "Fleur CBD : notes acidulées de pomme verte et agrumes. Structure résineuse. THC < 0,3 %.",
     options: buildGramOptions(6.90),
     payment_link: ""
   },
@@ -176,45 +185,49 @@ const STORE = [
     image: "assets/images/strawberry-haze.png",
     category: "fleurs",
     badge: "Fleur",
-    desc: "Fleur CBD aux arômes doux et fruités dominés par la fraise et les fruits rouges. Strawberry Haze séduit par un profil équilibré, une belle couleur et une richesse aromatique. THC < 0,3 %.",
+    desc: "Fleur CBD fruitée : fraise et fruits rouges. Profil équilibré et aromatique. THC < 0,3 %.",
     sticker: { text: "NEW", tone: "cyan" },
     options: buildGramOptions(5.90),
     payment_link: ""
   },
 
-  // ===== CALI WEED US (SANS REMISE GRAMMAGE) =====
+  // ===== CALI WEED US (SANS REMISES) =====
+  // ⚠️ Mets bien les fichiers ici :
+  // - assets/images/cali/sunset-sherbet-cali.webp
+  // - assets/images/cali/royal-runtz-cali.webp
+  // - assets/images/cali/ghost-train-haze-cali.webp
   {
     id: "sunset-sherbet-cali",
-    name: "Sunset Sherbet Cali Weed 🇺🇸",
+    name: "Sunset Sherbet Cali Weed US 🇺🇸",
     price: 14.90,
     image: "assets/images/cali/sunset-sherbet-cali.webp",
     category: "fleurs",
     badge: "Cali Weed",
-    desc: "Fleur CBD Cali Weed ultra premium. Buds denses, manucure clean, arômes fruités et gourmands. Sélection US FrenchConnect. THC < 0,3%.",
+    desc: "Cali Weed US ultra premium : buds denses, manucure clean, profil fruité/gourmand. THC < 0,3%.",
     sticker: { text: "CALI", tone: "black", side: "right" },
     options: buildGramOptionsNoDiscount(14.90),
     payment_link: ""
   },
   {
     id: "royal-runtz-cali",
-    name: "Royal Runtz Cali Weed 🇺🇸",
+    name: "Royal Runtz Cali Weed US 🇺🇸",
     price: 15.90,
     image: "assets/images/cali/royal-runtz-cali.webp",
     category: "fleurs",
     badge: "Cali Weed",
-    desc: "Royal Runtz Cali Weed CBD : hybride équilibrée, terpènes sucrés type bonbon, buds très compacts. Qualité US premium. THC < 0,3%.",
+    desc: "Hybride équilibrée : terpènes sucrés type bonbon, buds très compacts. Qualité US premium. THC < 0,3%.",
     sticker: { text: "BEST CALI", tone: "pink", side: "right" },
     options: buildGramOptionsNoDiscount(15.90),
     payment_link: ""
   },
   {
     id: "ghost-train-haze-cali",
-    name: "Ghost Train Haze Cali Weed 🇺🇸",
+    name: "Ghost Train Haze Cali Weed US 🇺🇸",
     price: 15.90,
     image: "assets/images/cali/ghost-train-haze-cali.webp",
     category: "fleurs",
     badge: "Cali Weed",
-    desc: "Ghost Train Haze Cali Weed CBD : dominante sativa, arômes agrumes puissants, buds résineux et denses. Sélection US. THC < 0,3%.",
+    desc: "Dominante sativa : agrumes puissants, buds résineux et denses. Sélection US. THC < 0,3%.",
     sticker: { text: "CALI", tone: "cyan", side: "right" },
     options: buildGramOptionsNoDiscount(15.90),
     payment_link: ""
@@ -228,7 +241,7 @@ const STORE = [
     image: "assets/images/RuntZ-haze-pre-roll.jpg",
     category: "prerolls",
     badge: "Pre Roll",
-    desc: "Pre roll CBD prêt à l’emploi, roulé avec des fleurs Runtz Haze soigneusement sélectionnées. Saveurs Agrumes douces, combustion régulière et roulage premium. THC < 0,3 %.",
+    desc: "Pre roll CBD prêt à l’emploi : roulage premium, combustion régulière. THC < 0,3 %.",
     payment_link: ""
   },
   {
@@ -238,7 +251,7 @@ const STORE = [
     image: "assets/images/strawberry-haze-pre-roll.webp",
     category: "prerolls",
     badge: "Pre Roll",
-    desc: "Pre roll CBD prêt à l’emploi, roulé avec des fleurs Strawberry Haze soigneusement sélectionnées. Saveurs fruitées et douces, combustion régulière et roulage premium. THC < 0,3 %.",
+    desc: "Pre roll CBD prêt à l’emploi : saveurs fruitées et douces. THC < 0,3 %.",
     payment_link: ""
   },
   {
@@ -248,7 +261,7 @@ const STORE = [
     image: "assets/images/banana-kush-cakeberry-rosin-pre-roll.jpeg",
     category: "prerolls",
     badge: "Pre Roll",
-    desc: "Pre roll CBD enrichi en rosin Cakeberry pour une expérience aromatique intense. Alliance gourmande entre les notes fruitées de Banana Kush et la richesse du rosin. THC < 0,3 %.",
+    desc: "Pre roll CBD enrichi en rosin : expérience aromatique intense. THC < 0,3 %.",
     payment_link: ""
   },
   {
@@ -258,10 +271,85 @@ const STORE = [
     image: "assets/images/prerolls3.webp",
     category: "prerolls",
     badge: "Pre Roll",
-    desc: "Pre roll CBD premium associant fleurs Runtz et rosin Cereal Cakes. Profil sucré et gourmand, roulage soigné et combustion homogène. THC < 0,3 %.",
+    desc: "Pre roll CBD premium : profil sucré et gourmand, combustion homogène. THC < 0,3 %.",
     payment_link: ""
   }
 ];
+
+// =====================
+// DESCRIPTIFS PREMIUM CALI US (affichés sur product.html si tu ajoutes le bloc HTML)
+// =====================
+const CALI_DESCRIPTIFS = {
+  "sunset-sherbet-cali": {
+    title: "🍧 Sunset Sherbet — Cali Weed US",
+    html: `
+<strong>Ultra premium, vibe dessert</strong> 😮‍💨🍓<br>
+Buds denses, manucure clean, terpènes gourmands.
+
+<br><br><strong>🌿 Arômes</strong><br>
+• Fruité / dessert 🍓🍧<br>
+• Sucré / crémeux 🍬
+
+<br><br><strong>✅ Points forts</strong><br>
+• Densité “Cali” 💎<br>
+• Odeur nette 👃🔥<br>
+• Visuel premium ✂️
+
+<br><br><strong>🕒 Idéal</strong><br>
+• Soir / chill 🌙
+
+<br><br><strong>⚖️ Légal</strong><br>
+THC &lt; 0,3% • Conforme UE
+`
+  },
+
+  "royal-runtz-cali": {
+    title: "🍬 Royal Runtz — Cali Weed US (Best)",
+    html: `
+<strong>La Cali “bonbon”</strong> 🍭🔥<br>
+Hybride équilibrée, terpènes sucrés, buds ultra compacts.
+
+<br><br><strong>🌿 Arômes</strong><br>
+• Candy / bonbons 🍬<br>
+• Fruits mûrs 🍇<br>
+• Rond & doux 🍯
+
+<br><br><strong>✅ Points forts</strong><br>
+• Aromatique intense 👃🔥<br>
+• Buds très denses 💎<br>
+• Finition premium ✂️
+
+<br><br><strong>🕒 Idéal</strong><br>
+• Jour / soir ⚖️
+
+<br><br><strong>⚖️ Légal</strong><br>
+THC &lt; 0,3% • Conforme UE
+`
+  },
+
+  "ghost-train-haze-cali": {
+    title: "🍋 Ghost Train Haze — Cali Weed US",
+    html: `
+<strong>Fresh & puissant</strong> ⚡🍋<br>
+Dominante sativa, agrumes marqués, vibe très “clean”.
+
+<br><br><strong>🌿 Arômes</strong><br>
+• Citron / agrumes 🍋<br>
+• Notes haze fraîches 🌿
+
+<br><br><strong>✅ Points forts</strong><br>
+• Odeur puissante 👃🔥<br>
+• Résineux & dense 💎<br>
+• Finition propre ✂️
+
+<br><br><strong>🕒 Idéal</strong><br>
+• Journée ☀️
+
+<br><br><strong>⚖️ Légal</strong><br>
+THC &lt; 0,3% • Conforme UE
+`
+  }
+};
 
 // =====================
 // HELPERS
@@ -290,7 +378,6 @@ function updateCartCount(){
   const el = document.getElementById("cart-count");
   if(el) el.textContent = count;
 }
-
 function clearCart(){
   localStorage.removeItem("cart");
   updateCartCount();
@@ -392,6 +479,10 @@ function bootShopPage(){
 
 // =====================
 // PAGE PRODUIT (grammage)
+// ⚠️ IDs attendus dans product.html :
+// - p-image, p-name, p-desc, p-cat, p-badge, p-price
+// - grammage-box, option, qty, add-to-cart
+// - (optionnel premium cali) : cali-desc, cali-title, cali-content
 // =====================
 function bootProductPage(){
   const url = new URL(location.href);
@@ -439,6 +530,22 @@ function bootProductPage(){
       const qty = parseInt((document.getElementById("qty")?.value || "1"), 10);
       addToCart(p.id, qty, currentOpt);
     };
+  }
+
+  // =====================
+  // ✅ DESCRIPTIF PREMIUM CALI (sous grammage)
+  // (s'affiche uniquement pour les 3 IDs cali)
+  // =====================
+  const caliBox = document.getElementById("cali-desc");
+  const caliTitle = document.getElementById("cali-title");
+  const caliContent = document.getElementById("cali-content");
+
+  if(caliBox && caliTitle && caliContent && CALI_DESCRIPTIFS[p.id]){
+    caliBox.style.display = "block";
+    caliTitle.textContent = CALI_DESCRIPTIFS[p.id].title;
+    caliContent.innerHTML = CALI_DESCRIPTIFS[p.id].html;
+  } else if(caliBox){
+    caliBox.style.display = "none";
   }
 }
 
@@ -495,6 +602,8 @@ function renderCart(){
 
   box.innerHTML = cart.map(l => {
     const p = findProduct(l.id);
+    if(!p) return "";
+
     const price = priceFor(p, l.optionId);
     total += price * l.qty;
 
