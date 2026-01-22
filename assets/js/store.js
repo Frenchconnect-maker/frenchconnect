@@ -7,7 +7,7 @@ window.SUPABASE_URL = window.SUPABASE_URL || "https://mnsqfagfdahvhlfopfah.supab
 window.SUPABASE_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
 // =====================
-// REMISES + GRAMMAGES
+// REMISES + GRAMMAGES (CATALOGUE NORMAL)
 // =====================
 const DISCOUNT = {
   1:   1.00, // 0%
@@ -27,6 +27,17 @@ function buildGramOptions(price1g){
     id: `${g}g`,
     label: `${g} g`,
     price: round2(price1g * g * (DISCOUNT[g] ?? 1.0)),
+    payment_link: ""
+  }));
+}
+
+// ✅ CALI US = AUCUNE REMISE (prix linéaire)
+function buildGramOptionsNoDiscount(price1g){
+  const grams = [1,3,5,10,25,50,100];
+  return grams.map(g => ({
+    id: `${g}g`,
+    label: `${g} g`,
+    price: round2(price1g * g),
     payment_link: ""
   }));
 }
@@ -143,7 +154,7 @@ const STORE = [
     category: "fleurs",
     badge: "Fleur",
     desc: "Fleur CBD très appréciée pour son profil gourmand et fruité. Runtz offre des arômes sucrés rappelant les bonbons et les fruits tropicaux, avec de belles têtes denses. THC < 0,3 %.",
-    sticker: { text: "BEST" }, // vert par défaut
+    sticker: { text: "BEST" },
     options: buildGramOptions(6.90),
     payment_link: ""
   },
@@ -171,7 +182,7 @@ const STORE = [
     payment_link: ""
   },
 
-  // ===== CALI WEED US =====
+  // ===== CALI WEED US (SANS REMISE GRAMMAGE) =====
   {
     id: "sunset-sherbet-cali",
     name: "Sunset Sherbet Cali Weed 🇺🇸",
@@ -180,7 +191,7 @@ const STORE = [
     category: "fleurs",
     badge: "Cali Weed",
     desc: "Fleur CBD Cali Weed ultra premium. Buds denses, manucure clean, arômes fruités et gourmands. Sélection US FrenchConnect. THC < 0,3%.",
-    sticker: { text: "CALI", tone: "black" },
+    sticker: { text: "CALI", tone: "black", side: "right" },
     options: buildGramOptionsNoDiscount(14.90),
     payment_link: ""
   },
@@ -205,7 +216,7 @@ const STORE = [
     badge: "Cali Weed",
     desc: "Ghost Train Haze Cali Weed CBD : dominante sativa, arômes agrumes puissants, buds résineux et denses. Sélection US. THC < 0,3%.",
     sticker: { text: "CALI", tone: "cyan", side: "right" },
-    options: buildGramOptionsNoDiscount(14.90),
+    options: buildGramOptionsNoDiscount(15.90),
     payment_link: ""
   },
 
@@ -515,7 +526,6 @@ function startCheckout(){
     alert("Ton panier est vide.");
     return;
   }
-  // GitHub Pages: on reste en relatif pour éviter les soucis de chemin
   window.location.href = "checkout.html";
 }
 window.startCheckout = startCheckout;
@@ -537,6 +547,7 @@ window.STORE = STORE;
 window.DISCOUNT = DISCOUNT;
 window.round2 = round2;
 window.buildGramOptions = buildGramOptions;
+window.buildGramOptionsNoDiscount = buildGramOptionsNoDiscount;
 window.formatPrice = formatPrice;
 window.getOption = getOption;
 window.defaultOptionId = defaultOptionId;
