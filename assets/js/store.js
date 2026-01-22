@@ -50,7 +50,7 @@ const STORE = [
     badge: "Rosin",
     desc: "Rosin CBD premium extrait sans solvants par pression à chaud. Cakeberry Rosin offre une texture fondante et un profil aromatique riche, mêlant notes sucrées et pâtissières. Produit artisanal de haute qualité. THC < 0,3 %.",
     sticker: { text: "LIMITED", tone: "pink", side: "right" },
-    options: buildGramOptions(40.00),
+    options: buildGramOptions(29.00),
     payment_link: ""
   },
   {
@@ -62,7 +62,7 @@ const STORE = [
     badge: "Live Rosin",
     desc: "Live Rosin CBD issu de fleurs fraîches pressées à chaud. Cereal Cakes développe des arômes complexes, céréaliers et légèrement vanillés, avec une forte concentration en terpènes naturels. THC < 0,3 %.",
     sticker: { text: "-28%", tone: "black", side: "right" },
-    options: buildGramOptions(40.00),
+    options: buildGramOptions(30.00),
     payment_link: ""
   },
   {
@@ -86,7 +86,7 @@ const STORE = [
     category: "resines",
     badge: "Hash",
     desc: "Résine CBD à la texture souple et homogène. Sherbet Cookie dévoile un profil sucré et crémeux, avec des notes biscuitées et légèrement épicées. Extraction soignée pour un rendu aromatique riche. THC < 0,3 %.",
-    options: buildGramOptions(12.00),
+    options: buildGramOptions(6.00),
     payment_link: ""
   },
   {
@@ -108,7 +108,7 @@ const STORE = [
     category: "resines",
     badge: "Hash",
     desc: "Résine CBD inspirée du profil Amnesia : notes citronnées, herbacées et légèrement épicées, associées à une texture fine issue d’un tamisage précis. THC < 0,3 %.",
-    options: buildGramOptions(11.00),
+    options: buildGramOptions(8.00),
     payment_link: ""
   },
   {
@@ -119,7 +119,7 @@ const STORE = [
     category: "resines",
     badge: "Hash",
     desc: "Hash CBD aux arômes ronds et fruités. Blueberry se distingue par ses notes de myrtille, de fruits rouges et une légère touche sucrée. Texture homogène et finition propre. THC < 0,3 %.",
-    options: buildGramOptions(12.00),
+    options: buildGramOptions(9.00),
     payment_link: ""
   },
 
@@ -132,7 +132,7 @@ const STORE = [
     category: "fleurs",
     badge: "Fleur",
     desc: "Fleur CBD indoor aux têtes compactes et résineuses. Diamond OG développe un profil aromatique puissant mêlant notes terreuses, boisées et légèrement citronnées. Qualité premium, manucure soignée. THC < 0,3 %.",
-    options: buildGramOptions(12.90),
+    options: buildGramOptions(7.90),
     payment_link: ""
   },
   {
@@ -144,7 +144,7 @@ const STORE = [
     badge: "Fleur",
     desc: "Fleur CBD très appréciée pour son profil gourmand et fruité. Runtz offre des arômes sucrés rappelant les bonbons et les fruits tropicaux, avec de belles têtes denses. THC < 0,3 %.",
     sticker: { text: "BEST" }, // vert par défaut
-    options: buildGramOptions(12.90),
+    options: buildGramOptions(6.90),
     payment_link: ""
   },
   {
@@ -155,7 +155,7 @@ const STORE = [
     category: "fleurs",
     badge: "Fleur",
     desc: "Fleur CBD au caractère vif et rafraîchissant. Sour Apple se distingue par ses notes acidulées de pomme verte et d’agrumes, avec une structure résineuse et une finition propre. THC < 0,3 %.",
-    options: buildGramOptions(12.90),
+    options: buildGramOptions(6.90),
     payment_link: ""
   },
   {
@@ -167,7 +167,7 @@ const STORE = [
     badge: "Fleur",
     desc: "Fleur CBD aux arômes doux et fruités dominés par la fraise et les fruits rouges. Strawberry Haze séduit par un profil équilibré, une belle couleur et une richesse aromatique. THC < 0,3 %.",
     sticker: { text: "NEW", tone: "cyan" },
-    options: buildGramOptions(12.90),
+    options: buildGramOptions(5.90),
     payment_link: ""
   },
 
@@ -181,7 +181,7 @@ const STORE = [
     badge: "Cali Weed",
     desc: "Fleur CBD Cali Weed ultra premium. Buds denses, manucure clean, arômes fruités et gourmands. Sélection US FrenchConnect. THC < 0,3%.",
     sticker: { text: "CALI", tone: "black" },
-    options: buildGramOptions(14.90),
+    options: buildGramOptionsNoDiscount(14.90),
     payment_link: ""
   },
   {
@@ -192,8 +192,8 @@ const STORE = [
     category: "fleurs",
     badge: "Cali Weed",
     desc: "Royal Runtz Cali Weed CBD : hybride équilibrée, terpènes sucrés type bonbon, buds très compacts. Qualité US premium. THC < 0,3%.",
-    sticker: { text: "BEST", tone: "pink", side: "right" },
-    options: buildGramOptions(15.90),
+    sticker: { text: "BEST CALI", tone: "pink", side: "right" },
+    options: buildGramOptionsNoDiscount(15.90),
     payment_link: ""
   },
   {
@@ -204,8 +204,8 @@ const STORE = [
     category: "fleurs",
     badge: "Cali Weed",
     desc: "Ghost Train Haze Cali Weed CBD : dominante sativa, arômes agrumes puissants, buds résineux et denses. Sélection US. THC < 0,3%.",
-    sticker: { text: "US", tone: "cyan", side: "right" },
-    options: buildGramOptions(15.90),
+    sticker: { text: "CALI", tone: "cyan", side: "right" },
+    options: buildGramOptionsNoDiscount(14.90),
     payment_link: ""
   },
 
@@ -213,7 +213,7 @@ const STORE = [
   {
     id: "RuntZ-haze-pre-roll",
     name: "Runtz Haze Pre Roll",
-    price: 14.90,
+    price: 4.90,
     image: "assets/images/RuntZ-haze-pre-roll.jpg",
     category: "prerolls",
     badge: "Pre Roll",
@@ -223,7 +223,7 @@ const STORE = [
   {
     id: "strawberry-haze-pre-roll",
     name: "Strawberry Haze Pre Roll",
-    price: 12.90,
+    price: 4.90,
     image: "assets/images/strawberry-haze-pre-roll.webp",
     category: "prerolls",
     badge: "Pre Roll",
@@ -233,7 +233,7 @@ const STORE = [
   {
     id: "banana-kush-cakeberry-rosin-pre-roll",
     name: "Banana Kush x Cakeberry Rosin Pre Roll",
-    price: 12.90,
+    price: 4.90,
     image: "assets/images/banana-kush-cakeberry-rosin-pre-roll.jpeg",
     category: "prerolls",
     badge: "Pre Roll",
@@ -243,7 +243,7 @@ const STORE = [
   {
     id: "runtz-cereal-cakes-pre-roll",
     name: "Runtz x Cereal Cakes Pre Roll",
-    price: 12.90,
+    price: 4.90,
     image: "assets/images/prerolls3.webp",
     category: "prerolls",
     badge: "Pre Roll",
