@@ -32,8 +32,8 @@ a{ color:inherit; text-decoration:none; }
 a:hover{ color: var(--neon3); }
 
 /* ================================
-   BACKGROUND GLOBAL — IDENTIQUE PARTOUT (PANIER STYLE)
-   ✅ FIX .com : chemin relatif
+   BACKGROUND GLOBAL — IDENTIQUE PARTOUT
+   ✅ Chemin relatif depuis assets/css/style.css
 ================================ */
 html{ background:#07070b; }
 
@@ -41,57 +41,44 @@ body{
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
-
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color: var(--ink);
   background: transparent;
   line-height:1.55;
 }
 
-/* Image de fond (même cadrage partout) */
+/* Image de fond */
 body::before{
   content:"";
   position: fixed;
   inset: 0;
   z-index: -2;
 
-  /* ✅ IMPORTANT : chemin RELATIF depuis assets/css/style.css */
   background-image: url("../images/background.webp");
   background-repeat: no-repeat;
   background-size: cover;
-
-  /* 🎯 Position comme ton panier */
   background-position: 65% center;
 
   transform: translateZ(0);
   will-change: transform;
 }
 
-/* Voile global léger */
+/* Voile global */
 body::after{
   content:"";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-
-  background: linear-gradient(
-    180deg,
-    rgba(0,0,0,.45),
-    rgba(0,0,0,.65)
-  );
+  background: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65));
 }
 
-/* Home = voile un peu plus léger */
+/* Home = voile plus léger */
 html.home body::after{
-  background: linear-gradient(
-    180deg,
-    rgba(0,0,0,.30),
-    rgba(0,0,0,.52)
-  );
+  background: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.52));
 }
 
-/* Titres (street) */
+/* Titres street */
 h1,h2,h3{
   margin:0 0 12px;
   font-family: "Bangers", Inter, system-ui, sans-serif;
@@ -109,8 +96,22 @@ h1,h2,h3{
 .container{ padding:24px; }
 .wrap{ max-width:var(--maxw); margin:0 auto; }
 
+/* utilitaires */
+.btn-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.pill-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
 /* ================================
-   HEADER (CLUB / STREET)
+   HEADER
 ================================ */
 .site-header{
   position: sticky;
@@ -213,7 +214,7 @@ h1,h2,h3{
 }
 
 /* ================================
-   GRID / CARDS (MAX STREET)
+   GRID / CARDS
 ================================ */
 .grid{
   max-width:var(--maxw);
@@ -286,6 +287,15 @@ h1,h2,h3{
   z-index: 1;
   filter: saturate(1.14) contrast(1.06);
 }
+
+/* ✅ images fiche produit (product.html) */
+#p-image{
+  width:100%;
+  border-radius:16px;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 60px rgba(0,0,0,.40);
+}
+
 .card .pad{
   padding: 14px;
   position: relative;
@@ -378,21 +388,34 @@ h1,h2,h3{
 /* ================================
    INPUTS / SELECTS
 ================================ */
-input, select{
+input, select, textarea{
   background: rgba(255,255,255,.03) !important;
   border: 1px solid rgba(255,255,255,.16) !important;
   color: #fff !important;
   border-radius: 12px;
+  padding:10px 12px;
 }
-input:focus, select:focus{
+input:focus, select:focus, textarea:focus{
   outline: none;
   border-color: rgba(0,229,255,.55) !important;
   box-shadow: 0 0 0 3px rgba(0,229,255,.12);
 }
 
 /* ================================
-   GRAMMAGE
+   PAGE PRODUIT (product.html)
+   ✅ mobile 100% (colonne)
 ================================ */
+#product-page{
+  max-width:var(--maxw);
+  margin: 0 auto;
+}
+@media (max-width: 860px){
+  #product-page{
+    display:block !important; /* écrase inline grid de ton HTML */
+  }
+}
+
+/* Grammage / qty */
 #grammage-box select,
 #grammage-box option{
   background: #0f0f0f !important;
@@ -405,10 +428,12 @@ input:focus, select:focus{
   background: #0f0f0f !important;
   color: #ffffff !important;
   border: 1px solid rgba(255,255,255,.20) !important;
+  width: 100%;
+  max-width: 140px;
 }
 
 /* ================================
-   PANIER (photos)
+   PANIER (cart.html)
 ================================ */
 #cart-items .cart-line img{
   width: 52px !important;
@@ -422,7 +447,7 @@ input:focus, select:focus{
 }
 
 /* ================================
-   STICKERS PROMO
+   STICKERS
 ================================ */
 .sticker{
   position:absolute !important;
@@ -456,6 +481,17 @@ input:focus, select:focus{
 .sticker.cyan{ background: var(--neon3) !important; }
 .sticker.black{ background: rgba(255,255,255,.92) !important; color:#000 !important; }
 
+/* Micro animation */
+@keyframes neonPulse{
+  0%{ filter: brightness(1); }
+  50%{ filter: brightness(1.08); }
+  100%{ filter: brightness(1); }
+}
+.sticker{ animation: neonPulse 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce){
+  .sticker{ animation:none !important; }
+}
+
 /* ================================
    FOOTER
 ================================ */
@@ -478,19 +514,6 @@ input:focus, select:focus{
 }
 @media (max-width:980px){
   .site-footer .cols{ grid-template-columns:1fr; }
-}
-
-/* ================================
-   Micro animation
-================================ */
-@keyframes neonPulse{
-  0%{ filter: brightness(1); }
-  50%{ filter: brightness(1.08); }
-  100%{ filter: brightness(1); }
-}
-.sticker{ animation: neonPulse 2.2s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce){
-  .sticker{ animation:none !important; }
 }
 
 /* =========================================================
@@ -527,20 +550,19 @@ input:focus, select:focus{
   box-shadow: 0 0 22px rgba(57,255,20,.10);
 }
 
+/* overlay */
 .mobile-menu{
   position: fixed;
   inset: 0;
   z-index: 9999;
   display:none;
 }
-
 .mobile-menu .backdrop{
   position:absolute;
   inset:0;
   background: rgba(0,0,0,.72);
   backdrop-filter: blur(8px);
 }
-
 .mobile-menu .panel{
   position:absolute;
   right: 14px;
@@ -560,7 +582,6 @@ input:focus, select:focus{
   opacity:0;
   transition: transform .22s ease, opacity .22s ease;
 }
-
 .mobile-menu .panel::after{
   content:"";
   position:absolute;
@@ -586,7 +607,6 @@ input:focus, select:focus{
   text-transform: uppercase;
   text-shadow: 0 0 16px rgba(0,229,255,.14);
 }
-
 .mobile-menu .close{
   width:44px;
   height:44px;
@@ -597,13 +617,11 @@ input:focus, select:focus{
   cursor:pointer;
   box-shadow: 0 0 18px rgba(255,43,214,.10);
 }
-
 .mobile-menu .links{
   padding: 8px 14px 14px;
   display:grid;
   gap:10px;
 }
-
 .mobile-menu .links a{
   padding: 12px 14px;
   border-radius: 16px;
@@ -625,6 +643,7 @@ input:focus, select:focus{
   .nav-toggle{ display:inline-block; }
 }
 
+/* burger animé quand menu ouvert */
 body.menu-open .nav-toggle span:nth-child(1){
   top:21px;
   transform: translateX(-50%) rotate(45deg);
@@ -636,7 +655,7 @@ body.menu-open .nav-toggle span:nth-child(3){
 }
 
 /* =========================================
-   HOME ONLY (index.html)
+   HOME ONLY
 ========================================= */
 html.home .card{
   background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02)) !important;
@@ -646,7 +665,6 @@ html.home .container{
   padding-top: 18px;
   padding-bottom: 18px;
 }
-
 
 
 
