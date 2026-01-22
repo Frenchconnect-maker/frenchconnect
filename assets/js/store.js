@@ -1,5 +1,4 @@
 // =====================
-// =====================
 // SUPABASE CONFIG (front)
 // - Utilisé par checkout.js
 // - Publishable key uniquement (PAS de secret key ici)
@@ -7,6 +6,7 @@
 window.SUPABASE_URL = window.SUPABASE_URL || "https://mnsqfagfdahvhlfopfah.supabase.co";
 window.SUPABASE_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uc3FmYWdmZGFodmhsZm9wZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MDE3NjEsImV4cCI6MjA4MzE3Nzc2MX0.yvzgQ9MVXN6lH8pnfiBAB0kFHCAkCzQYIQwNrSXDVEQ";
 
+// =====================
 // REMISES + GRAMMAGES
 // =====================
 const DISCOUNT = {
@@ -170,43 +170,44 @@ const STORE = [
     options: buildGramOptions(12.90),
     payment_link: ""
   },
-// ===== CALI WEED US =====
-{
-  id: "sunset-sherbet-cali",
-  name: "Sunset Sherbet Cali Weed 🇺🇸",
-  price: 14.90,
-  image: "assets/images/cali/sunset-sherbet-cali.webp",
-  category: "fleurs",
-  badge: "Cali Weed",
-  desc: "Fleur CBD Cali Weed ultra premium. Buds denses, manucure clean, arômes fruités et gourmands. Sélection US FrenchConnect. THC < 0,3%.",
-  sticker: { text: "CALI", tone: "black" },
-  options: buildGramOptions(14.90),
-  payment_link: ""
-},
-{
-  id: "royal-runtz-cali",
-  name: "Royal Runtz Cali Weed 🇺🇸",
-  price: 15.90,
-  image: "assets/images/cali/royal-caliweed-optimized.webp",
-  category: "fleurs",
-  badge: "Cali Weed",
-  desc: "Royal Runtz Cali Weed CBD : hybride équilibrée, terpènes sucrés type bonbon, buds très compacts. Qualité US premium. THC < 0,3%.",
-  sticker: { text: "BEST", tone: "pink" },
-  options: buildGramOptions(15.90),
-  payment_link: ""
-},
-{
-  id: "ghost-train-haze-cali",
-  name: "Ghost Train Haze Cali Weed 🇺🇸",
-  price: 15.90,
-  image: "assets/images/cali/ghost-caliweed-optimized.webp",
-  category: "fleurs",
-  badge: "Cali Weed",
-  desc: "Ghost Train Haze Cali Weed CBD : dominante sativa, arômes agrumes puissants, buds résineux et denses. Sélection US. THC < 0,3%.",
-  sticker: { text: "US", tone: "cyan" },
-  options: buildGramOptions(15.90),
-  payment_link: ""
-},
+
+  // ===== CALI WEED US =====
+  {
+    id: "sunset-sherbet-cali",
+    name: "Sunset Sherbet Cali Weed 🇺🇸",
+    price: 14.90,
+    image: "assets/images/cali/sunset-sherbet-cali.webp",
+    category: "fleurs",
+    badge: "Cali Weed",
+    desc: "Fleur CBD Cali Weed ultra premium. Buds denses, manucure clean, arômes fruités et gourmands. Sélection US FrenchConnect. THC < 0,3%.",
+    sticker: { text: "CALI", tone: "black" },
+    options: buildGramOptions(14.90),
+    payment_link: ""
+  },
+  {
+    id: "royal-runtz-cali",
+    name: "Royal Runtz Cali Weed 🇺🇸",
+    price: 15.90,
+    image: "assets/images/cali/royal-runtz-cali.webp",
+    category: "fleurs",
+    badge: "Cali Weed",
+    desc: "Royal Runtz Cali Weed CBD : hybride équilibrée, terpènes sucrés type bonbon, buds très compacts. Qualité US premium. THC < 0,3%.",
+    sticker: { text: "BEST", tone: "pink", side: "right" },
+    options: buildGramOptions(15.90),
+    payment_link: ""
+  },
+  {
+    id: "ghost-train-haze-cali",
+    name: "Ghost Train Haze Cali Weed 🇺🇸",
+    price: 15.90,
+    image: "assets/images/cali/ghost-train-haze-cali.webp",
+    category: "fleurs",
+    badge: "Cali Weed",
+    desc: "Ghost Train Haze Cali Weed CBD : dominante sativa, arômes agrumes puissants, buds résineux et denses. Sélection US. THC < 0,3%.",
+    sticker: { text: "US", tone: "cyan", side: "right" },
+    options: buildGramOptions(15.90),
+    payment_link: ""
+  },
 
   // ===== PRE ROLLS (SANS GRAMMAGE) =====
   {
@@ -514,7 +515,6 @@ function startCheckout(){
     alert("Ton panier est vide.");
     return;
   }
-  // ✅ nouveau flow : checkout (compte + commandes Supabase)
   // GitHub Pages: on reste en relatif pour éviter les soucis de chemin
   window.location.href = "checkout.html";
 }
@@ -529,7 +529,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCart();
   if(document.getElementById("product-page")) bootProductPage();
 });
-
 
 // =====================
 // EXPORTS (utilisables depuis checkout.js)
@@ -548,3 +547,4 @@ window.setCart = setCart;
 window.updateCartCount = updateCartCount;
 window.renderCart = renderCart;
 window.startCheckout = startCheckout;
+
