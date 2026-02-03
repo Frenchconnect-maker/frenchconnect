@@ -68,6 +68,7 @@
       aspect-ratio: 1/1;
       object-fit: cover;
       margin-bottom:12px;
+      display:block;
     }
 
     /* mobile safe */
@@ -185,7 +186,7 @@
     <section class="premium-wrap" style="margin-top:22px;">
       <h2 style="text-align:center;margin-bottom:8px;">🔥 Sélection Fleurs Françaises</h2>
       <p class="muted" style="text-align:center;max-width:900px;margin:0 auto 16px;">
-        Clique sur une fleur → redirection boutique (ou fiche produit si tu veux).
+        Clique sur une fleur → fiche produit (prix + grammages + panier).
       </p>
 
       <div class="grid" id="fr-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;">
@@ -204,4 +205,108 @@
         <p class="muted" style="max-width:860px;margin:0 auto 14px;">
           Dis-moi ce que tu veux (fruité, sucré, relax…), on te guide.
         </p>
-        <div class="btn-row" style="justify-content:center
+        <div class="btn-row" style="justify-content:center;flex-wrap:wrap;gap:10px;">
+          <a class="btn" href="contact.html" style="min-width:min(520px, 100%);text-align:center;">✍️ Nous écrire</a>
+          <a class="btn ghost" href="shop.html" style="min-width:min(520px, 100%);text-align:center;">🛒 Retour boutique</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="cols">
+      <div>
+        <h3>FrenchConnect</h3>
+        <p class="muted">CBD Premium • Street Selection</p>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <p class="muted"><a href="shop.html">Boutique</a></p>
+        <p class="muted"><a href="cart.html">Panier</a></p>
+        <p class="muted"><a href="account.html">Mon compte</a></p>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p class="muted"><a href="contact.html">Nous écrire</a></p>
+      </div>
+    </div>
+    <div class="copy">© <span id="year"></span> FrenchConnect</div>
+  </footer>
+
+  <!-- ✅ store.js + injection FR + burger -->
+  <script src="assets/js/store.js?v=20260204"></script>
+
+  <script>
+    // Year
+    (function(){
+      const y = document.getElementById("year");
+      if(y) y.textContent = new Date().getFullYear();
+    })();
+
+    // Burger (compatible avec ton CSS)
+    (function(){
+      const toggle = document.getElementById("navToggle");
+      const menu   = document.getElementById("mobileMenu");
+      const close  = document.getElementById("menuClose");
+      const back   = document.getElementById("menuBackdrop");
+      if(!toggle || !menu) return;
+
+      function openMenu(){
+        document.body.classList.add("menu-open");
+        menu.classList.add("open");
+        menu.setAttribute("aria-hidden","false");
+        toggle.setAttribute("aria-expanded","true");
+      }
+      function closeMenu(){
+        document.body.classList.remove("menu-open");
+        menu.classList.remove("open");
+        menu.setAttribute("aria-hidden","true");
+        toggle.setAttribute("aria-expanded","false");
+      }
+
+      toggle.addEventListener("click", () => menu.classList.contains("open") ? closeMenu() : openMenu());
+      if(close) close.addEventListener("click", closeMenu);
+      if(back)  back.addEventListener("click", closeMenu);
+      document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeMenu(); });
+      menu.addEventListener("click",(e)=>{ if(e.target.closest("a")) closeMenu(); });
+    })();
+
+    // Inject FR flowers from STORE (exclude Cali)
+    (function(){
+      if(!window.STORE) return;
+      const grid = document.getElementById("fr-grid");
+      if(!grid) return;
+
+      const frFlowers = STORE.filter(p =>
+        p.category === "fleurs" &&
+        !String(p.badge || "").toLowerCase().includes("cali")
+      );
+
+      grid.innerHTML = frFlowers.map(p => `
+        <article class="card">
+          <a href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${p.name}">
+            <img class="fr-thumb" src="${p.image}" alt="${p.name}" loading="lazy" decoding="async">
+          </a>
+          <div class="pad">
+            <div class="pill">FR</div>
+            <h3>${p.name}</h3>
+            <p class="muted mini">${p.desc || ""}</p>
+            <div class="price-tag">à partir de ${window.formatPrice ? formatPrice(p.options?.[0]?.price || p.price) : ((p.options?.[0]?.price || p.price).toFixed(2) + " €")}</div>
+            <div class="btn-row" style="margin-top:10px;">
+              <a class="btn" href="product.html?id=${encodeURIComponent(p.id)}" style="text-align:center;">Voir</a>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    })();
+
+    // Update cart count if store.js exposes it
+    (function(){
+      if(window.updateCartCount) window.updateCartCount();
+    })();
+  </script>
+
+</body>
+</html>
