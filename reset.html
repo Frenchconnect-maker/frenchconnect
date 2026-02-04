@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Nouveau mot de passe</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{font-family:system-ui,Arial;margin:0;padding:24px;background:#0b0b0b;color:#fff}
+    .box{max-width:520px;margin:0 auto;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px}
+    input{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.25);color:#fff}
+    button{padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:#fff;color:#000;font-weight:900;cursor:pointer;width:100%}
+    .msg{margin-top:12px;padding:10px 12px;border-radius:12px;font-weight:800;display:none}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Choisir un nouveau mot de passe</h2>
+    <p style="opacity:.8">Tu arrives ici depuis l’email “mot de passe oublié”.</p>
+
+    <label>Nouveau mot de passe</label>
+    <input id="pwd" type="password" autocomplete="new-password">
+
+    <div class="msg" id="msg"></div>
+
+    <div style="margin-top:12px">
+      <button id="save">Enregistrer</button>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ Mets les mêmes valeurs que sur ton site
+    const SUPABASE_URL = "https://mnsqfagfdahvhlfopfah.supabase.co";
+    const SUPABASE_ANON_KEY = "TA_ANON_KEY_ICI"; // eyJ...
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const msg = (type, text) => {
+      const el = document.getElementById("msg");
+      el.style.display = "block";
+      el.style.background = type === "ok" ? "rgba(0,180,80,.14)" : "rgba(220,50,50,.14)";
+      el.style.border = "1px solid rgba(255,255,255,.12)";
+      el.textContent = text;
+    };
+
+    document.getElementById("save").addEventListener("click", async () => {
+      const password = document.getElementById("pwd").value || "";
+      if (password.length < 6) {
+        msg("err", "Mot de passe trop court (min 6 caractères).");
+        return;
+      }
+
+      const { error } = await sb.auth.updateUser({ password });
+      if (error) {
+        msg("err", error.message);
+        return;
+      }
+
+      msg("ok", "Mot de passe mis à jour ✅ Tu peux retourner au checkout.");
+      setTimeout(() => location.href = "/checkout.html", 1400);
+    });
+  </script>
+</body>
+</html>
