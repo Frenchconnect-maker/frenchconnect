@@ -191,11 +191,105 @@ const STORE = [
     payment_link: ""
   },
 
-  // ===== CALI WEED US (SANS REMISES) =====
+  
+  // ===== FLEURS FR (Sud-Ouest 🇫🇷) =====
+  {
+    id: "pineapple-kush-fr",
+    name: "Pineapple Kush 🇫🇷",
+    price: 4.80,
+    image: "assets/images/fr/pineapple-kush.webp",
+    category: "fleurs",
+    badge: "Fleur FR",
+    origin: "fr",
+    desc: "Pineapple Kush (FR) — fleur CBD cultivée en Sud-Ouest 🇫🇷. Profil tropical/ananas, notes sucrées, manucure propre, goût naturel. THC < 0,3%.",
+    sticker: { text: "FR", tone: "black" },
+    options: buildGramOptions(4.80),
+    payment_link: ""
+  },
+  {
+    id: "sour-pineapple-fr",
+    name: "Sour Pineapple 🇫🇷",
+    price: 4.50,
+    image: "assets/images/fr/sour-pineapple.webp",
+    category: "fleurs",
+    badge: "Fleur FR",
+    origin: "fr",
+    desc: "Sour Pineapple (FR) — fruité + pointe acidulée. Culture Sud-Ouest 🇫🇷, arômes nets, têtes propres, régularité au quotidien. THC < 0,3%.",
+    sticker: { text: "FR", tone: "black" },
+    options: buildGramOptions(4.50),
+    payment_link: ""
+  },
+  {
+    id: "oregon-guava-fr",
+    name: "Oregon Guava 🇫🇷",
+    price: 4.70,
+    image: "assets/images/fr/oregon-guava.webp",
+    category: "fleurs",
+    badge: "Fleur FR",
+    origin: "fr",
+    desc: "Oregon Guava (FR) — notes fruitées type goyave, parfum clean, visuel soigné. Poussée en Sud-Ouest 🇫🇷. THC < 0,3%.",
+    sticker: { text: "FR", tone: "black" },
+    options: buildGramOptions(4.70),
+    payment_link: ""
+  },
+  {
+    id: "blue-orchid-fr",
+    name: "Blue Orchid 🇫🇷",
+    price: 4.70,
+    image: "assets/images/fr/blue-orchid.webp",
+    category: "fleurs",
+    badge: "Fleur FR",
+    origin: "fr",
+    desc: "Blue Orchid (FR) — floral/doux, très clean, manucure correcte, arômes naturels. Culture Sud-Ouest 🇫🇷. THC < 0,3%.",
+    sticker: { text: "FR", tone: "black" },
+    options: buildGramOptions(4.70),
+    payment_link: ""
+  },
+  {
+    id: "peach-buddha-fr",
+    name: "Peach Buddha 🇫🇷",
+    price: 3.90,
+    image: "assets/images/fr/peach-buddha.webp",
+    category: "fleurs",
+    badge: "Fleur FR",
+    origin: "fr",
+    desc: "Peach Buddha (FR) — notes pêche/fruitées, goût naturel, parfaite daily. Poussée en Sud-Ouest 🇫🇷. THC < 0,3%.",
+    sticker: { text: "FR", tone: "black" },
+    options: buildGramOptions(3.90),
+    payment_link: ""
+  },
+  {
+    id: "orange-buddha-fr",
+    name: "Orange Buddha 🇫🇷",
+    price: 3.80,
+    image: "assets/images/fr/orange-buddha.webp",
+    category: "fleurs",
+    badge: "Fleur FR",
+    origin: "fr",
+    desc: "Orange Buddha (FR) — agrumes/orange, parfum frais, têtes propres. Culture Sud-Ouest 🇫🇷. THC < 0,3%.",
+    sticker: { text: "FR", tone: "black" },
+    options: buildGramOptions(3.80),
+    payment_link: ""
+  },
+  {
+    id: "kompolti-fr",
+    name: "Kompolti 🇫🇷",
+    price: 3.90,
+    image: "assets/images/fr/kompolti.webp",
+    category: "fleurs",
+    badge: "Fleur FR",
+    origin: "fr",
+    desc: "Kompolti (FR) — profil nature/herbacé, régulier, clean. Cultivé en Sud-Ouest 🇫🇷. THC < 0,3%.",
+    sticker: { text: "FR", tone: "black" },
+    options: buildGramOptions(3.90),
+    payment_link: ""
+  },
+
+// ===== CALI WEED US (SANS REMISES) =====
   // ⚠️ Mets bien les fichiers ici :
   // - assets/images/cali/sunset-sherbet-cali.webp
-  // - assets/images/cali/royal-runtz-cali.webp
-  // - assets/images/cali/ghost-train-haze-cali.webp
+  // - assets/images/cali/royal-caliweed-optimized.webp
+  // - assets/images/cali/ghost-caliweed-optimized.webp
   {
     id: "sunset-sherbet-cali",
     name: "Sunset Sherbet Cali Weed US 🇺🇸",
@@ -232,94 +326,6 @@ const STORE = [
     options: buildGramOptionsNoDiscount(15.90),
     payment_link: ""
   },
-
-  
-  // ===== FLEURS FR (Sud-Ouest 🇫🇷) =====
-  {
-    id: "pineapple-kush-fr",
-    name: "Pineapple Kush 🇫🇷",
-    price: 4.80,
-    image: "assets/images/fr/pineapple-kush.webp",
-    category: "fleurs",
-    badge: "Fleur FR",
-    desc: "Fleur CBD cultivée dans le Sud-Ouest 🇫🇷. Profil tropical/ananas 🍍 avec une touche kush plus ronde. Buds propres, aromatique marquée. THC < 0,3 %.",
-    sticker: { text: "FR", tone: "cyan", side: "right" },
-    options: buildGramOptions(4.80),
-    payment_link: ""
-  },
-  {
-    id: "sour-pineapple-fr",
-    name: "Sour Pineapple 🇫🇷",
-    price: 4.50,
-    image: "assets/images/fr/sour-pineapple.webp",
-    category: "fleurs",
-    badge: "Fleur FR",
-    desc: "Fleur CBD cultivée dans le Sud-Ouest 🇫🇷. Notes fruitées 🍍 avec une pointe acidulée/agrumes 🍋. Sélection clean, THC < 0,3 %.",
-    sticker: { text: "FR", tone: "cyan", side: "right" },
-    options: buildGramOptions(4.50),
-    payment_link: ""
-  },
-  {
-    id: "oregon-guava-fr",
-    name: "Oregon Guava 🇫🇷",
-    price: 4.70,
-    image: "assets/images/fr/oregon-guava.webp",
-    category: "fleurs",
-    badge: "Fleur FR",
-    desc: "Fleur CBD cultivée dans le Sud-Ouest 🇫🇷. Profil fruit exotique/guava 🥭, aromatique expressif et clean. THC < 0,3 %.",
-    sticker: { text: "LOCAL", tone: "black" },
-    options: buildGramOptions(4.70),
-    payment_link: ""
-  },
-  {
-    id: "blue-orchid-fr",
-    name: "Blue Orchid 🇫🇷",
-    price: 4.70,
-    image: "assets/images/fr/blue-orchid.webp",
-    category: "fleurs",
-    badge: "Fleur FR",
-    desc: "Fleur CBD cultivée dans le Sud-Ouest 🇫🇷. Notes florales + fruitées 🌸🫐, rendu aromatique doux et propre. THC < 0,3 %.",
-    sticker: { text: "FR", tone: "cyan" },
-    options: buildGramOptions(4.70),
-    payment_link: ""
-  },
-  {
-    id: "kompolti-fr",
-    name: "Kompolti 🇫🇷",
-    price: 3.90,
-    image: "assets/images/fr/kompolti.webp",
-    category: "fleurs",
-    badge: "Fleur FR",
-    desc: "Fleur CBD cultivée dans le Sud-Ouest 🇫🇷. Variété connue pour un profil plus “terreux/herbacé” 🌿. Bon rapport qualité/prix. THC < 0,3 %.",
-    sticker: { text: "BEST VALUE", tone: "pink", side: "right" },
-    options: buildGramOptions(3.90),
-    payment_link: ""
-  },
-  {
-    id: "peach-buddha-fr",
-    name: "Peach Buddha 🇫🇷",
-    price: 3.90,
-    image: "assets/images/fr/peach-buddha.webp",
-    category: "fleurs",
-    badge: "Fleur FR",
-    desc: "Fleur CBD cultivée dans le Sud-Ouest 🇫🇷. Notes fruitées “pêche” 🍑, aromatique doux, sélection clean. THC < 0,3 %.",
-    sticker: { text: "FR", tone: "cyan", side: "right" },
-    options: buildGramOptions(3.90),
-    payment_link: ""
-  },
-  {
-    id: "orange-buddha-fr",
-    name: "Orange Buddha 🇫🇷",
-    price: 3.80,
-    image: "assets/images/fr/orange-buddha.webp",
-    category: "fleurs",
-    badge: "Fleur FR",
-    desc: "Fleur CBD cultivée dans le Sud-Ouest 🇫🇷. Notes agrumes/orange 🍊, profil frais et clean. THC < 0,3 %.",
-    sticker: { text: "FR", tone: "cyan" },
-    options: buildGramOptions(3.80),
-    payment_link: ""
-  },
-
 
   // ===== PRE ROLLS (SANS GRAMMAGE) =====
   {
@@ -472,6 +478,26 @@ function clearCart(){
   renderCart();
 }
 window.clearCart = clearCart;
+
+
+// =====================
+// ORIGINES (pour pages FR/US/ES/IT/MA/DE)
+// - champ optionnel: p.origin (ex: "fr", "us")
+// =====================
+const ORIGIN_MAP = {
+  fr: "France",
+  us: "USA",
+  es: "Espagne",
+  it: "Italie",
+  ma: "Maroc",
+  de: "Allemagne"
+};
+
+function normOrigin(o){
+  if(!o) return "";
+  const k = (""+o).toLowerCase().trim();
+  return ORIGIN_MAP[k] ? k : k;
+}
 
 // =====================
 // FILTRE CATEGORIES (shop)
@@ -756,3 +782,6 @@ window.updateCartCount = updateCartCount;
 window.renderCart = renderCart;
 window.startCheckout = startCheckout;
 
+
+window.ORIGIN_MAP = ORIGIN_MAP;
+window.normOrigin = normOrigin;
